@@ -28,6 +28,10 @@ function MultiPage() {
   const [currency, setCurrency] = useState<Currency>("FCFA");
   const [rate, setRate] = useState("");
   const [parcels, setParcels] = useState<Parcel[]>([newParcel(), newParcel()]);
+  const { status, consume, reset } = useConsume();
+  void reset;
+  const showResult = status.state === "ok";
+  const exhausted = status.state === "error" && status.fatal;
 
   const update = (id: string, patch: Partial<Parcel>) => {
     setParcels((ps) => ps.map((p) => (p.id === id ? { ...p, ...patch } : p)));
