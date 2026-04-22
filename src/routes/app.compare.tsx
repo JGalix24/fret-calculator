@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { Field, inputClass, selectClass } from "@/components/app/Field";
 import { ResultCard, Stat } from "@/components/app/ResultCard";
 import { CalcButton, ExhaustedNotice } from "@/components/app/CalcButton";
+import { ExportPdfButton } from "@/components/app/ExportPdfButton";
 import { useConsume } from "@/hooks/useConsume";
 import {
   CURRENCIES,
