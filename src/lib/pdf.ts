@@ -183,37 +183,40 @@ function drawSection(
   width: number,
   emphasize = false,
 ): number {
-  // Section title
+  // Section title (centered)
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(71, 85, 105);
-  doc.text(title.toUpperCase(), x, y);
-  y += 10;
+  doc.text(title.toUpperCase(), x + width / 2, y, { align: "center" });
+  y += 12;
 
   // Card
-  const rowH = 26;
-  const padding = 12;
+  const rowH = 32;
+  const padding = 16;
   const cardH = padding * 2 + rows.length * rowH;
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(226, 232, 240);
   doc.setLineWidth(0.8);
   doc.roundedRect(x, y, width, cardH, 8, 8, "FD");
 
-  let ry = y + padding + 16;
+  const centerX = x + width / 2;
+  let ry = y + padding + 12;
   rows.forEach((row, i) => {
     if (i > 0) {
       doc.setDrawColor(241, 245, 249);
-      doc.line(x + 12, ry - 18, x + width - 12, ry - 18);
+      doc.line(x + 16, ry - 22, x + width - 16, ry - 22);
     }
+    // Label (centered, small caps feel)
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(100, 116, 139);
-    doc.text(row.label, x + 14, ry);
+    doc.text(row.label, centerX, ry, { align: "center" });
 
-    doc.setFont("helvetica", emphasize ? "bold" : "normal");
-    doc.setFontSize(emphasize ? 12 : 11);
+    // Value (centered, bold below)
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(emphasize ? 14 : 12);
     doc.setTextColor(15, 23, 42);
-    doc.text(row.value, x + width - 14, ry, { align: "right" });
+    doc.text(row.value, centerX, ry + 14, { align: "center" });
 
     ry += rowH;
   });
