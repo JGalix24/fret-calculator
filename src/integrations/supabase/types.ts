@@ -14,16 +14,148 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      activation_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_usage: number | null
+          type: Database["public"]["Enums"]["activation_code_type"]
+          usage_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_usage?: number | null
+          type: Database["public"]["Enums"]["activation_code_type"]
+          usage_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_usage?: number | null
+          type?: Database["public"]["Enums"]["activation_code_type"]
+          usage_count?: number
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_create_code: {
+        Args: {
+          _password: string
+          _type: Database["public"]["Enums"]["activation_code_type"]
+        }
+        Returns: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_usage: number | null
+          type: Database["public"]["Enums"]["activation_code_type"]
+          usage_count: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "activation_codes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_delete_code: {
+        Args: { _id: string; _password: string }
+        Returns: undefined
+      }
+      admin_list_codes: {
+        Args: { _password: string }
+        Returns: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_usage: number | null
+          type: Database["public"]["Enums"]["activation_code_type"]
+          usage_count: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "activation_codes"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_set_active: {
+        Args: { _active: boolean; _id: string; _password: string }
+        Returns: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_usage: number | null
+          type: Database["public"]["Enums"]["activation_code_type"]
+          usage_count: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "activation_codes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      consume_activation_code: {
+        Args: { _code: string }
+        Returns: {
+          ok: boolean
+          reason: string
+          remaining: number
+        }[]
+      }
+      is_admin_password: { Args: { _password: string }; Returns: boolean }
+      validate_activation_code: {
+        Args: { _code: string }
+        Returns: {
+          code_type: Database["public"]["Enums"]["activation_code_type"]
+          expires_at: string
+          ok: boolean
+          reason: string
+          remaining: number
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      activation_code_type: "DEMO" | "MENSUEL" | "TRIMESTRIEL"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +282,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      activation_code_type: ["DEMO", "MENSUEL", "TRIMESTRIEL"],
+    },
   },
 } as const
