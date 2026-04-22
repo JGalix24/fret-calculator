@@ -121,19 +121,31 @@ function MultiPage() {
           </div>
         </div>
 
-        <ResultCard accent="orange">
-          <div className="space-y-5">
-            <Stat
-              label={lang === "fr" ? "Volume total" : "Total volume"}
-              value={`${totalVolume.toFixed(3)} m³`}
-              sub={lang === "fr" ? `${parcels.length} colis` : `${parcels.length} parcels`}
-            />
-            <Stat
-              label={lang === "fr" ? "Coût total" : "Total cost"}
-              value={formatMoney(total, currency)}
-            />
-          </div>
-        </ResultCard>
+        <div className="space-y-4">
+          {exhausted ? (
+            <ExhaustedNotice />
+          ) : (
+            <ResultCard accent="orange">
+              <div className="space-y-5">
+                <Stat
+                  label={lang === "fr" ? "Volume total" : "Total volume"}
+                  value={`${totalVolume.toFixed(3)} m³`}
+                  sub={lang === "fr" ? `${parcels.length} colis` : `${parcels.length} parcels`}
+                />
+                <Stat
+                  label={lang === "fr" ? "Coût total" : "Total cost"}
+                  value={showResult ? formatMoney(total, currency) : "—"}
+                />
+              </div>
+            </ResultCard>
+          )}
+          <CalcButton
+            onClick={consume}
+            status={status}
+            disabled={!(totalVolume > 0 && Number(rate) > 0)}
+            label={lang === "fr" ? "Calculer le total" : "Calculate total"}
+          />
+        </div>
       </div>
     </div>
   );
