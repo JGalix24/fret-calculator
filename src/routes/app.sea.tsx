@@ -32,11 +32,21 @@ function SeaPage() {
   const [W, setW] = useState("");
   const [H, setH] = useState("");
 
+  const { status, consume, reset } = useConsume();
+
   const country = COUNTRIES.find((c) => c.code === countryCode)!;
   const volume = useMemo(() => cbm(Number(L) || 0, Number(W) || 0, Number(H) || 0), [L, W, H]);
   const total = volume * (Number(rate) || 0);
   const eta = estimatedArrivalRange("sea");
   const ready = volume > 0 && Number(rate) > 0;
+  const showResult = status.state === "ok" && ready;
+  const exhausted = status.state === "error" && status.fatal;
+
+  // Reset cached result when inputs change
+  const onInputChange = (setter: (v: string) => void) => (v: string) => {
+    setter(v);
+    if (status.state === "ok") reset();
+  };
 
   return (
     <div className="max-w-4xl">
