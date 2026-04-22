@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 
 import appCss from "../styles.css?url";
 import { I18nProvider } from "@/lib/i18n";
+import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
 
 function NotFoundComponent() {
   return (
@@ -59,6 +60,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body className="bg-background text-foreground">
@@ -71,8 +73,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <I18nProvider>
-      <Outlet />
-    </I18nProvider>
+    <ThemeProvider>
+      <I18nProvider>
+        <Outlet />
+      </I18nProvider>
+    </ThemeProvider>
   );
 }

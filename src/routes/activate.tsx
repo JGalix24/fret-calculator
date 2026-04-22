@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useI18n, WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/i18n";
+import { useI18n, buildWhatsappLink, WHATSAPP_NUMBER, type WhatsappContext } from "@/lib/i18n";
 import { setSession } from "@/lib/session";
 import { validateCode } from "@/lib/activation";
 
@@ -25,10 +25,11 @@ export const Route = createFileRoute("/activate")({
 });
 
 function ActivatePage() {
-  const { t } = useI18n();
+  const { lang, t } = useI18n();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [errorCtx, setErrorCtx] = useState<WhatsappContext>("general");
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -47,7 +48,15 @@ function ActivatePage() {
         exhausted: t("activate.err.exhausted"),
         unknown: t("activate.err.unknown"),
       };
+      const ctxMap: Record<string, WhatsappContext> = {
+        expired: "renew",
+        exhausted: "exhausted",
+        inactive: "renew",
+        invalid: "general",
+        unknown: "general",
+      };
       setError(reasonMap[result.reason] ?? reasonMap.unknown);
+      setErrorCtx(ctxMap[result.reason] ?? "general");
       setCode("");
       return;
     }
@@ -119,7 +128,7 @@ function ActivatePage() {
           {t("activate.no_code")}
         </p>
         <a
-          href={WHATSAPP_LINK}
+          href={buildWhatsappLink(lang, error ? errorCtx : "general")}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[oklch(0.7_0.18_145)] hover:bg-[oklch(0.66_0.18_145)] px-5 py-3 text-sm font-semibold text-[#0F172A] transition-colors"

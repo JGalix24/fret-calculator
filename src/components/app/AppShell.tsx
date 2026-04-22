@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useI18n, type Lang } from "@/lib/i18n";
 import { clearSession, getSession } from "@/lib/session";
 import { useNavigate } from "@tanstack/react-router";
+import { ThemeToggle } from "@/lib/theme";
 
 type Tab = { to: "/app" | "/app/sea" | "/app/air" | "/app/compare" | "/app/multi"; label: { fr: string; en: string }; exact?: boolean };
 const tabs: Tab[] = [
@@ -77,6 +78,7 @@ export function AppShell() {
                 </button>
               ))}
             </div>
+            <ThemeToggle />
             <button
               onClick={onLogout}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1"
