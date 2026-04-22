@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useI18n, WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/i18n";
-import { parseCode, setSession } from "@/lib/session";
+import { setSession } from "@/lib/session";
+import { validateCode } from "@/lib/activation";
 
 export const Route = createFileRoute("/activate")({
   head: () => ({
@@ -27,20 +28,30 @@ function ActivatePage() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const [code, setCode] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setMessage(null);
-    const parsed = parseCode(code);
-    if (!parsed) {
-      setError(t("activate.invalid"));
+    const trimmed = code.trim().toUpperCase();
+    if (!trimmed) return;
+    setLoading(true);
+    const result = await validateCode(trimmed);
+    setLoading(false);
+    if (!result.ok) {
+      const reasonMap: Record<string, string> = {
+        invalid: t("activate.err.invalid"),
+        inactive: t("activate.err.inactive"),
+        expired: t("activate.err.expired"),
+        exhausted: t("activate.err.exhausted"),
+        unknown: t("activate.err.unknown"),
+      };
+      setError(reasonMap[result.reason] ?? reasonMap.unknown);
       setCode("");
       return;
     }
-    setSession(parsed);
+    setSession({ code: trimmed, type: result.type, remaining: result.remaining });
     navigate({ to: "/app" });
   };
 
@@ -83,23 +94,19 @@ function ActivatePage() {
             placeholder={t("activate.placeholder")}
             spellCheck={false}
             autoComplete="off"
-            className="w-full rounded-xl bg-input border border-border px-4 py-3.5 text-center text-lg font-mono tracking-[0.2em] placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary"
+            disabled={loading}
+            className="w-full rounded-xl bg-input border border-border px-4 py-3.5 text-center text-lg font-mono tracking-[0.2em] placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
           />
           <button
             type="submit"
-            className="w-full rounded-xl bg-[image:var(--gradient-primary)] px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-blue)] transition-transform hover:scale-[1.02]"
+            disabled={loading || !code.trim()}
+            className="w-full rounded-xl bg-[image:var(--gradient-primary)] px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-blue)] transition-transform hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100"
           >
-            {t("activate.validate")}
+            {loading ? t("activate.checking") : t("activate.validate")}
           </button>
           {error && (
             <p className="text-xs text-center text-destructive pt-1">{error}</p>
           )}
-          {message && (
-            <p className="text-xs text-center text-brand-orange-glow pt-1">{message}</p>
-          )}
-          <p className="text-[11px] text-center text-muted-foreground/70 pt-1">
-            {t("activate.hint")}
-          </p>
         </form>
 
         <div className="my-8 flex items-center gap-3">
