@@ -33,7 +33,7 @@ function ComparePage() {
   const [weight, setWeight] = useState("");
   const { status, consume, reset } = useConsume();
 
-  void countryCode;
+  const country = COUNTRIES.find((c) => c.code === countryCode)!;
   const volume = cbm(Number(L) || 0, Number(W) || 0, Number(H) || 0);
   const seaTotal = volume * (Number(seaRate) || 0);
   const airTotal = (Number(weight) || 0) * (Number(airRate) || 0);
@@ -155,6 +155,37 @@ function ComparePage() {
           </div>
         </ResultCard>
       </div>
+
+      {showResult && (
+        <div className="mt-4 flex justify-end">
+          <ExportPdfButton
+            build={() => {
+              const cheap = seaTotal <= airTotal ? (lang === "fr" ? "Bateau" : "Sea") : (lang === "fr" ? "Avion" : "Air");
+              return {
+                pageTitle: lang === "fr" ? "Comparaison Bateau vs Avion" : "Sea vs Air comparison",
+                subtitle:
+                  lang === "fr"
+                    ? "Comparaison du coût et du délai entre fret maritime et fret aérien."
+                    : "Cost and transit comparison between sea and air freight.",
+                params: [
+                  { label: lang === "fr" ? "Devise" : "Currency", value: currency },
+                  { label: lang === "fr" ? "Destination" : "Destination", value: country.name },
+                  { label: lang === "fr" ? `Tarif bateau / m³` : `Sea rate / m³`, value: formatMoney(Number(seaRate) || 0, currency) },
+                  { label: lang === "fr" ? `Tarif avion / kg` : `Air rate / kg`, value: formatMoney(Number(airRate) || 0, currency) },
+                  { label: lang === "fr" ? "Dimensions (L × l × H)" : "Dimensions (L × W × H)", value: `${L} × ${W} × ${H} cm` },
+                  { label: lang === "fr" ? "Poids" : "Weight", value: `${Number(weight) || 0} kg` },
+                ],
+                results: [
+                  { label: lang === "fr" ? "Volume" : "Volume", value: `${volume.toFixed(3)} m³` },
+                  { label: lang === "fr" ? `Coût bateau (${transitLabel("sea", lang)})` : `Sea cost (${transitLabel("sea", lang)})`, value: formatMoney(seaTotal, currency) },
+                  { label: lang === "fr" ? `Coût avion (${transitLabel("air", lang)})` : `Air cost (${transitLabel("air", lang)})`, value: formatMoney(airTotal, currency) },
+                  { label: lang === "fr" ? "Le moins cher" : "Cheapest", value: cheap },
+                ],
+              };
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
