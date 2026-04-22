@@ -68,35 +68,20 @@ export function generateFreightPdf(payload: FreightPdfPayload): void {
   doc.setTextColor(203, 213, 225); // slate-300
   doc.text(isFr ? "Récapitulatif de calcul" : "Calculation summary", M + 42, 68);
 
-  // Date (right)
+  // Date (right) — no code displayed (kept private)
   doc.setFontSize(10);
   doc.setTextColor(203, 213, 225);
   const dateStr = formatNow(payload.lang);
-  doc.text(dateStr, W - M, 52, { align: "right" });
-  const masked = maskCode(payload.code);
-  if (masked) {
-    doc.text(`${isFr ? "Code" : "Code"} : ${masked}`, W - M, 68, { align: "right" });
-  }
+  doc.text(dateStr, W - M, 60, { align: "right" });
 
-  y = 130;
+  y = 140;
 
-  // ---- Title ----
+  // ---- Title (centered) ----
   doc.setTextColor(15, 23, 42);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(22);
-  doc.text(payload.pageTitle, M, y);
-  y += 22;
-
-  if (payload.subtitle) {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.setTextColor(100, 116, 139); // slate-500
-    const subLines = doc.splitTextToSize(payload.subtitle, W - 2 * M);
-    doc.text(subLines, M, y);
-    y += subLines.length * 14;
-  }
-
-  y += 16;
+  doc.text(payload.pageTitle, W / 2, y, { align: "center" });
+  y += 28;
 
   // ---- Section: Parameters ----
   y = drawSection(
@@ -108,7 +93,7 @@ export function generateFreightPdf(payload: FreightPdfPayload): void {
     W - 2 * M,
   );
 
-  y += 18;
+  y += 22;
 
   // ---- Section: Results ----
   y = drawSection(
@@ -121,40 +106,52 @@ export function generateFreightPdf(payload: FreightPdfPayload): void {
     true,
   );
 
-  // ---- Transit / Arrival ----
+  // ---- Transit / Arrival (highlighted hero block) ----
   if (payload.transit || payload.arrival) {
-    y += 18;
-    doc.setFillColor(241, 245, 249); // slate-100
-    const boxH = (payload.arrival ? 50 : 28) + (payload.transit && payload.arrival ? 10 : 0);
-    doc.roundedRect(M, y, W - 2 * M, boxH + 16, 8, 8, "F");
-    let ty = y + 22;
+    y += 24;
+    const boxX = M;
+    const boxW = W - 2 * M;
+    const boxH = 96;
+
+    // Gradient-like layered fills (blue accent)
+    doc.setFillColor(37, 99, 235); // blue-600
+    doc.roundedRect(boxX, y, boxW, boxH, 12, 12, "F");
+
+    // Soft inner overlay for depth
+    doc.setFillColor(59, 130, 246); // blue-500
+    doc.roundedRect(boxX + 4, y + 4, boxW - 8, boxH - 8, 10, 10, "F");
+
+    // Left accent bar
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(boxX + 16, y + 18, 4, boxH - 36, 2, 2, "F");
+
+    let ty = y + 32;
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.setTextColor(71, 85, 105);
+    doc.setFontSize(9);
+    doc.setTextColor(219, 234, 254); // blue-100
     doc.text(
       (isFr ? "Délai estimé" : "Estimated transit").toUpperCase(),
-      M + 14,
+      boxX + 32,
       ty,
     );
-    ty += 14;
+    ty += 20;
+
     if (payload.transit) {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(13);
-      doc.setTextColor(15, 23, 42);
-      doc.text(payload.transit, M + 14, ty);
-      ty += 14;
+      doc.setFontSize(20);
+      doc.setTextColor(255, 255, 255);
+      doc.text(payload.transit, boxX + 32, ty);
+      ty += 18;
     }
     if (payload.arrival) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.setTextColor(71, 85, 105);
-      const lines = doc.splitTextToSize(payload.arrival, W - 2 * M - 28);
-      doc.text(lines, M + 14, ty);
-      y = ty + lines.length * 12;
-    } else {
-      y = ty;
+      doc.setTextColor(226, 232, 240); // slate-200
+      const lines = doc.splitTextToSize(payload.arrival, boxW - 64);
+      doc.text(lines, boxX + 32, ty);
     }
-    y += 8;
+
+    y += boxH + 8;
   }
 
   // ---- Footer ----
