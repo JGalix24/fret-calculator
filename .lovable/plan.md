@@ -1,69 +1,83 @@
 
 
-## Plan : Mode clair + message WhatsApp pré-rempli (personnalisé par offre)
+## Plan : Sécurité, contrôle temps réel & UX session
 
-### 1. Mode clair (toggle clair/sombre)
+### 1. Validation côté serveur sur `/activated` et `/app`
 
-**Tokens CSS** dans `src/styles.css` :
-- Garder le sombre actuel sur `:root`
-- Ajouter `:root.light { … }` qui surcharge background, foreground, glass, borders, shadows, et `select option` pour fond clair
-- Gradients hero adoucis en clair
+Aujourd'hui on fait confiance au `sessionStorage`. On ajoute une **revalidation serveur** :
 
-**Provider thème** : nouveau `src/lib/theme.tsx`
-- Lit `localStorage("fc-theme")` (défaut `dark`), applique la classe `light` sur `<html>`
-- Hook `useTheme()` exposant `theme` + `toggleTheme`
-- Branché dans `src/routes/__root.tsx`
-- Script anti-FOUC inline dans `<head>` pour éviter le flash
+- `src/routes/activated.tsx` :
+  - Au montage, appeler `validateCode(session.code)` (Supabase RPC déjà existant)
+  - Si la BDD répond `expired`, `inactive`, `invalid` ou `exhausted` → mettre à jour la session (ou la nettoyer) et basculer en mode « expiré »
+  - Si OK → réécrire `expiresAt` et `remaining` avec les valeurs serveur (source de vérité)
+  - État de chargement pendant la vérification (skeleton léger sur la carte)
 
-**Bouton lune/soleil** ajouté dans :
-- `src/components/landing/Header.tsx`
-- `src/components/app/AppShell.tsx`
+- `src/routes/app.tsx` :
+  - `beforeLoad` devient `async` et appelle aussi `validateCode` côté client pour bloquer l'accès si la BDD désactive le code
+  - Si KO → `clearSession()` + redirect vers `/activated?expired=1`
 
-### 2. Message WhatsApp pré-rempli et personnalisé par offre
+### 2. Refresh automatique de la session (polling)
 
-**Centralisation** dans `src/lib/i18n.tsx` :
-- Définir un type `WhatsappContext = "demo" | "mensuel" | "trimestriel" | "renew" | "exhausted" | "general"`
-- Messages FR (et EN scaffolding) par contexte, par exemple :
-  - `demo` → « Bonjour Mr.G, je viens de tester Freight-Calculator (5 calculs offerts). J'aimerais en savoir plus avant de m'abonner. »
-  - `mensuel` → « Bonjour Mr.G, je souhaite activer l'offre **Mensuelle (2 000 FCFA / 30 jours)** de Freight-Calculator. Voici mon reçu de paiement : »
-  - `trimestriel` → « Bonjour Mr.G, je souhaite activer l'offre **Trimestrielle (5 000 FCFA / 90 jours)** de Freight-Calculator. Voici mon reçu de paiement : »
-  - `exhausted` → « Bonjour Mr.G, j'ai épuisé mes 5 calculs gratuits et je veux passer à un plan payant. »
-  - `renew` → « Bonjour Mr.G, mon accès Freight-Calculator a expiré, je souhaite le renouveler. »
-  - `general` → message neutre par défaut
-- Helper `buildWhatsappLink(lang, context)` qui retourne `https://wa.me/22899584808?text=<encodeURIComponent(message)>`
-- Garder `WHATSAPP_LINK` comme fallback
+Dans `src/routes/activated.tsx` ET dans `src/components/app/AppShell.tsx` :
 
-**Branchement dans les composants** :
-- `Pricing.tsx` → CTA carte Mensuel = `mensuel`, CTA carte Trimestriel = `trimestriel`, lien numéro footer pricing = `general`
-- `FinalCTA.tsx` → si lien WA, contexte `general`
-- `Footer.tsx` → `general`
-- `routes/activate.tsx` :
-  - Lien « Pas de code ? » → `general`
-  - Erreur `exhausted` → `exhausted`
-  - Erreur `expired` → `renew`
-- Calculateurs (`app.*.tsx`) message d'erreur `exhausted` → bouton WA contextuel `exhausted`
+- Hook custom `useSessionRefresh()` créé dans `src/hooks/useSessionRefresh.ts` :
+  - Polling toutes les **5 minutes** via `setInterval`
+  - Appelle `validateCode(code)` 
+  - Met à jour `expiresAt` + `remaining` dans `sessionStorage`
+  - Si `expired` / `inactive` → `clearSession()` + redirect vers `/activated?expired=1`
+  - Aussi déclenché sur `visibilitychange` (retour sur l'onglet) pour réagir vite
+  - Cleanup propre sur unmount
 
-### 3. Détails techniques
+### 3. Bouton « Changer de code » (reset session)
 
-- Aucune migration DB, aucun nouveau package
-- `localStorage` pour le thème (persistance entre sessions)
-- Tous les composants utilisent déjà les tokens OKLCH → la bascule fonctionne sans toucher au markup
-- Messages encodés via `encodeURIComponent` pour gérer accents et retours à la ligne
+Dans `src/routes/activated.tsx` :
 
-### 4. Fichiers touchés
+- Nouveau bouton secondaire « **Changer de code** » / « **Use another code** »
+- Action : `clearSession()` + `navigate({ to: "/activate" })`
+- Confirmation visuelle via toast court (« Session terminée »)
+- Placé dans la grille d'actions secondaires à côté de « Copier mon code »
 
-Création :
-- `src/lib/theme.tsx`
+### 4. WhatsApp enrichi avec contexte détaillé
 
-Édition :
-- `src/styles.css` (tokens `.light`)
-- `src/lib/i18n.tsx` (messages WA par contexte + helper)
-- `src/routes/__root.tsx` (ThemeProvider + script anti-FOUC)
-- `src/components/landing/Header.tsx` (toggle thème)
-- `src/components/app/AppShell.tsx` (toggle thème)
-- `src/components/landing/Footer.tsx`
-- `src/components/landing/Pricing.tsx` (contextes mensuel/trimestriel)
-- `src/components/landing/FinalCTA.tsx`
-- `src/routes/activate.tsx` (contextes exhausted/renew/general)
-- Calculateurs concernés par l'épuisement (`app.sea.tsx`, `app.air.tsx`, `app.compare.tsx`, `app.multi.tsx`) si bouton WA affiché
+Mise à jour du helper dans `src/lib/i18n.tsx` :
+
+- `buildWhatsappLink(lang, context, details?)` accepte un objet optionnel `details` :
+  ```ts
+  {
+    plan?: string;
+    code?: string;        // 4 derniers caractères seulement, pour confidentialité
+    expiresAt?: string;   // formaté
+    daysLeft?: number;
+    remaining?: number;   // calculs restants (DEMO)
+    page?: string;        // ex: "Calculateur Mer"
+  }
+  ```
+- Le message inclut automatiquement : plan, code court (`****-XXXX`), expiration ou calculs restants, page d'origine
+- Format propre avec retours à la ligne, encodé via `encodeURIComponent`
+
+Branchement dans :
+- `src/routes/activated.tsx` (bouton « Besoin d'aide ? » → tous les détails)
+- `src/components/app/CalcButton.tsx` (erreur exhausted → contexte + page)
+- Les calculateurs (`app.sea.tsx`, `app.air.tsx`, `app.compare.tsx`, `app.multi.tsx`) passent leur nom de page au bouton WA
+
+### 5. Détails techniques
+
+- Aucune migration DB (les RPC `validate_activation_code` / `consume_activation_code` existent déjà)
+- Aucun nouveau package
+- Polling : intervalle de 5 min, pas de retry agressif (économie réseau)
+- Code WhatsApp : seulement les **4 derniers caractères** affichés pour limiter le risque de partage involontaire
+- Toasts via `sonner` déjà installé
+
+### 6. Fichiers touchés
+
+**Création** :
+- `src/hooks/useSessionRefresh.ts`
+
+**Édition** :
+- `src/routes/activated.tsx` (validation serveur au mount + bouton « Changer de code » + WA enrichi + polling)
+- `src/routes/app.tsx` (validation serveur dans `beforeLoad`)
+- `src/components/app/AppShell.tsx` (polling)
+- `src/lib/i18n.tsx` (signature étendue de `buildWhatsappLink` avec `details`)
+- `src/components/app/CalcButton.tsx` (passage des détails au lien WA)
+- `src/routes/app.sea.tsx`, `src/routes/app.air.tsx`, `src/routes/app.compare.tsx`, `src/routes/app.multi.tsx` (props page name)
 
