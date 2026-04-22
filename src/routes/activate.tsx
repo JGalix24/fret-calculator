@@ -91,9 +91,15 @@ function ActivatePage() {
           >
             {t("activate.validate")}
           </button>
+          {error && (
+            <p className="text-xs text-center text-destructive pt-1">{error}</p>
+          )}
           {message && (
             <p className="text-xs text-center text-brand-orange-glow pt-1">{message}</p>
           )}
+          <p className="text-[11px] text-center text-muted-foreground/70 pt-1">
+            {t("activate.hint")}
+          </p>
         </form>
 
         <div className="my-8 flex items-center gap-3">

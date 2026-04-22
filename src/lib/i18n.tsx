@@ -100,6 +100,10 @@ const fr: Dict = {
   "activate.back": "Retour à l'accueil",
   "activate.soon":
     "La validation des codes sera activée prochainement. Pour l'instant, contacte-nous sur WhatsApp pour démarrer.",
+  "activate.invalid":
+    "Code incorrect. Vérifie ton code ou contacte-nous sur WhatsApp.",
+  "activate.hint":
+    "Format attendu : MRG-DEMO-XXXX, MRG-30-XXXX ou MRG-90-XXXX (en attendant la validation serveur).",
 };
 
 // EN scaffolding — to be completed later. Falls back to FR for missing keys.
