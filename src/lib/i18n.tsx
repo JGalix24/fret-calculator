@@ -154,3 +154,47 @@ export function useI18n() {
 
 export const WHATSAPP_NUMBER = "+228 99584808";
 export const WHATSAPP_LINK = "https://wa.me/22899584808";
+
+export type WhatsappContext =
+  | "demo"
+  | "mensuel"
+  | "trimestriel"
+  | "renew"
+  | "exhausted"
+  | "general";
+
+const WA_MESSAGES_FR: Record<WhatsappContext, string> = {
+  demo:
+    "Bonjour Mr.G, je viens de tester Freight-Calculator (5 calculs offerts). J'aimerais en savoir plus avant de m'abonner.",
+  mensuel:
+    "Bonjour Mr.G, je souhaite activer l'offre Mensuelle (2 000 FCFA / 30 jours) de Freight-Calculator. Voici mon reçu de paiement :",
+  trimestriel:
+    "Bonjour Mr.G, je souhaite activer l'offre Trimestrielle (5 000 FCFA / 90 jours) de Freight-Calculator. Voici mon reçu de paiement :",
+  renew:
+    "Bonjour Mr.G, mon accès Freight-Calculator a expiré, je souhaite le renouveler.",
+  exhausted:
+    "Bonjour Mr.G, j'ai épuisé mes 5 calculs gratuits sur Freight-Calculator et je veux passer à un plan payant.",
+  general:
+    "Bonjour Mr.G, je suis intéressé(e) par Freight-Calculator. J'aimerais avoir plus d'informations.",
+};
+
+const WA_MESSAGES_EN: Record<WhatsappContext, string> = {
+  demo:
+    "Hello Mr.G, I just tried Freight-Calculator (5 free calculations). I'd like to know more before subscribing.",
+  mensuel:
+    "Hello Mr.G, I want to activate the Monthly plan (2,000 FCFA / 30 days) of Freight-Calculator. Here is my payment receipt:",
+  trimestriel:
+    "Hello Mr.G, I want to activate the Quarterly plan (5,000 FCFA / 90 days) of Freight-Calculator. Here is my payment receipt:",
+  renew:
+    "Hello Mr.G, my Freight-Calculator access has expired, I'd like to renew it.",
+  exhausted:
+    "Hello Mr.G, I've used my 5 free calculations on Freight-Calculator and want to upgrade to a paid plan.",
+  general:
+    "Hello Mr.G, I'm interested in Freight-Calculator. I'd like more information.",
+};
+
+export function buildWhatsappLink(lang: Lang, context: WhatsappContext = "general"): string {
+  const dict = lang === "en" ? WA_MESSAGES_EN : WA_MESSAGES_FR;
+  const msg = dict[context] ?? WA_MESSAGES_FR.general;
+  return `https://wa.me/22899584808?text=${encodeURIComponent(msg)}`;
+}
