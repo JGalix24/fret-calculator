@@ -240,3 +240,19 @@
 .animate-float {
   animation: float-slow 6s ease-in-out infinite;
 }
+
+/* Native <select> dropdown — force dark theme on options (browsers render the
+   popup with the OS default unless background-color is set on the option). */
+select {
+  color-scheme: dark;
+}
+select option,
+select optgroup {
+  background-color: oklch(0.22 0.04 264);
+  color: oklch(0.97 0.01 250);
+}
+select option:checked,
+select option:hover {
+  background-color: oklch(0.32 0.08 264);
+  color: oklch(0.99 0.01 250);
+}
