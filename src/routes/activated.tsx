@@ -128,7 +128,9 @@ function ActivatedPage() {
   const expMs = computedExpiresAt ? new Date(computedExpiresAt).getTime() : null;
   const now = Date.now();
   const isExpired =
-    Boolean(expiredFlag) || (expMs !== null && !Number.isNaN(expMs) && expMs < now);
+    Boolean(expiredFlag) ||
+    serverExpired ||
+    (expMs !== null && !Number.isNaN(expMs) && expMs < now);
   const daysLeft =
     expMs !== null && !Number.isNaN(expMs) && expMs > now
       ? Math.max(0, Math.ceil((expMs - now) / 86_400_000))
@@ -172,6 +174,9 @@ function ActivatedPage() {
         : "Could not copy the code",
     back: lang === "fr" ? "← Retour à l'accueil" : "← Back to home",
     days: lang === "fr" ? "jours" : "days",
+    changeCode: lang === "fr" ? "Changer de code" : "Use another code",
+    sessionEnded: lang === "fr" ? "Session terminée" : "Session ended",
+    checking: lang === "fr" ? "Vérification…" : "Checking…",
   };
 
   const handleCopy = async () => {
@@ -184,18 +189,26 @@ function ActivatedPage() {
     }
   };
 
-  // Help message: include plan + expiration if available
-  const helpMsg =
-    lang === "fr"
-      ? `Bonjour Mr.G, j'ai besoin d'aide avec Freight-Calculator.\nPlan : ${planLabel}${
-          expiresDate ? `\nExpiration : ${expiresDate}` : ""
-        }${session ? `\nCode : ${session.code}` : ""}`
-      : `Hello Mr.G, I need help with Freight-Calculator.\nPlan: ${planLabel}${
-          expiresDate ? `\nExpires: ${expiresDate}` : ""
-        }${session ? `\nCode: ${session.code}` : ""}`;
-  const helpHref = `https://wa.me/22899584808?text=${encodeURIComponent(helpMsg)}`;
+  const handleChangeCode = () => {
+    clearSession();
+    toast.success(labels.sessionEnded);
+    navigate({ to: "/activate" });
+  };
 
   const renewCtx: WhatsappContext = isExpired ? "renew" : "general";
+
+  // Enriched WhatsApp link
+  const helpHref = buildWhatsappLink(lang, renewCtx, {
+    plan: planLabel || undefined,
+    code: session?.code,
+    expiresAt: !isDemo && expiresDate ? expiresDate : undefined,
+    daysLeft: !isDemo && !isExpired && expMs !== null ? daysLeft : undefined,
+    remaining:
+      isDemo && session?.remaining !== null && session?.remaining !== undefined
+        ? session.remaining
+        : undefined,
+    page: lang === "fr" ? "Page de confirmation" : "Confirmation page",
+  });
 
   return (
     <div
