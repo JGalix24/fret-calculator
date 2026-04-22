@@ -3,6 +3,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import appCss from "../styles.css?url";
 import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -76,6 +77,7 @@ function RootComponent() {
     <ThemeProvider>
       <I18nProvider>
         <Outlet />
+        <Toaster richColors position="top-center" />
       </I18nProvider>
     </ThemeProvider>
   );
