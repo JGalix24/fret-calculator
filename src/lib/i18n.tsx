@@ -98,12 +98,20 @@ const fr: Dict = {
   "activate.pricing": "2 000 FCFA / mois · 5 000 FCFA / 3 mois",
   "activate.payments": "Moyens de paiement : Moov Money · Mixx by Yas",
   "activate.back": "Retour à l'accueil",
-  "activate.soon":
-    "La validation des codes sera activée prochainement. Pour l'instant, contacte-nous sur WhatsApp pour démarrer.",
-  "activate.invalid":
-    "Code incorrect. Vérifie ton code ou contacte-nous sur WhatsApp.",
-  "activate.hint":
-    "Format attendu : MRG-DEMO-XXXX, MRG-30-XXXX ou MRG-90-XXXX (en attendant la validation serveur).",
+  "activate.checking": "Vérification…",
+  "activate.err.invalid": "Code incorrect. Vérifie ton code ou contacte-nous sur WhatsApp.",
+  "activate.err.inactive": "Ce code a été désactivé. Contacte-nous sur WhatsApp.",
+  "activate.err.expired": "Ton accès a expiré. Renouvelle sur WhatsApp : +228 99584808",
+  "activate.err.exhausted": "Tu as utilisé tes 5 calculs gratuits. Passe au plan mensuel sur WhatsApp.",
+  "activate.err.unknown": "Une erreur est survenue. Réessaie ou contacte-nous sur WhatsApp.",
+  "app.exhausted.title": "Tu as utilisé tes 5 calculs gratuits",
+  "app.exhausted.body": "Passe au plan mensuel pour continuer à calculer sans limite.",
+  "app.expired.title": "Ton accès a expiré",
+  "app.expired.body": "Renouvelle ton abonnement sur WhatsApp pour reprendre.",
+  "app.error.calc": "Impossible de valider ce calcul. Réessaie.",
+  "app.computing": "Calcul en cours…",
+  "app.calculate": "Calculer",
+  "app.remaining": "calculs restants",
 };
 
 // EN scaffolding — to be completed later. Falls back to FR for missing keys.

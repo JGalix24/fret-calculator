@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { Field, inputClass, selectClass } from "@/components/app/Field";
 import { ResultCard, Stat } from "@/components/app/ResultCard";
+import { CalcButton, ExhaustedNotice } from "@/components/app/CalcButton";
+import { useConsume } from "@/hooks/useConsume";
 import {
   CURRENCIES,
   COUNTRIES,
@@ -28,14 +30,18 @@ function ComparePage() {
   const [W, setW] = useState("");
   const [H, setH] = useState("");
   const [weight, setWeight] = useState("");
+  const { status, consume, reset } = useConsume();
 
   void countryCode;
   const volume = cbm(Number(L) || 0, Number(W) || 0, Number(H) || 0);
   const seaTotal = volume * (Number(seaRate) || 0);
   const airTotal = (Number(weight) || 0) * (Number(airRate) || 0);
   const ready = volume > 0 && Number(weight) > 0 && Number(seaRate) > 0 && Number(airRate) > 0;
+  const showResult = status.state === "ok" && ready;
+  const exhausted = status.state === "error" && status.fatal;
+  void reset;
 
-  const cheaper = ready ? (seaTotal <= airTotal ? "sea" : "air") : null;
+  const cheaper = showResult ? (seaTotal <= airTotal ? "sea" : "air") : null;
 
   return (
     <div className="max-w-5xl">
@@ -93,7 +99,20 @@ function ComparePage() {
             <input value={weight} onChange={(e) => setWeight(e.target.value.replace(",", "."))} placeholder="kg" inputMode="decimal" className={inputClass + " text-center"} />
           </div>
         </div>
+
+        <CalcButton
+          onClick={consume}
+          status={status}
+          disabled={!ready}
+          label={lang === "fr" ? "Comparer" : "Compare"}
+        />
       </div>
+
+      {exhausted && (
+        <div className="mt-6">
+          <ExhaustedNotice />
+        </div>
+      )}
 
       <div className="mt-6 grid md:grid-cols-2 gap-5">
         <ResultCard accent="blue">
@@ -107,7 +126,7 @@ function ComparePage() {
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <Stat label={lang === "fr" ? "Volume" : "Volume"} value={`${volume.toFixed(3)} m³`} />
-            <Stat label={lang === "fr" ? "Coût" : "Cost"} value={ready ? formatMoney(seaTotal, currency) : "—"} />
+            <Stat label={lang === "fr" ? "Coût" : "Cost"} value={showResult ? formatMoney(seaTotal, currency) : "—"} />
           </div>
           <div className="mt-3 text-sm text-muted-foreground">
             {lang === "fr" ? "Délai " : "Transit "} {transitLabel("sea", lang)}
@@ -128,7 +147,7 @@ function ComparePage() {
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <Stat label={lang === "fr" ? "Poids" : "Weight"} value={`${Number(weight) || 0} kg`} />
-            <Stat label={lang === "fr" ? "Coût" : "Cost"} value={ready ? formatMoney(airTotal, currency) : "—"} />
+            <Stat label={lang === "fr" ? "Coût" : "Cost"} value={showResult ? formatMoney(airTotal, currency) : "—"} />
           </div>
           <div className="mt-3 text-sm text-muted-foreground">
             {lang === "fr" ? "Délai " : "Transit "} {transitLabel("air", lang)}

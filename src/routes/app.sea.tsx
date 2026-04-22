@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { Field, inputClass, selectClass } from "@/components/app/Field";
 import { ResultCard, Stat } from "@/components/app/ResultCard";
+import { CalcButton, ExhaustedNotice } from "@/components/app/CalcButton";
+import { useConsume } from "@/hooks/useConsume";
 import {
   CURRENCIES,
   COUNTRIES,
@@ -30,11 +32,21 @@ function SeaPage() {
   const [W, setW] = useState("");
   const [H, setH] = useState("");
 
+  const { status, consume, reset } = useConsume();
+
   const country = COUNTRIES.find((c) => c.code === countryCode)!;
   const volume = useMemo(() => cbm(Number(L) || 0, Number(W) || 0, Number(H) || 0), [L, W, H]);
   const total = volume * (Number(rate) || 0);
   const eta = estimatedArrivalRange("sea");
   const ready = volume > 0 && Number(rate) > 0;
+  const showResult = status.state === "ok" && ready;
+  const exhausted = status.state === "error" && status.fatal;
+
+  // Reset cached result when inputs change
+  const onInputChange = (setter: (v: string) => void) => (v: string) => {
+    setter(v);
+    if (status.state === "ok") reset();
+  };
 
   return (
     <div className="max-w-4xl">
@@ -85,7 +97,7 @@ function SeaPage() {
             <input
               inputMode="decimal"
               value={rate}
-              onChange={(e) => setRate(e.target.value.replace(",", "."))}
+              onChange={(e) => onInputChange(setRate)(e.target.value.replace(",", "."))}
               placeholder="ex: 250000"
               className={inputClass}
             />
@@ -96,46 +108,61 @@ function SeaPage() {
               {lang === "fr" ? "Dimensions du colis (cm)" : "Parcel dimensions (cm)"}
             </div>
             <div className="grid grid-cols-3 gap-3">
-              <input value={L} onChange={(e) => setL(e.target.value.replace(",", "."))} placeholder="L" inputMode="decimal" className={inputClass + " text-center"} />
-              <input value={W} onChange={(e) => setW(e.target.value.replace(",", "."))} placeholder="l" inputMode="decimal" className={inputClass + " text-center"} />
-              <input value={H} onChange={(e) => setH(e.target.value.replace(",", "."))} placeholder="H" inputMode="decimal" className={inputClass + " text-center"} />
+              <input value={L} onChange={(e) => onInputChange(setL)(e.target.value.replace(",", "."))} placeholder="L" inputMode="decimal" className={inputClass + " text-center"} />
+              <input value={W} onChange={(e) => onInputChange(setW)(e.target.value.replace(",", "."))} placeholder="l" inputMode="decimal" className={inputClass + " text-center"} />
+              <input value={H} onChange={(e) => onInputChange(setH)(e.target.value.replace(",", "."))} placeholder="H" inputMode="decimal" className={inputClass + " text-center"} />
             </div>
           </div>
+
+          <CalcButton
+            onClick={consume}
+            status={status}
+            disabled={!ready}
+            label={lang === "fr" ? "Calculer mon fret" : "Calculate"}
+          />
         </div>
 
-        <ResultCard accent="blue">
-          {ready ? (
-            <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <Stat
-                  label={lang === "fr" ? "Volume" : "Volume"}
-                  value={`${volume.toFixed(3)} m³`}
-                />
-                <Stat
-                  label={lang === "fr" ? "Coût total" : "Total cost"}
-                  value={formatMoney(total, currency)}
-                />
-              </div>
-              <div className="rounded-xl bg-card/40 border border-border p-4">
-                <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                  {lang === "fr" ? "Délai estimé" : "Estimated transit"}
+        {exhausted ? (
+          <ExhaustedNotice />
+        ) : (
+          <ResultCard accent="blue">
+            {showResult ? (
+              <div className="space-y-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <Stat
+                    label={lang === "fr" ? "Volume" : "Volume"}
+                    value={`${volume.toFixed(3)} m³`}
+                  />
+                  <Stat
+                    label={lang === "fr" ? "Coût total" : "Total cost"}
+                    value={formatMoney(total, currency)}
+                  />
                 </div>
-                <div className="mt-1 text-base font-semibold">{transitLabel("sea", lang)}</div>
-                <div className="mt-2 text-sm text-muted-foreground">
-                  {lang === "fr"
-                    ? `Ta marchandise posera le pied ${arrivalLabel(country)} entre le ${formatDateFR(eta.from)} et le ${formatDateFR(eta.to)}.`
-                    : `Your goods should arrive ${country.name} between ${formatDateFR(eta.from)} and ${formatDateFR(eta.to)}.`}
+                <div className="rounded-xl bg-card/40 border border-border p-4">
+                  <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    {lang === "fr" ? "Délai estimé" : "Estimated transit"}
+                  </div>
+                  <div className="mt-1 text-base font-semibold">{transitLabel("sea", lang)}</div>
+                  <div className="mt-2 text-sm text-muted-foreground">
+                    {lang === "fr"
+                      ? `Ta marchandise posera le pied ${arrivalLabel(country)} entre le ${formatDateFR(eta.from)} et le ${formatDateFR(eta.to)}.`
+                      : `Your goods should arrive ${country.name} between ${formatDateFR(eta.from)} and ${formatDateFR(eta.to)}.`}
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="text-sm text-muted-foreground">
-              {lang === "fr"
-                ? "Renseigne le tarif et les dimensions pour voir le calcul."
-                : "Enter rate and dimensions to see the calculation."}
-            </div>
-          )}
-        </ResultCard>
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                {lang === "fr"
+                  ? ready
+                    ? "Clique sur Calculer pour valider et révéler le coût."
+                    : "Renseigne le tarif et les dimensions pour voir le calcul."
+                  : ready
+                    ? "Click Calculate to reveal the cost."
+                    : "Enter rate and dimensions to see the calculation."}
+              </div>
+            )}
+          </ResultCard>
+        )}
       </div>
     </div>
   );
