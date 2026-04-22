@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { Field, inputClass, selectClass } from "@/components/app/Field";
 import { ResultCard, Stat } from "@/components/app/ResultCard";
 import { CalcButton, ExhaustedNotice } from "@/components/app/CalcButton";
+import { ExportPdfButton } from "@/components/app/ExportPdfButton";
 import { useConsume } from "@/hooks/useConsume";
 import {
   CURRENCIES,
@@ -121,6 +122,37 @@ function AirPage() {
                       ? `Ta marchandise posera le pied ${arrivalLabel(country)} entre le ${formatDateFR(eta.from)} et le ${formatDateFR(eta.to)}.`
                       : `Your goods should arrive ${country.name} between ${formatDateFR(eta.from)} and ${formatDateFR(eta.to)}.`}
                   </div>
+                </div>
+                <div className="flex justify-end pt-1">
+                  <ExportPdfButton
+                    build={() => ({
+                      pageTitle: lang === "fr" ? "Fret aérien (kg)" : "Air freight (kg)",
+                      subtitle:
+                        lang === "fr"
+                          ? "Coût = poids × tarif au kilogramme."
+                          : "Cost = weight × rate per kg.",
+                      params: [
+                        { label: lang === "fr" ? "Devise" : "Currency", value: currency },
+                        { label: lang === "fr" ? "Destination" : "Destination", value: country.name },
+                        {
+                          label: lang === "fr" ? `Tarif au kg (${currency})` : `Rate per kg (${currency})`,
+                          value: formatMoney(Number(rate) || 0, currency),
+                        },
+                        {
+                          label: lang === "fr" ? "Poids du colis" : "Parcel weight",
+                          value: `${Number(weight)} kg`,
+                        },
+                      ],
+                      results: [
+                        { label: lang === "fr" ? "Coût total" : "Total cost", value: formatMoney(total, currency) },
+                      ],
+                      transit: transitLabel("air", lang),
+                      arrival:
+                        lang === "fr"
+                          ? `Arrivée estimée ${arrivalLabel(country)} entre le ${formatDateFR(eta.from)} et le ${formatDateFR(eta.to)}.`
+                          : `Estimated arrival in ${country.name} between ${formatDateFR(eta.from)} and ${formatDateFR(eta.to)}.`,
+                    })}
+                  />
                 </div>
               </div>
             ) : (
