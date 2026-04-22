@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { Field, inputClass, selectClass } from "@/components/app/Field";
 import { ResultCard, Stat } from "@/components/app/ResultCard";
 import { CalcButton, ExhaustedNotice } from "@/components/app/CalcButton";
+import { ExportPdfButton } from "@/components/app/ExportPdfButton";
 import { useConsume } from "@/hooks/useConsume";
 import {
   CURRENCIES,
@@ -148,6 +149,38 @@ function SeaPage() {
                       ? `Ta marchandise posera le pied ${arrivalLabel(country)} entre le ${formatDateFR(eta.from)} et le ${formatDateFR(eta.to)}.`
                       : `Your goods should arrive ${country.name} between ${formatDateFR(eta.from)} and ${formatDateFR(eta.to)}.`}
                   </div>
+                </div>
+                <div className="flex justify-end pt-1">
+                  <ExportPdfButton
+                    build={() => ({
+                      pageTitle: lang === "fr" ? "Fret maritime (CBM)" : "Sea freight (CBM)",
+                      subtitle:
+                        lang === "fr"
+                          ? "Volume = L × l × H ÷ 1 000 000. Coût = volume × tarif au m³."
+                          : "Volume = L × W × H / 1,000,000. Cost = volume × CBM rate.",
+                      params: [
+                        { label: lang === "fr" ? "Devise" : "Currency", value: currency },
+                        { label: lang === "fr" ? "Destination" : "Destination", value: country.name },
+                        {
+                          label: lang === "fr" ? `Tarif au m³ (${currency})` : `Rate per m³ (${currency})`,
+                          value: formatMoney(Number(rate) || 0, currency),
+                        },
+                        {
+                          label: lang === "fr" ? "Dimensions (L × l × H)" : "Dimensions (L × W × H)",
+                          value: `${L} × ${W} × ${H} cm`,
+                        },
+                      ],
+                      results: [
+                        { label: lang === "fr" ? "Volume" : "Volume", value: `${volume.toFixed(3)} m³` },
+                        { label: lang === "fr" ? "Coût total" : "Total cost", value: formatMoney(total, currency) },
+                      ],
+                      transit: transitLabel("sea", lang),
+                      arrival:
+                        lang === "fr"
+                          ? `Arrivée estimée ${arrivalLabel(country)} entre le ${formatDateFR(eta.from)} et le ${formatDateFR(eta.to)}.`
+                          : `Estimated arrival in ${country.name} between ${formatDateFR(eta.from)} and ${formatDateFR(eta.to)}.`,
+                    })}
+                  />
                 </div>
               </div>
             ) : (
