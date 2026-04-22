@@ -7,6 +7,8 @@ export type ActivationStatus = {
   code: string;
   type: ActivationType;
   remaining: number | null;
+  expiresAt?: string | null;
+  activatedAt?: string;
 };
 
 export function getSession(): ActivationStatus | null {

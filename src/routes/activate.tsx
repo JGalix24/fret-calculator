@@ -60,8 +60,14 @@ function ActivatePage() {
       setCode("");
       return;
     }
-    setSession({ code: trimmed, type: result.type, remaining: result.remaining });
-    navigate({ to: "/app" });
+    setSession({
+      code: trimmed,
+      type: result.type,
+      remaining: result.remaining,
+      expiresAt: result.expiresAt,
+      activatedAt: new Date().toISOString(),
+    });
+    navigate({ to: "/activated" });
   };
 
   return (
