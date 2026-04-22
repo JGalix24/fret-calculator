@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useI18n, buildWhatsappLink, type WhatsappContext } from "@/lib/i18n";
-import { getSession, clearSession } from "@/lib/session";
+import { getSession, clearSession, setSession } from "@/lib/session";
+import { validateCode } from "@/lib/activation";
+import { useSessionRefresh } from "@/hooks/useSessionRefresh";
 
 export const Route = createFileRoute("/activated")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -53,12 +55,57 @@ function ActivatedPage() {
   const { lang } = useI18n();
   const navigate = useNavigate();
   const { expired: expiredFlag } = Route.useSearch();
-  const session = getSession();
+  const [session, setLocalSession] = useState(() => getSession());
   const [, setTick] = useState(0);
+  const [validating, setValidating] = useState(true);
+  const [serverExpired, setServerExpired] = useState(false);
 
   useEffect(() => {
     if (!session && !expiredFlag) navigate({ to: "/activate" });
   }, [session, expiredFlag, navigate]);
+
+  // Server-side revalidation on mount (source of truth)
+  useEffect(() => {
+    let cancelled = false;
+    const s = getSession();
+    if (!s) {
+      setValidating(false);
+      return;
+    }
+    (async () => {
+      try {
+        const r = await validateCode(s.code);
+        if (cancelled) return;
+        if (r.ok) {
+          const updated = {
+            ...s,
+            type: r.type,
+            remaining: r.remaining,
+            expiresAt: r.expiresAt,
+          };
+          setSession(updated);
+          setLocalSession(updated);
+        } else if (
+          r.reason === "expired" ||
+          r.reason === "inactive" ||
+          r.reason === "invalid" ||
+          r.reason === "exhausted"
+        ) {
+          setServerExpired(true);
+        }
+      } catch {
+        // network failure: keep cached session
+      } finally {
+        if (!cancelled) setValidating(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Periodic refresh + on tab focus
+  useSessionRefresh(true);
 
   // Re-render once a minute to keep the countdown fresh
   useEffect(() => {
@@ -81,7 +128,9 @@ function ActivatedPage() {
   const expMs = computedExpiresAt ? new Date(computedExpiresAt).getTime() : null;
   const now = Date.now();
   const isExpired =
-    Boolean(expiredFlag) || (expMs !== null && !Number.isNaN(expMs) && expMs < now);
+    Boolean(expiredFlag) ||
+    serverExpired ||
+    (expMs !== null && !Number.isNaN(expMs) && expMs < now);
   const daysLeft =
     expMs !== null && !Number.isNaN(expMs) && expMs > now
       ? Math.max(0, Math.ceil((expMs - now) / 86_400_000))
@@ -125,6 +174,9 @@ function ActivatedPage() {
         : "Could not copy the code",
     back: lang === "fr" ? "← Retour à l'accueil" : "← Back to home",
     days: lang === "fr" ? "jours" : "days",
+    changeCode: lang === "fr" ? "Changer de code" : "Use another code",
+    sessionEnded: lang === "fr" ? "Session terminée" : "Session ended",
+    checking: lang === "fr" ? "Vérification…" : "Checking…",
   };
 
   const handleCopy = async () => {
@@ -137,18 +189,26 @@ function ActivatedPage() {
     }
   };
 
-  // Help message: include plan + expiration if available
-  const helpMsg =
-    lang === "fr"
-      ? `Bonjour Mr.G, j'ai besoin d'aide avec Freight-Calculator.\nPlan : ${planLabel}${
-          expiresDate ? `\nExpiration : ${expiresDate}` : ""
-        }${session ? `\nCode : ${session.code}` : ""}`
-      : `Hello Mr.G, I need help with Freight-Calculator.\nPlan: ${planLabel}${
-          expiresDate ? `\nExpires: ${expiresDate}` : ""
-        }${session ? `\nCode: ${session.code}` : ""}`;
-  const helpHref = `https://wa.me/22899584808?text=${encodeURIComponent(helpMsg)}`;
+  const handleChangeCode = () => {
+    clearSession();
+    toast.success(labels.sessionEnded);
+    navigate({ to: "/activate" });
+  };
 
   const renewCtx: WhatsappContext = isExpired ? "renew" : "general";
+
+  // Enriched WhatsApp link
+  const helpHref = buildWhatsappLink(lang, renewCtx, {
+    plan: planLabel || undefined,
+    code: session?.code,
+    expiresAt: !isDemo && expiresDate ? expiresDate : undefined,
+    daysLeft: !isDemo && !isExpired && expMs !== null ? daysLeft : undefined,
+    remaining:
+      isDemo && session?.remaining !== null && session?.remaining !== undefined
+        ? session.remaining
+        : undefined,
+    page: lang === "fr" ? "Page de confirmation" : "Confirmation page",
+  });
 
   return (
     <div
@@ -275,7 +335,7 @@ function ActivatedPage() {
             </button>
           )}
           <a
-            href={isExpired ? buildWhatsappLink(lang, renewCtx) : helpHref}
+            href={helpHref}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[oklch(0.7_0.18_145)] hover:bg-[oklch(0.66_0.18_145)] px-4 py-3 text-sm font-semibold text-[#0F172A] transition-colors"
@@ -286,6 +346,22 @@ function ActivatedPage() {
             {labels.help}
           </a>
         </div>
+
+        {session && !isExpired && (
+          <button
+            type="button"
+            onClick={handleChangeCode}
+            className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
+          >
+            {labels.changeCode}
+          </button>
+        )}
+
+        {validating && (
+          <p className="mt-3 text-center text-[11px] text-muted-foreground">
+            {labels.checking}
+          </p>
+        )}
 
         <div className="mt-6 text-center">
           <Link

@@ -123,7 +123,7 @@ function SeaPage() {
         </div>
 
         {exhausted ? (
-          <ExhaustedNotice />
+          <ExhaustedNotice page={lang === "fr" ? "Calculateur Mer" : "Sea calculator"} />
         ) : (
           <ResultCard accent="blue">
             {showResult ? (

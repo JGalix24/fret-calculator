@@ -110,7 +110,7 @@ function ComparePage() {
 
       {exhausted && (
         <div className="mt-6">
-          <ExhaustedNotice />
+          <ExhaustedNotice page={lang === "fr" ? "Comparateur Mer/Avion" : "Sea/Air compare"} />
         </div>
       )}
 

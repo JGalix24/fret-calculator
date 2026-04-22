@@ -102,7 +102,7 @@ function AirPage() {
         </div>
 
         {exhausted ? (
-          <ExhaustedNotice />
+          <ExhaustedNotice page={lang === "fr" ? "Calculateur Avion" : "Air calculator"} />
         ) : (
           <ResultCard accent="violet">
             {showResult ? (
