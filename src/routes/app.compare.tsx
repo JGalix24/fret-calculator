@@ -30,14 +30,18 @@ function ComparePage() {
   const [W, setW] = useState("");
   const [H, setH] = useState("");
   const [weight, setWeight] = useState("");
+  const { status, consume, reset } = useConsume();
 
   void countryCode;
   const volume = cbm(Number(L) || 0, Number(W) || 0, Number(H) || 0);
   const seaTotal = volume * (Number(seaRate) || 0);
   const airTotal = (Number(weight) || 0) * (Number(airRate) || 0);
   const ready = volume > 0 && Number(weight) > 0 && Number(seaRate) > 0 && Number(airRate) > 0;
+  const showResult = status.state === "ok" && ready;
+  const exhausted = status.state === "error" && status.fatal;
+  void reset;
 
-  const cheaper = ready ? (seaTotal <= airTotal ? "sea" : "air") : null;
+  const cheaper = showResult ? (seaTotal <= airTotal ? "sea" : "air") : null;
 
   return (
     <div className="max-w-5xl">
