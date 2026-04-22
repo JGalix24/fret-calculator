@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useI18n, buildWhatsappLink, type WhatsappContext } from "@/lib/i18n";
-import { getSession, clearSession } from "@/lib/session";
+import { getSession, clearSession, setSession } from "@/lib/session";
+import { validateCode } from "@/lib/activation";
+import { useSessionRefresh } from "@/hooks/useSessionRefresh";
 
 export const Route = createFileRoute("/activated")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -53,12 +55,57 @@ function ActivatedPage() {
   const { lang } = useI18n();
   const navigate = useNavigate();
   const { expired: expiredFlag } = Route.useSearch();
-  const session = getSession();
+  const [session, setLocalSession] = useState(() => getSession());
   const [, setTick] = useState(0);
+  const [validating, setValidating] = useState(true);
+  const [serverExpired, setServerExpired] = useState(false);
 
   useEffect(() => {
     if (!session && !expiredFlag) navigate({ to: "/activate" });
   }, [session, expiredFlag, navigate]);
+
+  // Server-side revalidation on mount (source of truth)
+  useEffect(() => {
+    let cancelled = false;
+    const s = getSession();
+    if (!s) {
+      setValidating(false);
+      return;
+    }
+    (async () => {
+      try {
+        const r = await validateCode(s.code);
+        if (cancelled) return;
+        if (r.ok) {
+          const updated = {
+            ...s,
+            type: r.type,
+            remaining: r.remaining,
+            expiresAt: r.expiresAt,
+          };
+          setSession(updated);
+          setLocalSession(updated);
+        } else if (
+          r.reason === "expired" ||
+          r.reason === "inactive" ||
+          r.reason === "invalid" ||
+          r.reason === "exhausted"
+        ) {
+          setServerExpired(true);
+        }
+      } catch {
+        // network failure: keep cached session
+      } finally {
+        if (!cancelled) setValidating(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Periodic refresh + on tab focus
+  useSessionRefresh(true);
 
   // Re-render once a minute to keep the countdown fresh
   useEffect(() => {
