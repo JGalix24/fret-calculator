@@ -109,6 +109,8 @@ const fr: Dict = {
   "app.expired.title": "Ton accès a expiré",
   "app.expired.body": "Renouvelle ton abonnement sur WhatsApp pour reprendre.",
   "app.error.calc": "Impossible de valider ce calcul. Réessaie.",
+  "app.computing": "Calcul en cours…",
+  "app.calculate": "Calculer",
   "app.remaining": "calculs restants",
 };
 
