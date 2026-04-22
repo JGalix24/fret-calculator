@@ -193,8 +193,44 @@ const WA_MESSAGES_EN: Record<WhatsappContext, string> = {
     "Hello Mr.G, I'm interested in Freight-Calculator. I'd like more information.",
 };
 
-export function buildWhatsappLink(lang: Lang, context: WhatsappContext = "general"): string {
+export type WhatsappDetails = {
+  plan?: string;
+  code?: string; // last 4 chars only
+  expiresAt?: string; // pre-formatted
+  daysLeft?: number;
+  remaining?: number; // DEMO calcs left
+  page?: string;
+};
+
+function shortCode(code?: string): string | null {
+  if (!code) return null;
+  const clean = code.trim();
+  if (clean.length <= 4) return clean;
+  return `****-${clean.slice(-4)}`;
+}
+
+function buildDetailsBlock(lang: Lang, d?: WhatsappDetails): string {
+  if (!d) return "";
+  const isFr = lang !== "en";
+  const lines: string[] = [];
+  if (d.plan) lines.push(isFr ? `Plan : ${d.plan}` : `Plan: ${d.plan}`);
+  const sc = shortCode(d.code);
+  if (sc) lines.push(isFr ? `Code : ${sc}` : `Code: ${sc}`);
+  if (d.expiresAt) lines.push(isFr ? `Expiration : ${d.expiresAt}` : `Expires: ${d.expiresAt}`);
+  if (typeof d.daysLeft === "number")
+    lines.push(isFr ? `Jours restants : ${d.daysLeft}` : `Days left: ${d.daysLeft}`);
+  if (typeof d.remaining === "number")
+    lines.push(isFr ? `Calculs restants : ${d.remaining} / 5` : `Calculations left: ${d.remaining} / 5`);
+  if (d.page) lines.push(isFr ? `Page : ${d.page}` : `Page: ${d.page}`);
+  return lines.length ? `\n\n${lines.join("\n")}` : "";
+}
+
+export function buildWhatsappLink(
+  lang: Lang,
+  context: WhatsappContext = "general",
+  details?: WhatsappDetails,
+): string {
   const dict = lang === "en" ? WA_MESSAGES_EN : WA_MESSAGES_FR;
-  const msg = dict[context] ?? WA_MESSAGES_FR.general;
+  const msg = (dict[context] ?? WA_MESSAGES_FR.general) + buildDetailsBlock(lang, details);
   return `https://wa.me/22899584808?text=${encodeURIComponent(msg)}`;
 }
