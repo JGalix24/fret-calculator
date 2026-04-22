@@ -123,7 +123,7 @@ function MultiPage() {
 
         <div className="space-y-4">
           {exhausted ? (
-            <ExhaustedNotice />
+            <ExhaustedNotice page={lang === "fr" ? "Calculateur Multi-colis" : "Multi-parcel calculator"} />
           ) : (
             <ResultCard accent="orange">
               <div className="space-y-5">
