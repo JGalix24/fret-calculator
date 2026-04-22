@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { Field, inputClass, selectClass } from "@/components/app/Field";
 import { ResultCard, Stat } from "@/components/app/ResultCard";
 import { CalcButton, ExhaustedNotice } from "@/components/app/CalcButton";
+import { ExportPdfButton } from "@/components/app/ExportPdfButton";
 import { useConsume } from "@/hooks/useConsume";
 import { CURRENCIES, cbm, formatMoney, type Currency } from "@/lib/freight";
 
@@ -145,6 +146,33 @@ function MultiPage() {
             disabled={!(totalVolume > 0 && Number(rate) > 0)}
             label={lang === "fr" ? "Calculer le total" : "Calculate total"}
           />
+          {showResult && (
+            <ExportPdfButton
+              build={() => ({
+                pageTitle: lang === "fr" ? "Multi-colis (CBM)" : "Multi-parcel (CBM)",
+                subtitle:
+                  lang === "fr"
+                    ? "Volume total = somme des (L × l × H × quantité) ÷ 1 000 000."
+                    : "Total volume = sum of (L × W × H × qty) / 1,000,000.",
+                params: [
+                  { label: lang === "fr" ? "Devise" : "Currency", value: currency },
+                  {
+                    label: lang === "fr" ? `Tarif au m³ (${currency})` : `Rate per m³ (${currency})`,
+                    value: formatMoney(Number(rate) || 0, currency),
+                  },
+                  ...lines.map((l, i) => ({
+                    label: lang === "fr" ? `Colis ${i + 1} (×${l.qty})` : `Parcel ${i + 1} (×${l.qty})`,
+                    value: `${l.L || 0} × ${l.W || 0} × ${l.H || 0} cm  →  ${l.volume.toFixed(3)} m³`,
+                  })),
+                ],
+                results: [
+                  { label: lang === "fr" ? "Nombre de colis" : "Parcel count", value: `${parcels.length}` },
+                  { label: lang === "fr" ? "Volume total" : "Total volume", value: `${totalVolume.toFixed(3)} m³` },
+                  { label: lang === "fr" ? "Coût total" : "Total cost", value: formatMoney(total, currency) },
+                ],
+              })}
+            />
+          )}
         </div>
       </div>
     </div>
