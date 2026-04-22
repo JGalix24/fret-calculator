@@ -99,7 +99,20 @@ function ComparePage() {
             <input value={weight} onChange={(e) => setWeight(e.target.value.replace(",", "."))} placeholder="kg" inputMode="decimal" className={inputClass + " text-center"} />
           </div>
         </div>
+
+        <CalcButton
+          onClick={consume}
+          status={status}
+          disabled={!ready}
+          label={lang === "fr" ? "Comparer" : "Compare"}
+        />
       </div>
+
+      {exhausted && (
+        <div className="mt-6">
+          <ExhaustedNotice />
+        </div>
+      )}
 
       <div className="mt-6 grid md:grid-cols-2 gap-5">
         <ResultCard accent="blue">
@@ -113,7 +126,7 @@ function ComparePage() {
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <Stat label={lang === "fr" ? "Volume" : "Volume"} value={`${volume.toFixed(3)} m³`} />
-            <Stat label={lang === "fr" ? "Coût" : "Cost"} value={ready ? formatMoney(seaTotal, currency) : "—"} />
+            <Stat label={lang === "fr" ? "Coût" : "Cost"} value={showResult ? formatMoney(seaTotal, currency) : "—"} />
           </div>
           <div className="mt-3 text-sm text-muted-foreground">
             {lang === "fr" ? "Délai " : "Transit "} {transitLabel("sea", lang)}
@@ -134,7 +147,7 @@ function ComparePage() {
           </div>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <Stat label={lang === "fr" ? "Poids" : "Weight"} value={`${Number(weight) || 0} kg`} />
-            <Stat label={lang === "fr" ? "Coût" : "Cost"} value={ready ? formatMoney(airTotal, currency) : "—"} />
+            <Stat label={lang === "fr" ? "Coût" : "Cost"} value={showResult ? formatMoney(airTotal, currency) : "—"} />
           </div>
           <div className="mt-3 text-sm text-muted-foreground">
             {lang === "fr" ? "Délai " : "Transit "} {transitLabel("air", lang)}
