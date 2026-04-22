@@ -10,6 +10,8 @@ export type ConsumeResult =
   | { ok: true; remaining: number | null }
   | { ok: false; reason: "invalid" | "inactive" | "expired" | "exhausted" | "unknown" };
 
+type FailReason = "invalid" | "inactive" | "expired" | "exhausted" | "unknown";
+
 export async function validateCode(code: string): Promise<ValidateResult> {
   const { data, error } = await supabase.rpc("validate_activation_code", { _code: code });
   if (error || !data || data.length === 0) {
@@ -17,10 +19,7 @@ export async function validateCode(code: string): Promise<ValidateResult> {
   }
   const row = data[0];
   if (!row.ok) {
-    return {
-      ok: false,
-      reason: (row.reason as ValidateResult & { ok: false }["reason"]) || "unknown",
-    };
+    return { ok: false, reason: ((row.reason ?? "unknown") as FailReason) };
   }
   return {
     ok: true,
@@ -37,7 +36,7 @@ export async function consumeCode(code: string): Promise<ConsumeResult> {
   }
   const row = data[0];
   if (!row.ok) {
-    return { ok: false, reason: (row.reason as "invalid") || "unknown" };
+    return { ok: false, reason: ((row.reason ?? "unknown") as FailReason) };
   }
   return { ok: true, remaining: row.remaining };
 }
