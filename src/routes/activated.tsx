@@ -335,7 +335,7 @@ function ActivatedPage() {
             </button>
           )}
           <a
-            href={isExpired ? buildWhatsappLink(lang, renewCtx) : helpHref}
+            href={helpHref}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[oklch(0.7_0.18_145)] hover:bg-[oklch(0.66_0.18_145)] px-4 py-3 text-sm font-semibold text-[#0F172A] transition-colors"
@@ -346,6 +346,22 @@ function ActivatedPage() {
             {labels.help}
           </a>
         </div>
+
+        {session && !isExpired && (
+          <button
+            type="button"
+            onClick={handleChangeCode}
+            className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
+          >
+            {labels.changeCode}
+          </button>
+        )}
+
+        {validating && (
+          <p className="mt-3 text-center text-[11px] text-muted-foreground">
+            {labels.checking}
+          </p>
+        )}
 
         <div className="mt-6 text-center">
           <Link
