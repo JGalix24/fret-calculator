@@ -3,13 +3,14 @@ import { useI18n, type Lang } from "@/lib/i18n";
 import { clearSession, getSession } from "@/lib/session";
 import { useNavigate } from "@tanstack/react-router";
 
-const tabs = [
+type Tab = { to: "/app" | "/app/sea" | "/app/air" | "/app/compare" | "/app/multi"; label: { fr: string; en: string }; exact?: boolean };
+const tabs: Tab[] = [
   { to: "/app", label: { fr: "Accueil", en: "Home" }, exact: true },
   { to: "/app/sea", label: { fr: "Bateau", en: "Sea" } },
   { to: "/app/air", label: { fr: "Avion", en: "Air" } },
   { to: "/app/compare", label: { fr: "Comparer", en: "Compare" } },
   { to: "/app/multi", label: { fr: "Multi-colis", en: "Multi" } },
-] as const;
+];
 
 export function AppShell() {
   const { lang, setLang } = useI18n();

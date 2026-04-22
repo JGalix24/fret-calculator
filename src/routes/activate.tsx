@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useI18n, WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/i18n";
+import { parseCode, setSession } from "@/lib/session";
 
 export const Route = createFileRoute("/activate")({
   head: () => ({
@@ -24,13 +25,23 @@ export const Route = createFileRoute("/activate")({
 
 function ActivatePage() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage(t("activate.soon"));
-    setCode("");
+    setError(null);
+    setMessage(null);
+    const parsed = parseCode(code);
+    if (!parsed) {
+      setError(t("activate.invalid"));
+      setCode("");
+      return;
+    }
+    setSession(parsed);
+    navigate({ to: "/app" });
   };
 
   return (
