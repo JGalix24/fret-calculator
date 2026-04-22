@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ActivatedRouteImport } from './routes/activated'
 import { Route as ActivateRouteImport } from './routes/activate'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -27,6 +28,11 @@ const AppRoute = AppRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ActivatedRoute = ActivatedRouteImport.update({
+  id: '/activated',
+  path: '/activated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ActivateRoute = ActivateRouteImport.update({
@@ -68,6 +74,7 @@ const AppAirRoute = AppAirRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/activate': typeof ActivateRoute
+  '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
   '/app/air': typeof AppAirRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activate': typeof ActivateRoute
+  '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/activate': typeof ActivateRoute
+  '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
   '/app/air': typeof AppAirRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/activate'
+    | '/activated'
     | '/admin'
     | '/app'
     | '/app/air'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/activate'
+    | '/activated'
     | '/admin'
     | '/app/air'
     | '/app/compare'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/activate'
+    | '/activated'
     | '/admin'
     | '/app'
     | '/app/air'
@@ -136,6 +148,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ActivateRoute: typeof ActivateRoute
+  ActivatedRoute: typeof ActivatedRoute
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
 }
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/activated': {
+      id: '/activated'
+      path: '/activated'
+      fullPath: '/activated'
+      preLoaderRoute: typeof ActivatedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/activate': {
@@ -229,9 +249,19 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActivateRoute: ActivateRoute,
+  ActivatedRoute: ActivatedRoute,
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
