@@ -9,9 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as ActivateRouteImport } from './routes/activate'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppSeaRouteImport } from './routes/app.sea'
+import { Route as AppMultiRouteImport } from './routes/app.multi'
+import { Route as AppCompareRouteImport } from './routes/app.compare'
+import { Route as AppAirRouteImport } from './routes/app.air'
 
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ActivateRoute = ActivateRouteImport.update({
   id: '/activate',
   path: '/activate',
@@ -22,35 +33,109 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSeaRoute = AppSeaRouteImport.update({
+  id: '/sea',
+  path: '/sea',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMultiRoute = AppMultiRouteImport.update({
+  id: '/multi',
+  path: '/multi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCompareRoute = AppCompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAirRoute = AppAirRouteImport.update({
+  id: '/air',
+  path: '/air',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/activate': typeof ActivateRoute
+  '/app': typeof AppRouteWithChildren
+  '/app/air': typeof AppAirRoute
+  '/app/compare': typeof AppCompareRoute
+  '/app/multi': typeof AppMultiRoute
+  '/app/sea': typeof AppSeaRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activate': typeof ActivateRoute
+  '/app/air': typeof AppAirRoute
+  '/app/compare': typeof AppCompareRoute
+  '/app/multi': typeof AppMultiRoute
+  '/app/sea': typeof AppSeaRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/activate': typeof ActivateRoute
+  '/app': typeof AppRouteWithChildren
+  '/app/air': typeof AppAirRoute
+  '/app/compare': typeof AppCompareRoute
+  '/app/multi': typeof AppMultiRoute
+  '/app/sea': typeof AppSeaRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/activate'
+  fullPaths:
+    | '/'
+    | '/activate'
+    | '/app'
+    | '/app/air'
+    | '/app/compare'
+    | '/app/multi'
+    | '/app/sea'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/activate'
-  id: '__root__' | '/' | '/activate'
+  to:
+    | '/'
+    | '/activate'
+    | '/app/air'
+    | '/app/compare'
+    | '/app/multi'
+    | '/app/sea'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/activate'
+    | '/app'
+    | '/app/air'
+    | '/app/compare'
+    | '/app/multi'
+    | '/app/sea'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ActivateRoute: typeof ActivateRoute
+  AppRoute: typeof AppRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/activate': {
       id: '/activate'
       path: '/activate'
@@ -65,13 +150,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/sea': {
+      id: '/app/sea'
+      path: '/sea'
+      fullPath: '/app/sea'
+      preLoaderRoute: typeof AppSeaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/multi': {
+      id: '/app/multi'
+      path: '/multi'
+      fullPath: '/app/multi'
+      preLoaderRoute: typeof AppMultiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/compare': {
+      id: '/app/compare'
+      path: '/compare'
+      fullPath: '/app/compare'
+      preLoaderRoute: typeof AppCompareRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/air': {
+      id: '/app/air'
+      path: '/air'
+      fullPath: '/app/air'
+      preLoaderRoute: typeof AppAirRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
+
+interface AppRouteChildren {
+  AppAirRoute: typeof AppAirRoute
+  AppCompareRoute: typeof AppCompareRoute
+  AppMultiRoute: typeof AppMultiRoute
+  AppSeaRoute: typeof AppSeaRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAirRoute: AppAirRoute,
+  AppCompareRoute: AppCompareRoute,
+  AppMultiRoute: AppMultiRoute,
+  AppSeaRoute: AppSeaRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActivateRoute: ActivateRoute,
+  AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

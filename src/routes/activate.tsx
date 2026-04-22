@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useI18n, WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/i18n";
+import { parseCode, setSession } from "@/lib/session";
 
 export const Route = createFileRoute("/activate")({
   head: () => ({
@@ -24,13 +25,23 @@ export const Route = createFileRoute("/activate")({
 
 function ActivatePage() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [code, setCode] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage(t("activate.soon"));
-    setCode("");
+    setError(null);
+    setMessage(null);
+    const parsed = parseCode(code);
+    if (!parsed) {
+      setError(t("activate.invalid"));
+      setCode("");
+      return;
+    }
+    setSession(parsed);
+    navigate({ to: "/app" });
   };
 
   return (
@@ -80,9 +91,15 @@ function ActivatePage() {
           >
             {t("activate.validate")}
           </button>
+          {error && (
+            <p className="text-xs text-center text-destructive pt-1">{error}</p>
+          )}
           {message && (
             <p className="text-xs text-center text-brand-orange-glow pt-1">{message}</p>
           )}
+          <p className="text-[11px] text-center text-muted-foreground/70 pt-1">
+            {t("activate.hint")}
+          </p>
         </form>
 
         <div className="my-8 flex items-center gap-3">
