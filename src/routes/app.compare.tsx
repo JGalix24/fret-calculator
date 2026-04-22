@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { Field, inputClass, selectClass } from "@/components/app/Field";
 import { ResultCard, Stat } from "@/components/app/ResultCard";
+import { CalcButton, ExhaustedNotice } from "@/components/app/CalcButton";
+import { useConsume } from "@/hooks/useConsume";
 import {
   CURRENCIES,
   COUNTRIES,
