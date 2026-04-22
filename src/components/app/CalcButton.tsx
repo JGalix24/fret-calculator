@@ -79,14 +79,16 @@ export function ResultGate({
   status,
   preview,
   result,
+  page,
 }: {
   status: ConsumeUI;
   preview: ReactNode;
   result: ReactNode;
+  page?: string;
 }) {
   if (status.state === "ok") return <>{result}</>;
   if (status.state === "error" && status.fatal) {
-    return <ExhaustedNotice />;
+    return <ExhaustedNotice page={page} />;
   }
   return <>{preview}</>;
 }
