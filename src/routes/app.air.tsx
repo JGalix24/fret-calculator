@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { Field, inputClass, selectClass } from "@/components/app/Field";
 import { ResultCard, Stat } from "@/components/app/ResultCard";
+import { CalcButton, ExhaustedNotice } from "@/components/app/CalcButton";
+import { useConsume } from "@/hooks/useConsume";
 import {
   CURRENCIES,
   COUNTRIES,
@@ -26,11 +28,15 @@ function AirPage() {
   const [countryCode, setCountryCode] = useState("TG");
   const [rate, setRate] = useState("");
   const [weight, setWeight] = useState("");
+  const { status, consume, reset } = useConsume();
 
   const country = COUNTRIES.find((c) => c.code === countryCode)!;
   const total = (Number(weight) || 0) * (Number(rate) || 0);
   const eta = estimatedArrivalRange("air");
   const ready = Number(weight) > 0 && Number(rate) > 0;
+  const showResult = status.state === "ok" && ready;
+  const exhausted = status.state === "error" && status.fatal;
+  const onAnyChange = () => { if (status.state === "ok") reset(); };
 
   return (
     <div className="max-w-4xl">
