@@ -157,6 +157,76 @@
   --sidebar-ring: oklch(0.58 0.22 264);
 }
 
+/* Light theme overrides — applied when <html class="light"> is set */
+:root.light {
+  --background: oklch(0.98 0.005 250);            /* near-white */
+  --foreground: oklch(0.22 0.04 264);             /* navy ink */
+  --card: oklch(1 0 0 / 0.7);
+  --card-foreground: oklch(0.22 0.04 264);
+  --popover: oklch(0.99 0.005 250);
+  --popover-foreground: oklch(0.22 0.04 264);
+
+  --primary: oklch(0.55 0.22 264);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.94 0.01 250);
+  --secondary-foreground: oklch(0.22 0.04 264);
+  --muted: oklch(0.95 0.008 250);
+  --muted-foreground: oklch(0.45 0.03 256);
+  --accent: oklch(0.93 0.015 264);
+  --accent-foreground: oklch(0.22 0.04 264);
+  --destructive: oklch(0.58 0.24 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.22 0.04 264 / 0.12);
+  --input: oklch(0.22 0.04 264 / 0.06);
+  --ring: oklch(0.55 0.22 264);
+
+  --gradient-hero:
+    radial-gradient(ellipse 80% 60% at 50% -10%, oklch(0.58 0.22 264 / 0.18), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 30%, oklch(0.55 0.26 295 / 0.14), transparent 60%),
+    linear-gradient(180deg, var(--background), oklch(0.95 0.01 250));
+  --gradient-text: linear-gradient(120deg, oklch(0.22 0.04 264), oklch(0.4 0.12 264));
+
+  --shadow-glass: 0 8px 32px oklch(0.22 0.04 264 / 0.08), inset 0 1px 0 oklch(1 0 0 / 0.6);
+  --shadow-glow-blue: 0 10px 40px -10px oklch(0.55 0.22 264 / 0.4);
+  --shadow-glow-violet: 0 10px 40px -10px oklch(0.55 0.26 295 / 0.35);
+  --shadow-glow-green: 0 10px 40px -10px oklch(0.58 0.15 160 / 0.3);
+  --shadow-glow-orange: 0 10px 40px -10px oklch(0.65 0.21 38 / 0.35);
+  --shadow-elegant: 0 20px 60px -20px oklch(0.22 0.04 264 / 0.25);
+
+  --sidebar: oklch(0.98 0.005 250);
+  --sidebar-foreground: oklch(0.22 0.04 264);
+  --sidebar-accent: oklch(0.94 0.01 250);
+  --sidebar-accent-foreground: oklch(0.22 0.04 264);
+  --sidebar-border: oklch(0.22 0.04 264 / 0.12);
+}
+
+:root.light .glass {
+  background: oklch(1 0 0 / 0.65);
+  border: 1px solid oklch(0.22 0.04 264 / 0.1);
+}
+:root.light .glass-strong {
+  background: oklch(1 0 0 / 0.85);
+  border: 1px solid oklch(0.22 0.04 264 / 0.12);
+}
+:root.light .grid-bg {
+  background-image:
+    linear-gradient(oklch(0.22 0.04 264 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.22 0.04 264 / 0.05) 1px, transparent 1px);
+}
+:root.light select {
+  color-scheme: light;
+}
+:root.light select option,
+:root.light select optgroup {
+  background-color: oklch(0.99 0.005 250);
+  color: oklch(0.22 0.04 264);
+}
+:root.light select option:checked,
+:root.light select option:hover {
+  background-color: oklch(0.9 0.03 264);
+  color: oklch(0.22 0.04 264);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

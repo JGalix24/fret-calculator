@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { useI18n, WHATSAPP_LINK } from "@/lib/i18n";
+import { useI18n, buildWhatsappLink } from "@/lib/i18n";
 import type { ConsumeUI } from "@/hooks/useConsume";
 
 export function CalcButton({
@@ -47,13 +47,13 @@ export function ExhaustedNotice({
   body?: string;
   ctaLabel?: string;
 }) {
-  const { t } = useI18n();
+  const { lang, t } = useI18n();
   return (
     <div className="glass-strong rounded-2xl p-6 text-center">
       <h3 className="text-lg font-bold">{title ?? t("app.exhausted.title")}</h3>
       <p className="mt-2 text-sm text-muted-foreground">{body ?? t("app.exhausted.body")}</p>
       <a
-        href={WHATSAPP_LINK}
+        href={buildWhatsappLink(lang, "exhausted")}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[oklch(0.7_0.18_145)] hover:bg-[oklch(0.66_0.18_145)] px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition-colors"

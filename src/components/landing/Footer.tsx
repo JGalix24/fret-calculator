@@ -1,4 +1,4 @@
-import { useI18n, WHATSAPP_LINK, WHATSAPP_NUMBER, type Lang } from "@/lib/i18n";
+import { useI18n, buildWhatsappLink, WHATSAPP_NUMBER, type Lang } from "@/lib/i18n";
 
 export function Footer() {
   const { lang, setLang, t } = useI18n();
@@ -20,7 +20,7 @@ export function Footer() {
         </div>
 
         <a
-          href={WHATSAPP_LINK}
+          href={buildWhatsappLink(lang, "general")}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"

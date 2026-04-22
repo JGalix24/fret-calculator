@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useI18n, type Lang } from "@/lib/i18n";
+import { ThemeToggle } from "@/lib/theme";
 
 export function Header() {
   const { lang, setLang, t } = useI18n();
@@ -25,6 +26,7 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <LangSwitcher lang={lang} onChange={setLang} />
+          <ThemeToggle />
           <Link
             to="/activate"
             className="hidden sm:inline-flex items-center rounded-full bg-[image:var(--gradient-primary)] px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-glow-blue)] transition-transform hover:scale-[1.03]"

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useI18n, WHATSAPP_LINK, WHATSAPP_NUMBER } from "@/lib/i18n";
+import { useI18n, buildWhatsappLink, WHATSAPP_NUMBER } from "@/lib/i18n";
 
 const Check = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
@@ -8,7 +8,7 @@ const Check = () => (
 );
 
 export function Pricing() {
-  const { t } = useI18n();
+  const { lang, t } = useI18n();
 
   return (
     <section className="relative py-20 md:py-28">
@@ -35,6 +35,7 @@ export function Pricing() {
               t("pricing.month.feat3"),
             ]}
             cta={t("pricing.cta")}
+            href={buildWhatsappLink(lang, "mensuel")}
           />
           <PriceCard
             highlight
@@ -49,13 +50,14 @@ export function Pricing() {
               t("pricing.quarter.feat3"),
             ]}
             cta={t("pricing.cta")}
+            href={buildWhatsappLink(lang, "trimestriel")}
           />
         </div>
 
         <div className="mt-10 text-center">
           <p className="text-sm text-muted-foreground">{t("pricing.note")}</p>
           <a
-            href={WHATSAPP_LINK}
+            href={buildWhatsappLink(lang, "general")}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.18_145)] hover:bg-[oklch(0.66_0.18_145)] px-5 py-2.5 text-sm font-semibold text-[#0F172A] transition-colors"
@@ -80,6 +82,7 @@ function PriceCard({
   extra,
   features,
   cta,
+  href,
 }: {
   highlight: boolean;
   badge?: string;
@@ -89,6 +92,7 @@ function PriceCard({
   extra?: string;
   features: string[];
   cta: string;
+  href: string;
 }) {
   return (
     <motion.div
@@ -160,7 +164,7 @@ function PriceCard({
         ))}
       </ul>
       <a
-        href={WHATSAPP_LINK}
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         className={`mt-8 inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition-transform hover:scale-[1.02] ${
