@@ -4,9 +4,11 @@ import {
   adminCreate,
   adminDelete,
   adminList,
+  adminLookupDemoRef,
   adminSetActive,
   type ActivationType,
   type CodeRow,
+  type DemoLookup,
 } from "@/lib/activation";
 
 export const Route = createFileRoute("/admin")({
@@ -22,6 +24,10 @@ function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState<ActivationType>("DEMO");
   const [justCreated, setJustCreated] = useState<string | null>(null);
+  const [lookupRef, setLookupRef] = useState("");
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [lookupResult, setLookupResult] = useState<DemoLookup | null>(null);
+  const [lookupErr, setLookupErr] = useState<string | null>(null);
 
   const refresh = async (pw: string) => {
     setLoading(true);
@@ -75,6 +81,32 @@ function AdminPage() {
 
   const copy = (text: string) => {
     void navigator.clipboard.writeText(text);
+  };
+
+  const onLookup = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    setLookupErr(null);
+    setLookupResult(null);
+    if (!lookupRef.trim()) return;
+    setLookupLoading(true);
+    try {
+      const res = await adminLookupDemoRef(password, lookupRef.trim());
+      setLookupResult(res);
+    } catch {
+      setLookupErr("Erreur de recherche.");
+    } finally {
+      setLookupLoading(false);
+    }
+  };
+
+  const onCreateDemoForCustomer = async () => {
+    try {
+      const created = await adminCreate(password, "DEMO");
+      setJustCreated(created.code);
+      void refresh(password);
+    } catch {
+      setLookupErr("Impossible de créer le code.");
+    }
   };
 
   const stats = {
@@ -170,6 +202,74 @@ function AdminPage() {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="glass-strong rounded-2xl p-6">
+          <h2 className="text-lg font-semibold">Vérifier un visiteur (référence WhatsApp)</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Le visiteur t'envoie sa référence (ex : <code className="font-mono">A3F2-9K1B</code>). Colle-la ici pour vérifier s'il a déjà reçu un code démo.
+          </p>
+          <form onSubmit={onLookup} className="mt-4 flex flex-wrap items-end gap-3">
+            <input
+              type="text"
+              value={lookupRef}
+              onChange={(e) => setLookupRef(e.target.value)}
+              placeholder="A3F2-9K1B"
+              className="flex-1 min-w-[200px] rounded-xl bg-input border border-border px-4 py-2.5 text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <button
+              type="submit"
+              disabled={lookupLoading || !lookupRef.trim()}
+              className="rounded-xl bg-[image:var(--gradient-primary)] px-5 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+            >
+              {lookupLoading ? "Recherche…" : "Vérifier"}
+            </button>
+          </form>
+
+          {lookupErr && <p className="mt-3 text-xs text-destructive">{lookupErr}</p>}
+
+          {lookupResult && (
+            <div className="mt-4 rounded-xl border border-border bg-card/40 p-4 text-sm">
+              {lookupResult.found ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-semibold text-destructive">
+                      Déjà servi
+                    </span>
+                    <span className="text-xs text-muted-foreground">Référence : <code className="font-mono">{lookupResult.short_ref}</code></span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div><span className="text-muted-foreground">Code donné :</span> <code className="font-mono">{lookupResult.code ?? "—"}</code></div>
+                    <div><span className="text-muted-foreground">Type :</span> {lookupResult.code_type ?? "—"}</div>
+                    <div><span className="text-muted-foreground">Reçu le :</span> {lookupResult.granted_at ? new Date(lookupResult.granted_at).toLocaleString("fr-FR") : "—"}</div>
+                    <div><span className="text-muted-foreground">Utilisation :</span> {lookupResult.usage_count ?? 0}/{lookupResult.max_usage ?? "∞"}</div>
+                    <div><span className="text-muted-foreground">Actif :</span> {lookupResult.is_active ? "Oui" : "Non"}</div>
+                  </div>
+                  <p className="pt-2 text-xs text-muted-foreground">
+                    ⚠️ Cette personne a déjà reçu un code. Elle ment probablement. Propose-lui un plan payant.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center rounded-full bg-brand-green/15 px-2 py-0.5 text-xs font-semibold text-[oklch(0.7_0.16_160)]">
+                      Jamais servi
+                    </span>
+                    <span className="text-xs text-muted-foreground">Aucun code démo trouvé pour cette référence.</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Cas légitime probable. Tu peux générer un code démo manuellement à lui envoyer :
+                  </p>
+                  <button
+                    onClick={onCreateDemoForCustomer}
+                    className="rounded-xl bg-[oklch(0.7_0.18_145)] px-4 py-2 text-xs font-semibold text-[#0F172A] hover:scale-[1.02] transition-transform"
+                  >
+                    Créer un code DEMO manuel
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="glass rounded-2xl overflow-hidden">

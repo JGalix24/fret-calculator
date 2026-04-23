@@ -67,22 +67,34 @@ export type Database = {
       }
       demo_grants: {
         Row: {
+          accept_language: string | null
           code_id: string | null
           created_at: string
+          fingerprint_hash: string | null
           id: string
           ip_hash: string
+          short_ref: string | null
+          user_agent_hash: string | null
         }
         Insert: {
+          accept_language?: string | null
           code_id?: string | null
           created_at?: string
+          fingerprint_hash?: string | null
           id?: string
           ip_hash: string
+          short_ref?: string | null
+          user_agent_hash?: string | null
         }
         Update: {
+          accept_language?: string | null
           code_id?: string | null
           created_at?: string
+          fingerprint_hash?: string | null
           id?: string
           ip_hash?: string
+          short_ref?: string | null
+          user_agent_hash?: string | null
         }
         Relationships: [
           {
@@ -209,6 +221,20 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      admin_lookup_demo_ref: {
+        Args: { _password: string; _short_ref: string }
+        Returns: {
+          code: string
+          code_type: Database["public"]["Enums"]["activation_code_type"]
+          expires_at: string
+          found: boolean
+          granted_at: string
+          is_active: boolean
+          max_usage: number
+          short_ref: string
+          usage_count: number
+        }[]
+      }
       admin_set_active: {
         Args: { _active: boolean; _id: string; _password: string }
         Returns: {
@@ -254,6 +280,20 @@ export type Database = {
           code: string
           ok: boolean
           reason: string
+        }[]
+      }
+      system_create_demo_code_v2: {
+        Args: {
+          _accept_language: string
+          _fingerprint_hash: string
+          _ip_hash: string
+          _user_agent_hash: string
+        }
+        Returns: {
+          code: string
+          ok: boolean
+          reason: string
+          short_ref: string
         }[]
       }
       system_create_paid_code: {

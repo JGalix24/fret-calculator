@@ -2,29 +2,27 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, buildWhatsappLink } from "@/lib/i18n";
 import { createDemoCode } from "@/utils/payments.functions";
+import { getClientFingerprint } from "@/lib/fingerprint";
 
 const DEMO_USED_KEY = "fc.demo.used";
 
 export function Hero() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const navigate = useNavigate();
   const demoFn = useServerFn(createDemoCode);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [shortRef, setShortRef] = useState<string | null>(null);
 
   const startDemo = async () => {
     setErr(null);
-    if (typeof window !== "undefined" && window.localStorage.getItem(DEMO_USED_KEY)) {
-      const el = document.getElementById("pricing");
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-      setErr("Vous avez déjà utilisé votre essai gratuit. Choisissez un plan ci-dessous.");
-      return;
-    }
+    setShortRef(null);
     setLoading(true);
     try {
-      const res = await demoFn();
+      const fp = getClientFingerprint();
+      const res = await demoFn({ data: { signal: fp.signal } });
       if (res.ok && res.code) {
         if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
         navigate({ to: "/activate", search: { code: res.code } as never });
@@ -32,6 +30,7 @@ export function Hero() {
       }
       if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
       setErr(res.error ?? "Impossible de générer un code. Réessayez.");
+      if ("shortRef" in res && res.shortRef) setShortRef(res.shortRef as string);
       const el = document.getElementById("pricing");
       if (el) el.scrollIntoView({ behavior: "smooth" });
     } catch (e) {
@@ -121,7 +120,29 @@ export function Hero() {
               </button>
             </div>
             <p className="text-xs text-muted-foreground">{t("hero.badge")}</p>
-            {err && <p className="text-xs text-destructive">{err}</p>}
+            {err && (
+              <div className="mt-2 max-w-md text-center space-y-2">
+                <p className="text-xs text-destructive">{err}</p>
+                {shortRef && (
+                  <div className="glass inline-flex flex-col items-center gap-2 rounded-2xl px-4 py-3">
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      Votre référence
+                    </div>
+                    <div className="font-mono text-sm font-bold text-foreground tracking-widest">
+                      {shortRef}
+                    </div>
+                    <a
+                      href={buildWhatsappLink(lang, "demo", { code: shortRef, page: "Hero / Démo bloquée" })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.18_145)] px-4 py-2 text-xs font-semibold text-[#0F172A] hover:scale-[1.03] transition-transform"
+                    >
+                      Contacter sur WhatsApp avec ma référence
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
 
           {/* Hero preview cards — Bateau + Avion */}

@@ -4,6 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useI18n, buildWhatsappLink } from "@/lib/i18n";
 import { createCheckoutSession, createDemoCode } from "@/utils/payments.functions";
+import { getClientFingerprint } from "@/lib/fingerprint";
 
 const DEMO_USED_KEY = "fc.demo.used";
 
@@ -23,6 +24,7 @@ export function Pricing() {
 
   const [loadingPlan, setLoadingPlan] = useState<PaidPlan | "DEMO" | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [shortRef, setShortRef] = useState<string | null>(null);
 
   const handlePay = async (plan: PaidPlan) => {
     setErrorMsg(null);
@@ -44,13 +46,11 @@ export function Pricing() {
 
   const handleDemo = async () => {
     setErrorMsg(null);
-    if (typeof window !== "undefined" && window.localStorage.getItem(DEMO_USED_KEY)) {
-      setErrorMsg("Vous avez déjà profité de votre essai gratuit. Choisissez un plan payant ci-dessous.");
-      return;
-    }
+    setShortRef(null);
     setLoadingPlan("DEMO");
     try {
-      const res = await demoFn();
+      const fp = getClientFingerprint();
+      const res = await demoFn({ data: { signal: fp.signal } });
       if (res.ok && res.code) {
         if (typeof window !== "undefined") {
           window.localStorage.setItem(DEMO_USED_KEY, "1");
@@ -60,6 +60,7 @@ export function Pricing() {
       }
       if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
       setErrorMsg(res.error ?? "Impossible de générer un code démo. Réessayez dans un instant.");
+      if ("shortRef" in res && res.shortRef) setShortRef(res.shortRef as string);
     } catch (e) {
       console.error(e);
       setErrorMsg("Erreur réseau. Réessayez.");
@@ -135,7 +136,27 @@ export function Pricing() {
         </div>
 
         {errorMsg && (
-          <p className="mt-6 text-center text-sm text-destructive">{errorMsg}</p>
+          <div className="mt-6 mx-auto max-w-md text-center space-y-3">
+            <p className="text-sm text-destructive">{errorMsg}</p>
+            {shortRef && (
+              <div className="glass inline-flex flex-col items-center gap-2 rounded-2xl px-5 py-4">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Votre référence
+                </div>
+                <div className="font-mono text-base font-bold text-foreground tracking-widest">
+                  {shortRef}
+                </div>
+                <a
+                  href={buildWhatsappLink(lang, "demo", { code: shortRef, page: "Pricing / Démo bloquée" })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.18_145)] px-5 py-2.5 text-xs font-semibold text-[#0F172A] hover:scale-[1.03] transition-transform"
+                >
+                  Contacter sur WhatsApp avec ma référence
+                </a>
+              </div>
+            )}
+          </div>
         )}
 
         <p className="mt-10 text-center text-xs text-muted-foreground">
