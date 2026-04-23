@@ -177,8 +177,8 @@ function SeaPage() {
                       transit: transitLabel("sea", lang),
                       arrival:
                         lang === "fr"
-                          ? `Arrivée estimée ${arrivalLabel(country)} entre le ${formatDateFR(eta.from)} et le ${formatDateFR(eta.to)}.`
-                          : `Estimated arrival in ${country.name} between ${formatDateFR(eta.from)} and ${formatDateFR(eta.to)}.`,
+                          ? `L'arrivée de votre colis est prévue ${arrivalLabel(country)} entre le ${formatDateFR(eta.from)} et le ${formatDateFR(eta.to)}.`
+                          : `Your parcel is expected to arrive in ${country.name} between ${formatDateFR(eta.from)} and ${formatDateFR(eta.to)}.`,
                     })}
                   />
                 </div>
