@@ -120,7 +120,29 @@ export function Hero() {
               </button>
             </div>
             <p className="text-xs text-muted-foreground">{t("hero.badge")}</p>
-            {err && <p className="text-xs text-destructive">{err}</p>}
+            {err && (
+              <div className="mt-2 max-w-md text-center space-y-2">
+                <p className="text-xs text-destructive">{err}</p>
+                {shortRef && (
+                  <div className="glass inline-flex flex-col items-center gap-2 rounded-2xl px-4 py-3">
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      Votre référence
+                    </div>
+                    <div className="font-mono text-sm font-bold text-foreground tracking-widest">
+                      {shortRef}
+                    </div>
+                    <a
+                      href={buildWhatsappLink(lang, "demo", { code: shortRef, page: "Hero / Démo bloquée" })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.18_145)] px-4 py-2 text-xs font-semibold text-[#0F172A] hover:scale-[1.03] transition-transform"
+                    >
+                      Contacter sur WhatsApp avec ma référence
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
 
           {/* Hero preview cards — Bateau + Avion */}
