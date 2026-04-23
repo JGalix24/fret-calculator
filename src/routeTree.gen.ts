@@ -19,6 +19,7 @@ import { Route as AppSeaRouteImport } from './routes/app.sea'
 import { Route as AppMultiRouteImport } from './routes/app.multi'
 import { Route as AppCompareRouteImport } from './routes/app.compare'
 import { Route as AppAirRouteImport } from './routes/app.air'
+import { Route as ApiPublicPaydunyaWebhookRouteImport } from './routes/api.public.paydunya-webhook'
 
 const AppRoute = AppRouteImport.update({
   id: '/app',
@@ -70,6 +71,12 @@ const AppAirRoute = AppAirRouteImport.update({
   path: '/air',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicPaydunyaWebhookRoute =
+  ApiPublicPaydunyaWebhookRouteImport.update({
+    id: '/api/public/paydunya-webhook',
+    path: '/api/public/paydunya-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/paydunya-webhook': typeof ApiPublicPaydunyaWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -93,6 +101,7 @@ export interface FileRoutesByTo {
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app': typeof AppIndexRoute
+  '/api/public/paydunya-webhook': typeof ApiPublicPaydunyaWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,6 +115,7 @@ export interface FileRoutesById {
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/paydunya-webhook': typeof ApiPublicPaydunyaWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/app/multi'
     | '/app/sea'
     | '/app/'
+    | '/api/public/paydunya-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/app/multi'
     | '/app/sea'
     | '/app'
+    | '/api/public/paydunya-webhook'
   id:
     | '__root__'
     | '/'
@@ -143,6 +155,7 @@ export interface FileRouteTypes {
     | '/app/multi'
     | '/app/sea'
     | '/app/'
+    | '/api/public/paydunya-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -151,6 +164,7 @@ export interface RootRouteChildren {
   ActivatedRoute: typeof ActivatedRoute
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
+  ApiPublicPaydunyaWebhookRoute: typeof ApiPublicPaydunyaWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAirRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/paydunya-webhook': {
+      id: '/api/public/paydunya-webhook'
+      path: '/api/public/paydunya-webhook'
+      fullPath: '/api/public/paydunya-webhook'
+      preLoaderRoute: typeof ApiPublicPaydunyaWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -252,6 +273,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivatedRoute: ActivatedRoute,
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
+  ApiPublicPaydunyaWebhookRoute: ApiPublicPaydunyaWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
