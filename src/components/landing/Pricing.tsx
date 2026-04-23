@@ -4,6 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useI18n, buildWhatsappLink } from "@/lib/i18n";
 import { createCheckoutSession, createDemoCode } from "@/utils/payments.functions";
+import { getClientFingerprint } from "@/lib/fingerprint";
 
 const DEMO_USED_KEY = "fc.demo.used";
 
