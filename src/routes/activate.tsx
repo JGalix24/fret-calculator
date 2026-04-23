@@ -31,10 +31,15 @@ export const Route = createFileRoute("/activate")({
 function ActivatePage() {
   const { lang, t } = useI18n();
   const navigate = useNavigate();
-  const [code, setCode] = useState("");
+  const { code: prefillCode } = Route.useSearch();
+  const [code, setCode] = useState((prefillCode ?? "").toUpperCase());
   const [error, setError] = useState<string | null>(null);
   const [errorCtx, setErrorCtx] = useState<WhatsappContext>("general");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (prefillCode) setCode(prefillCode.toUpperCase());
+  }, [prefillCode]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
