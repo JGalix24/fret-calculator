@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PaymentSuccessRouteImport } from './routes/payment-success'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ActivatedRouteImport } from './routes/activated'
@@ -21,6 +22,11 @@ import { Route as AppCompareRouteImport } from './routes/app.compare'
 import { Route as AppAirRouteImport } from './routes/app.air'
 import { Route as ApiPublicPaydunyaWebhookRouteImport } from './routes/api.public.paydunya-webhook'
 
+const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
+  id: '/payment-success',
+  path: '/payment-success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
+  '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
   '/app/multi': typeof AppMultiRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/activate': typeof ActivateRoute
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
+  '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
   '/app/multi': typeof AppMultiRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
+  '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
   '/app/multi': typeof AppMultiRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/activated'
     | '/admin'
     | '/app'
+    | '/payment-success'
     | '/app/air'
     | '/app/compare'
     | '/app/multi'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/activate'
     | '/activated'
     | '/admin'
+    | '/payment-success'
     | '/app/air'
     | '/app/compare'
     | '/app/multi'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/activated'
     | '/admin'
     | '/app'
+    | '/payment-success'
     | '/app/air'
     | '/app/compare'
     | '/app/multi'
@@ -164,11 +176,19 @@ export interface RootRouteChildren {
   ActivatedRoute: typeof ActivatedRoute
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
+  PaymentSuccessRoute: typeof PaymentSuccessRoute
   ApiPublicPaydunyaWebhookRoute: typeof ApiPublicPaydunyaWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/payment-success': {
+      id: '/payment-success'
+      path: '/payment-success'
+      fullPath: '/payment-success'
+      preLoaderRoute: typeof PaymentSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
@@ -273,6 +293,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivatedRoute: ActivatedRoute,
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
+  PaymentSuccessRoute: PaymentSuccessRoute,
   ApiPublicPaydunyaWebhookRoute: ApiPublicPaydunyaWebhookRoute,
 }
 export const routeTree = rootRouteImport
