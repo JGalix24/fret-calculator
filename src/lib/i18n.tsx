@@ -6,9 +6,9 @@ type Dict = Record<string, string>;
 
 const fr: Dict = {
   "nav.try": "Essayer gratuitement",
-  "hero.title": "L'outil de calcul de fret qu'utilisent les importateurs sérieux en Afrique de l'Ouest",
+  "hero.title": "Stop aux mauvaises surprises sur vos frais de fret.",
   "hero.subtitle":
-    "Calculez vos frais de transport, comparez vos options et sachez exactement quand votre marchandise posera le pied au Togo — avant même de passer commande.",
+    "Calculez le coût exact de votre colis depuis la Chine vers Lomé en 30 secondes. CBM, kg, délai d'arrivée — tout est là.",
   "hero.cta": "Essayer gratuitement",
   "hero.badge": "5 calculs offerts · Sans inscription · Sans carte bancaire",
 
