@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+// trigger route regeneration
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { useServerFn } from "@tanstack/react-start";
