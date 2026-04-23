@@ -22,7 +22,12 @@ export function formatMoney(amount: number, currency: Currency): string {
   const formatted = new Intl.NumberFormat("fr-FR", {
     minimumFractionDigits: currency === "FCFA" ? 0 : 2,
     maximumFractionDigits: currency === "FCFA" ? 0 : 2,
-  }).format(rounded);
+  })
+    .format(rounded)
+    // Intl uses NARROW NO-BREAK SPACE (U+202F) and NO-BREAK SPACE (U+00A0)
+    // as thousands separators. Some PDF fonts render U+202F as "/".
+    // Normalize to a regular space for safe rendering everywhere.
+    .replace(/[\u202F\u00A0]/g, " ");
   return `${formatted} ${currency}`;
 }
 
