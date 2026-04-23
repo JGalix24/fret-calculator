@@ -83,6 +83,32 @@ function AdminPage() {
     void navigator.clipboard.writeText(text);
   };
 
+  const onLookup = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    setLookupErr(null);
+    setLookupResult(null);
+    if (!lookupRef.trim()) return;
+    setLookupLoading(true);
+    try {
+      const res = await adminLookupDemoRef(password, lookupRef.trim());
+      setLookupResult(res);
+    } catch {
+      setLookupErr("Erreur de recherche.");
+    } finally {
+      setLookupLoading(false);
+    }
+  };
+
+  const onCreateDemoForCustomer = async () => {
+    try {
+      const created = await adminCreate(password, "DEMO");
+      setJustCreated(created.code);
+      void refresh(password);
+    } catch {
+      setLookupErr("Impossible de créer le code.");
+    }
+  };
+
   const stats = {
     active: codes.filter((c) => c.is_active && (!c.expires_at || new Date(c.expires_at) > new Date())).length,
     demo: codes.filter((c) => c.type === "DEMO" && c.is_active && (c.max_usage === null || c.usage_count < (c.max_usage ?? 0))).length,
