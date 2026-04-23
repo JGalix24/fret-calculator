@@ -124,41 +124,97 @@ export function Hero() {
             {err && <p className="text-xs text-destructive">{err}</p>}
           </motion.div>
 
-          {/* Hero preview card */}
+          {/* Hero preview cards — Bateau + Avion */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="mt-16 md:mt-20"
           >
-            <div className="relative mx-auto max-w-3xl">
-              <div className="glass-strong rounded-3xl p-2 shadow-[var(--shadow-elegant)]">
-                <div className="rounded-2xl bg-background/40 p-6 md:p-8">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <PreviewStat label="Volume" value="0,84 m³" tone="blue" />
-                    <PreviewStat label="Coût total" value="42 000 FCFA" tone="violet" />
-                    <PreviewStat label="Arrivée estimée" value="55 jours" tone="green" />
-                  </div>
-                  <div className="mt-6 h-2 rounded-full bg-muted overflow-hidden">
-                    <motion.div
-                      className="h-full"
-                      style={{ background: "var(--gradient-primary)" }}
-                      initial={{ width: 0 }}
-                      animate={{ width: "72%" }}
-                      transition={{ duration: 1.6, delay: 0.8, ease: "easeOut" }}
-                    />
-                  </div>
-                  <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Chine · Lomé</span>
-                    <span>Fret maritime · CBM</span>
-                  </div>
-                </div>
-              </div>
+            <div className="relative mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
+              <PreviewCard
+                mode="Fret maritime · CBM"
+                volumeLabel="Volume"
+                volumeValue="0,84 m³"
+                cost="20 000 FCFA"
+                eta="30 jours"
+                route="Chine · Lomé"
+                progressDelay={0.8}
+              />
+              <PreviewCard
+                mode="Fret aérien · kg"
+                volumeLabel="Poids"
+                volumeValue="12 kg"
+                cost="42 000 FCFA"
+                eta="1 semaine"
+                route="Chine · Lomé"
+                progressDelay={1.1}
+              />
             </div>
           </motion.div>
         </div>
       </div>
     </section>
+  );
+}
+
+function PreviewCard({
+  mode,
+  volumeLabel,
+  volumeValue,
+  cost,
+  eta,
+  route,
+  progressDelay,
+}: {
+  mode: string;
+  volumeLabel: string;
+  volumeValue: string;
+  cost: string;
+  eta: string;
+  route: string;
+  progressDelay: number;
+}) {
+  return (
+    <div className="glass-strong rounded-3xl p-2 shadow-[var(--shadow-elegant)]">
+      <div className="rounded-2xl bg-background/40 p-6 md:p-7">
+        <div className="grid grid-cols-3 gap-3">
+          <PreviewStat label={volumeLabel} value={volumeValue} tone="blue" />
+          <PreviewStat label="Coût total" value={cost} tone="violet" />
+          <PreviewStat label="Arrivée estimée" value={eta} tone="green" />
+        </div>
+        <div className="relative mt-6 h-2 rounded-full bg-muted overflow-hidden">
+          <motion.div
+            className="absolute inset-y-0 left-0 rounded-full"
+            style={{ background: "var(--gradient-primary)" }}
+            initial={{ width: "0%" }}
+            animate={{ width: ["0%", "72%", "30%", "85%", "55%"] }}
+            transition={{
+              duration: 6,
+              delay: progressDelay,
+              ease: "easeInOut",
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+          />
+          <motion.div
+            className="absolute inset-y-0 w-16 -skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+            initial={{ left: "-20%" }}
+            animate={{ left: "110%" }}
+            transition={{
+              duration: 1.8,
+              delay: progressDelay,
+              ease: "easeInOut",
+              repeat: Infinity,
+            }}
+          />
+        </div>
+        <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+          <span>{route}</span>
+          <span>{mode}</span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -183,7 +239,7 @@ function PreviewStat({
         {label}
       </div>
       <div
-        className="mt-1 text-2xl font-bold"
+        className="mt-1 text-lg md:text-xl font-bold"
         style={{
           background: gradient,
           WebkitBackgroundClip: "text",
@@ -196,3 +252,4 @@ function PreviewStat({
     </div>
   );
 }
+
