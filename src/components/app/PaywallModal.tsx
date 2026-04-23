@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useI18n, buildWhatsappLink } from "@/lib/i18n";
 import { usePaywall } from "@/lib/paywall";
 import { getSession } from "@/lib/session";
+import { createCheckoutSession } from "@/utils/payments.functions";
 
 const Check = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
@@ -10,16 +13,14 @@ const Check = () => (
   </svg>
 );
 
-const WaIcon = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-    <path d="M20.52 3.48A11.93 11.93 0 0 0 12.04 0C5.5 0 .2 5.3.2 11.84c0 2.08.55 4.12 1.6 5.92L0 24l6.4-1.68a11.83 11.83 0 0 0 5.64 1.44c6.54 0 11.84-5.3 11.84-11.84 0-3.16-1.23-6.13-3.37-8.44z" />
-  </svg>
-);
 
 export function PaywallModal() {
   const { lang } = useI18n();
   const { isOpen, page, closePaywall } = usePaywall();
   const session = getSession();
+  const checkout = useServerFn(createCheckoutSession);
+  const [loadingPlan, setLoadingPlan] = useState<"MENSUEL" | "TRIMESTRIEL" | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const isFr = lang === "fr";
   const t = {
@@ -36,21 +37,36 @@ export function PaywallModal() {
     feat1q: isFr ? "Accès illimité 90 jours" : "Unlimited access 90 days",
     feat2: isFr ? "Tous les modes de calcul" : "All calculation modes",
     feat3: isFr ? "Export PDF" : "PDF export",
-    cta: isFr ? "Choisir ce plan" : "Choose this plan",
-    pay: isFr ? "Paiement Mixx by Yas ou Flooz" : "Pay with Mixx by Yas or Flooz",
+    cta: isFr ? "Payer ce plan" : "Pay this plan",
+    loading: isFr ? "Redirection vers paiement…" : "Redirecting to payment…",
+    pay: isFr ? "Mixx by Yas ou Moov Money" : "Mixx by Yas or Moov Money",
     have: isFr ? "J'ai déjà un code" : "I already have a code",
     note: isFr
-      ? "Activation manuelle sous 5 minutes via WhatsApp après réception du paiement."
-      : "Manual activation within 5 minutes via WhatsApp after payment.",
+      ? "Code activation envoyé immédiatement après confirmation du paiement."
+      : "Activation code delivered instantly after payment confirmation.",
+    fallback: isFr ? "Problème ? Nous contacter" : "Issue? Contact us",
+    err: isFr ? "Erreur de paiement, réessayez ou contactez-nous." : "Payment error, retry or contact us.",
   };
 
-  const monthHref = buildWhatsappLink(lang, "mensuel", {
-    plan: t.monthName,
-    code: session?.code,
-    page,
-  });
-  const quarterHref = buildWhatsappLink(lang, "trimestriel", {
-    plan: t.quarterName,
+  const onChoose = async (plan: "MENSUEL" | "TRIMESTRIEL") => {
+    setError(null);
+    setLoadingPlan(plan);
+    try {
+      const res = await checkout({ data: { plan } });
+      if (res.ok && res.checkoutUrl) {
+        window.location.href = res.checkoutUrl;
+        return;
+      }
+      setError(t.err);
+    } catch (e) {
+      console.error(e);
+      setError(t.err);
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
+  const fallbackHref = buildWhatsappLink(lang, "general", {
     code: session?.code,
     page,
   });
@@ -88,14 +104,16 @@ export function PaywallModal() {
           </DialogDescription>
         </div>
 
-        <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="px-6 pb-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <PlanCard
             name={t.monthName}
             price="2 000"
             unit={t.monthUnit}
             features={[t.feat1m, t.feat2, t.feat3]}
-            cta={t.cta}
-            href={monthHref}
+            cta={loadingPlan === "MENSUEL" ? t.loading : t.cta}
+            onClick={() => onChoose("MENSUEL")}
+            disabled={loadingPlan !== null}
+            loading={loadingPlan === "MENSUEL"}
             pay={t.pay}
             highlight={false}
           />
@@ -104,23 +122,40 @@ export function PaywallModal() {
             price="5 000"
             unit={t.quarterUnit}
             features={[t.feat1q, t.feat2, t.feat3]}
-            cta={t.cta}
-            href={quarterHref}
+            cta={loadingPlan === "TRIMESTRIEL" ? t.loading : t.cta}
+            onClick={() => onChoose("TRIMESTRIEL")}
+            disabled={loadingPlan !== null}
+            loading={loadingPlan === "TRIMESTRIEL"}
             pay={t.pay}
             highlight
             badge={t.badge}
           />
         </div>
 
-        <div className="px-6 pb-6 text-center">
+        {error && (
+          <p className="px-6 text-center text-xs text-destructive">{error}</p>
+        )}
+
+        <div className="px-6 pb-6 pt-3 text-center">
           <p className="text-[11px] text-muted-foreground">{t.note}</p>
-          <Link
-            to="/activate"
-            onClick={() => closePaywall()}
-            className="mt-3 inline-block text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
-          >
-            {t.have}
-          </Link>
+          <div className="mt-3 flex items-center justify-center gap-4 text-xs">
+            <Link
+              to="/activate"
+              onClick={() => closePaywall()}
+              className="text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              {t.have}
+            </Link>
+            <span className="text-border">·</span>
+            <a
+              href={fallbackHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              {t.fallback}
+            </a>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -133,7 +168,9 @@ function PlanCard({
   unit,
   features,
   cta,
-  href,
+  onClick,
+  disabled,
+  loading,
   pay,
   highlight,
   badge,
@@ -143,7 +180,9 @@ function PlanCard({
   unit: string;
   features: string[];
   cta: string;
-  href: string;
+  onClick: () => void;
+  disabled?: boolean;
+  loading?: boolean;
   pay: string;
   highlight: boolean;
   badge?: string;
@@ -191,15 +230,17 @@ function PlanCard({
           </li>
         ))}
       </ul>
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[oklch(0.7_0.18_145)] hover:bg-[oklch(0.66_0.18_145)] px-4 py-2.5 text-xs font-semibold text-[#0F172A] transition-colors"
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[image:var(--gradient-primary)] hover:scale-[1.02] transition-transform px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-glow-blue)] disabled:opacity-60 disabled:hover:scale-100"
       >
-        <WaIcon />
+        {loading ? (
+          <span className="h-3.5 w-3.5 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
+        ) : null}
         {cta}
-      </a>
+      </button>
       <p className="mt-2 text-center text-[10px] text-muted-foreground">{pay}</p>
     </div>
   );

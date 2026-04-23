@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PaymentSuccessRouteImport } from './routes/payment-success'
+import { Route as PaymentCancelRouteImport } from './routes/payment-cancel'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ActivatedRouteImport } from './routes/activated'
@@ -19,7 +21,18 @@ import { Route as AppSeaRouteImport } from './routes/app.sea'
 import { Route as AppMultiRouteImport } from './routes/app.multi'
 import { Route as AppCompareRouteImport } from './routes/app.compare'
 import { Route as AppAirRouteImport } from './routes/app.air'
+import { Route as ApiPublicPaydunyaWebhookRouteImport } from './routes/api.public.paydunya-webhook'
 
+const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
+  id: '/payment-success',
+  path: '/payment-success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentCancelRoute = PaymentCancelRouteImport.update({
+  id: '/payment-cancel',
+  path: '/payment-cancel',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -70,6 +83,12 @@ const AppAirRoute = AppAirRouteImport.update({
   path: '/air',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicPaydunyaWebhookRoute =
+  ApiPublicPaydunyaWebhookRouteImport.update({
+    id: '/api/public/paydunya-webhook',
+    path: '/api/public/paydunya-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -77,22 +96,28 @@ export interface FileRoutesByFullPath {
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
+  '/payment-cancel': typeof PaymentCancelRoute
+  '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/paydunya-webhook': typeof ApiPublicPaydunyaWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activate': typeof ActivateRoute
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
+  '/payment-cancel': typeof PaymentCancelRoute
+  '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app': typeof AppIndexRoute
+  '/api/public/paydunya-webhook': typeof ApiPublicPaydunyaWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -101,11 +126,14 @@ export interface FileRoutesById {
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
+  '/payment-cancel': typeof PaymentCancelRoute
+  '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/paydunya-webhook': typeof ApiPublicPaydunyaWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -115,22 +143,28 @@ export interface FileRouteTypes {
     | '/activated'
     | '/admin'
     | '/app'
+    | '/payment-cancel'
+    | '/payment-success'
     | '/app/air'
     | '/app/compare'
     | '/app/multi'
     | '/app/sea'
     | '/app/'
+    | '/api/public/paydunya-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/activate'
     | '/activated'
     | '/admin'
+    | '/payment-cancel'
+    | '/payment-success'
     | '/app/air'
     | '/app/compare'
     | '/app/multi'
     | '/app/sea'
     | '/app'
+    | '/api/public/paydunya-webhook'
   id:
     | '__root__'
     | '/'
@@ -138,11 +172,14 @@ export interface FileRouteTypes {
     | '/activated'
     | '/admin'
     | '/app'
+    | '/payment-cancel'
+    | '/payment-success'
     | '/app/air'
     | '/app/compare'
     | '/app/multi'
     | '/app/sea'
     | '/app/'
+    | '/api/public/paydunya-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -151,10 +188,27 @@ export interface RootRouteChildren {
   ActivatedRoute: typeof ActivatedRoute
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
+  PaymentCancelRoute: typeof PaymentCancelRoute
+  PaymentSuccessRoute: typeof PaymentSuccessRoute
+  ApiPublicPaydunyaWebhookRoute: typeof ApiPublicPaydunyaWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/payment-success': {
+      id: '/payment-success'
+      path: '/payment-success'
+      fullPath: '/payment-success'
+      preLoaderRoute: typeof PaymentSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-cancel': {
+      id: '/payment-cancel'
+      path: '/payment-cancel'
+      fullPath: '/payment-cancel'
+      preLoaderRoute: typeof PaymentCancelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
@@ -225,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAirRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/paydunya-webhook': {
+      id: '/api/public/paydunya-webhook'
+      path: '/api/public/paydunya-webhook'
+      fullPath: '/api/public/paydunya-webhook'
+      preLoaderRoute: typeof ApiPublicPaydunyaWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -252,6 +313,9 @@ const rootRouteChildren: RootRouteChildren = {
   ActivatedRoute: ActivatedRoute,
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
+  PaymentCancelRoute: PaymentCancelRoute,
+  PaymentSuccessRoute: PaymentSuccessRoute,
+  ApiPublicPaydunyaWebhookRoute: ApiPublicPaydunyaWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

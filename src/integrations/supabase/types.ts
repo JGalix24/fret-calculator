@@ -65,6 +65,71 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          code_id: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          generated_code: string | null
+          id: string
+          paid_at: string | null
+          plan: Database["public"]["Enums"]["activation_code_type"]
+          provider: string
+          provider_ref: string | null
+          provider_token: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          code_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          generated_code?: string | null
+          id?: string
+          paid_at?: string | null
+          plan: Database["public"]["Enums"]["activation_code_type"]
+          provider?: string
+          provider_ref?: string | null
+          provider_token?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          code_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          generated_code?: string | null
+          id?: string
+          paid_at?: string | null
+          plan?: Database["public"]["Enums"]["activation_code_type"]
+          provider?: string
+          provider_ref?: string | null
+          provider_token?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "activation_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -143,6 +208,45 @@ export type Database = {
         }[]
       }
       is_admin_password: { Args: { _password: string }; Returns: boolean }
+      system_attach_provider_token: {
+        Args: { _payment_id: string; _token: string }
+        Returns: undefined
+      }
+      system_create_paid_code: {
+        Args: { _payment_id: string }
+        Returns: {
+          code: string
+          code_id: string
+        }[]
+      }
+      system_create_pending_payment: {
+        Args: {
+          _amount: number
+          _customer_email?: string
+          _customer_name?: string
+          _customer_phone?: string
+          _plan: Database["public"]["Enums"]["activation_code_type"]
+        }
+        Returns: string
+      }
+      system_get_payment: {
+        Args: { _payment_id: string }
+        Returns: {
+          amount: number
+          generated_code: string
+          id: string
+          plan: Database["public"]["Enums"]["activation_code_type"]
+          status: Database["public"]["Enums"]["payment_status"]
+        }[]
+      }
+      system_mark_payment_status: {
+        Args: {
+          _payment_id: string
+          _provider_ref?: string
+          _status: Database["public"]["Enums"]["payment_status"]
+        }
+        Returns: undefined
+      }
       validate_activation_code: {
         Args: { _code: string }
         Returns: {
@@ -156,6 +260,7 @@ export type Database = {
     }
     Enums: {
       activation_code_type: "DEMO" | "MENSUEL" | "TRIMESTRIEL"
+      payment_status: "pending" | "paid" | "failed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -284,6 +389,7 @@ export const Constants = {
   public: {
     Enums: {
       activation_code_type: ["DEMO", "MENSUEL", "TRIMESTRIEL"],
+      payment_status: ["pending", "paid", "failed", "cancelled"],
     },
   },
 } as const
