@@ -4,9 +4,5 @@ export const Route = createFileRoute("/payment-cancel")({
   beforeLoad: () => {
     throw redirect({ to: "/app" });
   },
-  component: PaymentCancelPage,
+  component: () => null,
 });
-
-function PaymentCancelPage() {
-  return null;
-}
