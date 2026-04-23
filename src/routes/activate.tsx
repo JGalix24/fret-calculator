@@ -67,7 +67,7 @@ function ActivatePage() {
       expiresAt: result.expiresAt,
       activatedAt: new Date().toISOString(),
     });
-    navigate({ to: "/activated" });
+    navigate({ to: "/activated", search: {} as never });
   };
 
   return (

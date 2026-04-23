@@ -4,6 +4,7 @@ import { clearSession, getSession } from "@/lib/session";
 import { useNavigate } from "@tanstack/react-router";
 import { ThemeToggle } from "@/lib/theme";
 import { useSessionRefresh } from "@/hooks/useSessionRefresh";
+import { PaywallModal } from "@/components/app/PaywallModal";
 
 type Tab = { to: "/app" | "/app/sea" | "/app/air" | "/app/compare" | "/app/multi"; label: { fr: string; en: string }; exact?: boolean };
 const tabs: Tab[] = [
@@ -116,6 +117,8 @@ export function AppShell() {
       <main className="relative container mx-auto px-4 md:px-6 py-8 md:py-12">
         <Outlet />
       </main>
+
+      <PaywallModal />
     </div>
   );
 }
