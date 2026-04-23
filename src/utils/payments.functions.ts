@@ -112,7 +112,7 @@ export const createDemoCode = createServerFn({ method: "POST" }).handler(async (
       return {
         ok: false as const,
         reason: "rate_limited" as const,
-        error: "Vous avez déjà obtenu un code démo récemment. Réessayez dans 24h ou choisissez un plan payant.",
+        error: "Vous avez déjà profité de votre essai gratuit. Choisissez un plan payant pour continuer.",
       };
     }
     return { ok: false as const, reason: "server_error" as const, error: "Could not create demo code" };
