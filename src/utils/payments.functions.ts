@@ -68,6 +68,15 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     }
   });
 
+export const createDemoCode = createServerFn({ method: "POST" }).handler(async () => {
+  const { data, error } = await supabaseAdmin.rpc("system_create_demo_code");
+  if (error || !data || data.length === 0) {
+    console.error("create demo code failed", error);
+    return { ok: false as const, error: "Could not create demo code" };
+  }
+  return { ok: true as const, code: data[0].code };
+});
+
 const RefSchema = z.object({ ref: z.string().uuid() });
 
 export const getPaymentStatus = createServerFn({ method: "POST" })

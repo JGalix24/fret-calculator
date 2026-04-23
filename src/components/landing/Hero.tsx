@@ -1,9 +1,48 @@
-import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
+import { createDemoCode } from "@/utils/payments.functions";
+
+const DEMO_USED_KEY = "fc.demo.used";
 
 export function Hero() {
   const { t } = useI18n();
+  const navigate = useNavigate();
+  const demoFn = useServerFn(createDemoCode);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const startDemo = async () => {
+    setErr(null);
+    if (typeof window !== "undefined" && window.localStorage.getItem(DEMO_USED_KEY)) {
+      const el = document.getElementById("pricing");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+      setErr("Vous avez déjà utilisé votre essai gratuit. Choisissez un plan ci-dessous.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await demoFn();
+      if (res.ok && res.code) {
+        if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
+        navigate({ to: "/activate", search: { code: res.code } as never });
+        return;
+      }
+      setErr("Impossible de générer un code. Réessayez.");
+    } catch (e) {
+      console.error(e);
+      setErr("Erreur réseau. Réessayez.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const scrollToPricing = () => {
+    const el = document.getElementById("pricing");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <section className="relative overflow-hidden">
@@ -58,16 +97,28 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-10 flex flex-col items-center gap-4"
           >
-            <Link
-              to="/activate"
-              className="animate-pulse-glow group relative inline-flex items-center gap-2 rounded-full bg-[image:var(--gradient-primary)] px-8 py-4 text-base font-semibold text-primary-foreground transition-transform hover:scale-[1.04]"
-            >
-              {t("hero.cta")}
-              <svg viewBox="0 0 24 24" className="h-5 w-5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <button
+                type="button"
+                onClick={startDemo}
+                disabled={loading}
+                className="animate-pulse-glow group relative inline-flex items-center gap-2 rounded-full bg-[image:var(--gradient-primary)] px-8 py-4 text-base font-semibold text-primary-foreground transition-transform hover:scale-[1.04] disabled:opacity-70 disabled:hover:scale-100"
+              >
+                {loading ? "Génération du code…" : t("hero.cta")}
+                <svg viewBox="0 0 24 24" className="h-5 w-5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={scrollToPricing}
+                className="glass inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-foreground hover:bg-accent transition-colors"
+              >
+                Voir les tarifs
+              </button>
+            </div>
             <p className="text-xs text-muted-foreground">{t("hero.badge")}</p>
+            {err && <p className="text-xs text-destructive">{err}</p>}
           </motion.div>
 
           {/* Hero preview card */}
