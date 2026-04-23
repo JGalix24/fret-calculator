@@ -1,11 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { z } from "zod";
 import { motion } from "framer-motion";
 import { useI18n, buildWhatsappLink, WHATSAPP_NUMBER, type WhatsappContext } from "@/lib/i18n";
 import { setSession } from "@/lib/session";
 import { validateCode } from "@/lib/activation";
 
+const SearchSchema = z.object({ code: z.string().optional() });
+
 export const Route = createFileRoute("/activate")({
+  validateSearch: SearchSchema,
   head: () => ({
     meta: [
       { title: "Activer mon accès — Freight-Calculator" },
