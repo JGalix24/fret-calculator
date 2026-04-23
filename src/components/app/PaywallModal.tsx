@@ -173,7 +173,9 @@ function PlanCard({
   unit,
   features,
   cta,
-  href,
+  onClick,
+  disabled,
+  loading,
   pay,
   highlight,
   badge,
@@ -183,7 +185,9 @@ function PlanCard({
   unit: string;
   features: string[];
   cta: string;
-  href: string;
+  onClick: () => void;
+  disabled?: boolean;
+  loading?: boolean;
   pay: string;
   highlight: boolean;
   badge?: string;
@@ -231,15 +235,17 @@ function PlanCard({
           </li>
         ))}
       </ul>
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[oklch(0.7_0.18_145)] hover:bg-[oklch(0.66_0.18_145)] px-4 py-2.5 text-xs font-semibold text-[#0F172A] transition-colors"
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[image:var(--gradient-primary)] hover:scale-[1.02] transition-transform px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-[var(--shadow-glow-blue)] disabled:opacity-60 disabled:hover:scale-100"
       >
-        <WaIcon />
+        {loading ? (
+          <span className="h-3.5 w-3.5 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
+        ) : null}
         {cta}
-      </a>
+      </button>
       <p className="mt-2 text-center text-[10px] text-muted-foreground">{pay}</p>
     </div>
   );
