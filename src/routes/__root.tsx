@@ -4,6 +4,7 @@ import appCss from "../styles.css?url";
 import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme";
 import { Toaster } from "@/components/ui/sonner";
+import { PaywallProvider } from "@/lib/paywall";
 
 function NotFoundComponent() {
   return (
@@ -76,8 +77,10 @@ function RootComponent() {
   return (
     <ThemeProvider>
       <I18nProvider>
-        <Outlet />
-        <Toaster richColors position="top-center" />
+        <PaywallProvider>
+          <Outlet />
+          <Toaster richColors position="top-center" />
+        </PaywallProvider>
       </I18nProvider>
     </ThemeProvider>
   );
