@@ -136,7 +136,27 @@ export function Pricing() {
         </div>
 
         {errorMsg && (
-          <p className="mt-6 text-center text-sm text-destructive">{errorMsg}</p>
+          <div className="mt-6 mx-auto max-w-md text-center space-y-3">
+            <p className="text-sm text-destructive">{errorMsg}</p>
+            {shortRef && (
+              <div className="glass inline-flex flex-col items-center gap-2 rounded-2xl px-5 py-4">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Votre référence
+                </div>
+                <div className="font-mono text-base font-bold text-foreground tracking-widest">
+                  {shortRef}
+                </div>
+                <a
+                  href={buildWhatsappLink(lang, "demo", { code: shortRef, page: "Pricing / Démo bloquée" })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.7_0.18_145)] px-5 py-2.5 text-xs font-semibold text-[#0F172A] hover:scale-[1.03] transition-transform"
+                >
+                  Contacter sur WhatsApp avec ma référence
+                </a>
+              </div>
+            )}
+          </div>
         )}
 
         <p className="mt-10 text-center text-xs text-muted-foreground">
