@@ -65,6 +65,35 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_grants: {
+        Row: {
+          code_id: string | null
+          created_at: string
+          id: string
+          ip_hash: string
+        }
+        Insert: {
+          code_id?: string | null
+          created_at?: string
+          id?: string
+          ip_hash: string
+        }
+        Update: {
+          code_id?: string | null
+          created_at?: string
+          id?: string
+          ip_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_grants_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "activation_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -217,6 +246,14 @@ export type Database = {
         Returns: {
           code: string
           code_id: string
+        }[]
+      }
+      system_create_demo_code_for_ip: {
+        Args: { _ip_hash: string }
+        Returns: {
+          code: string
+          ok: boolean
+          reason: string
         }[]
       }
       system_create_paid_code: {

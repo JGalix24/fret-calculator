@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
+import crypto from "node:crypto";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
@@ -8,6 +9,30 @@ import {
   confirmInvoice,
   type PaydunyaPlan,
 } from "./paydunya.server";
+
+function getClientIp(): string | null {
+  try {
+    const req = getRequest();
+    const h = req.headers;
+    const candidates = [
+      h.get("cf-connecting-ip"),
+      h.get("x-real-ip"),
+      h.get("x-forwarded-for")?.split(",")[0]?.trim(),
+      h.get("true-client-ip"),
+    ];
+    for (const c of candidates) {
+      if (c && c.length > 0) return c;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function hashIp(ip: string): string {
+  const salt = process.env.PAYDUNYA_MASTER_KEY ?? "fc-demo-salt";
+  return crypto.createHash("sha256").update(`${salt}:${ip}`).digest("hex");
+}
 
 const PlanSchema = z.object({
   plan: z.enum(["MENSUEL", "TRIMESTRIEL"]),
@@ -69,12 +94,30 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
   });
 
 export const createDemoCode = createServerFn({ method: "POST" }).handler(async () => {
-  const { data, error } = await supabaseAdmin.rpc("system_create_demo_code");
+  const ip = getClientIp();
+  if (!ip) {
+    return { ok: false as const, reason: "no_ip" as const, error: "Impossible d'identifier la requête." };
+  }
+  const ipHash = hashIp(ip);
+  const { data, error } = await supabaseAdmin.rpc("system_create_demo_code_for_ip", {
+    _ip_hash: ipHash,
+  });
   if (error || !data || data.length === 0) {
     console.error("create demo code failed", error);
-    return { ok: false as const, error: "Could not create demo code" };
+    return { ok: false as const, reason: "server_error" as const, error: "Could not create demo code" };
   }
-  return { ok: true as const, code: data[0].code };
+  const row = data[0];
+  if (!row.ok) {
+    if (row.reason === "rate_limited") {
+      return {
+        ok: false as const,
+        reason: "rate_limited" as const,
+        error: "Vous avez déjà obtenu un code démo récemment. Réessayez dans 24h ou choisissez un plan payant.",
+      };
+    }
+    return { ok: false as const, reason: "server_error" as const, error: "Could not create demo code" };
+  }
+  return { ok: true as const, code: row.code as string };
 });
 
 const RefSchema = z.object({ ref: z.string().uuid() });

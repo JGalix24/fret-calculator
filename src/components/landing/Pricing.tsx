@@ -58,7 +58,8 @@ export function Pricing() {
         navigate({ to: "/activate", search: { code: res.code } as never });
         return;
       }
-      setErrorMsg("Impossible de générer un code démo. Réessayez dans un instant.");
+      if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
+      setErrorMsg(res.error ?? "Impossible de générer un code démo. Réessayez dans un instant.");
     } catch (e) {
       console.error(e);
       setErrorMsg("Erreur réseau. Réessayez.");
