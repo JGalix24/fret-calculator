@@ -46,13 +46,11 @@ export function Pricing() {
 
   const handleDemo = async () => {
     setErrorMsg(null);
-    if (typeof window !== "undefined" && window.localStorage.getItem(DEMO_USED_KEY)) {
-      setErrorMsg("Vous avez déjà profité de votre essai gratuit. Choisissez un plan payant ci-dessous.");
-      return;
-    }
+    setShortRef(null);
     setLoadingPlan("DEMO");
     try {
-      const res = await demoFn();
+      const fp = getClientFingerprint();
+      const res = await demoFn({ data: { signal: fp.signal } });
       if (res.ok && res.code) {
         if (typeof window !== "undefined") {
           window.localStorage.setItem(DEMO_USED_KEY, "1");
@@ -62,6 +60,7 @@ export function Pricing() {
       }
       if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
       setErrorMsg(res.error ?? "Impossible de générer un code démo. Réessayez dans un instant.");
+      if ("shortRef" in res && res.shortRef) setShortRef(res.shortRef as string);
     } catch (e) {
       console.error(e);
       setErrorMsg("Erreur réseau. Réessayez.");
