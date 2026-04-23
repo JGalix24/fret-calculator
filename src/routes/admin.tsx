@@ -24,6 +24,10 @@ function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState<ActivationType>("DEMO");
   const [justCreated, setJustCreated] = useState<string | null>(null);
+  const [lookupRef, setLookupRef] = useState("");
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [lookupResult, setLookupResult] = useState<DemoLookup | null>(null);
+  const [lookupErr, setLookupErr] = useState<string | null>(null);
 
   const refresh = async (pw: string) => {
     setLoading(true);
