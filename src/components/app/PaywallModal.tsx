@@ -109,14 +109,16 @@ export function PaywallModal() {
           </DialogDescription>
         </div>
 
-        <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="px-6 pb-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <PlanCard
             name={t.monthName}
             price="2 000"
             unit={t.monthUnit}
             features={[t.feat1m, t.feat2, t.feat3]}
-            cta={t.cta}
-            href={monthHref}
+            cta={loadingPlan === "MENSUEL" ? t.loading : t.cta}
+            onClick={() => onChoose("MENSUEL")}
+            disabled={loadingPlan !== null}
+            loading={loadingPlan === "MENSUEL"}
             pay={t.pay}
             highlight={false}
           />
@@ -125,23 +127,40 @@ export function PaywallModal() {
             price="5 000"
             unit={t.quarterUnit}
             features={[t.feat1q, t.feat2, t.feat3]}
-            cta={t.cta}
-            href={quarterHref}
+            cta={loadingPlan === "TRIMESTRIEL" ? t.loading : t.cta}
+            onClick={() => onChoose("TRIMESTRIEL")}
+            disabled={loadingPlan !== null}
+            loading={loadingPlan === "TRIMESTRIEL"}
             pay={t.pay}
             highlight
             badge={t.badge}
           />
         </div>
 
-        <div className="px-6 pb-6 text-center">
+        {error && (
+          <p className="px-6 text-center text-xs text-destructive">{error}</p>
+        )}
+
+        <div className="px-6 pb-6 pt-3 text-center">
           <p className="text-[11px] text-muted-foreground">{t.note}</p>
-          <Link
-            to="/activate"
-            onClick={() => closePaywall()}
-            className="mt-3 inline-block text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
-          >
-            {t.have}
-          </Link>
+          <div className="mt-3 flex items-center justify-center gap-4 text-xs">
+            <Link
+              to="/activate"
+              onClick={() => closePaywall()}
+              className="text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              {t.have}
+            </Link>
+            <span className="text-border">·</span>
+            <a
+              href={fallbackHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              {t.fallback}
+            </a>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
