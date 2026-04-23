@@ -29,9 +29,9 @@ function getClientIp(): string | null {
   }
 }
 
-function hashIp(ip: string): string {
+function sha256(input: string): string {
   const salt = process.env.PAYDUNYA_MASTER_KEY ?? "fc-demo-salt";
-  return crypto.createHash("sha256").update(`${salt}:${ip}`).digest("hex");
+  return crypto.createHash("sha256").update(`${salt}:${input}`).digest("hex");
 }
 
 const PlanSchema = z.object({
@@ -93,32 +93,55 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     }
   });
 
-export const createDemoCode = createServerFn({ method: "POST" }).handler(async () => {
-  const ip = getClientIp();
-  if (!ip) {
-    return { ok: false as const, reason: "no_ip" as const, error: "Impossible d'identifier la requête." };
-  }
-  const ipHash = hashIp(ip);
-  const { data, error } = await supabaseAdmin.rpc("system_create_demo_code_for_ip", {
-    _ip_hash: ipHash,
-  });
-  if (error || !data || data.length === 0) {
-    console.error("create demo code failed", error);
-    return { ok: false as const, reason: "server_error" as const, error: "Could not create demo code" };
-  }
-  const row = data[0];
-  if (!row.ok) {
-    if (row.reason === "rate_limited") {
-      return {
-        ok: false as const,
-        reason: "rate_limited" as const,
-        error: "Vous avez déjà profité de votre essai gratuit. Choisissez un plan payant pour continuer.",
-      };
+const DemoInputSchema = z.object({
+  signal: z.string().min(8).max(256),
+}).optional();
+
+export const createDemoCode = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => DemoInputSchema.parse(input))
+  .handler(async ({ data }) => {
+    const ip = getClientIp();
+    if (!ip) {
+      return { ok: false as const, reason: "no_ip" as const, error: "Impossible d'identifier la requête." };
     }
-    return { ok: false as const, reason: "server_error" as const, error: "Could not create demo code" };
-  }
-  return { ok: true as const, code: row.code as string };
-});
+    const ipHash = sha256(ip);
+
+    let userAgent = "";
+    let acceptLang = "";
+    try {
+      const req = getRequest();
+      userAgent = req.headers.get("user-agent") ?? "";
+      acceptLang = req.headers.get("accept-language") ?? "";
+    } catch { /* ignore */ }
+
+    const clientSignal = data?.signal ?? "no-signal";
+    const fingerprintHash = sha256(`${clientSignal}|${userAgent}|${acceptLang}|${ip}`);
+    const userAgentHash = sha256(userAgent);
+
+    const { data: rows, error } = await supabaseAdmin.rpc("system_create_demo_code_v2", {
+      _ip_hash: ipHash,
+      _fingerprint_hash: fingerprintHash,
+      _user_agent_hash: userAgentHash,
+      _accept_language: acceptLang.slice(0, 64),
+    });
+    if (error || !rows || rows.length === 0) {
+      console.error("create demo code v2 failed", error);
+      return { ok: false as const, reason: "server_error" as const, error: "Could not create demo code" };
+    }
+    const row = rows[0];
+    if (!row.ok) {
+      if (row.reason === "rate_limited") {
+        return {
+          ok: false as const,
+          reason: "rate_limited" as const,
+          shortRef: row.short_ref ?? null,
+          error: "Cet appareil a déjà reçu un code démo récemment. Si c'est une erreur, contactez-nous sur WhatsApp avec votre référence ci-dessous pour obtenir un code gratuit.",
+        };
+      }
+      return { ok: false as const, reason: "server_error" as const, error: "Could not create demo code" };
+    }
+    return { ok: true as const, code: row.code as string, shortRef: row.short_ref as string };
+  });
 
 const RefSchema = z.object({ ref: z.string().uuid() });
 
