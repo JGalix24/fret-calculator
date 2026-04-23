@@ -1,72 +1,104 @@
 
 
-## Plan : Mise à jour tarifs + paywall + paiement automatique
+## Phase 2 — Intégration PayDunya (paiement automatique)
 
-### Tarifs corrigés (partout)
+### Ce dont j'ai besoin de toi
 
-- **Mensuel** : ~~5 000 FCFA~~ → **2 000 FCFA** / 30 jours
-- **Trimestriel** : ~~12 000 FCFA~~ → **5 000 FCFA** / 90 jours
-- Badge « Économie » sur trimestriel : ~17 % d'économie vs 3 mois mensuels (6 000 → 5 000)
+Pour brancher PayDunya, j'ai besoin de **4 secrets** que tu trouves dans ton dashboard PayDunya → **Intégration → API Keys** :
 
-### Fichiers à mettre à jour pour les tarifs
+1. **`PAYDUNYA_MASTER_KEY`** — clé maître du compte
+2. **`PAYDUNYA_PUBLIC_KEY`** — clé publique (mode test : commence par `test_public_…`)
+3. **`PAYDUNYA_PRIVATE_KEY`** — clé privée (mode test : commence par `test_private_…`)
+4. **`PAYDUNYA_TOKEN`** — token de l'API
 
-- `src/lib/i18n.tsx` : clés `pricing.month.price`, `pricing.quarter.price`, `pricing.quarter.save` (FR + EN)
-- `src/routes/activate.tsx` : ligne `t("activate.pricing")` (clé i18n)
-- Tout endroit qui mentionne « 5 000 » ou « 12 000 » FCFA en dur
+Plus 1 secret optionnel mais recommandé :
+5. **`PAYDUNYA_MODE`** — `test` pour l'instant, `live` plus tard quand tu passes en prod
 
-### Partie 1 — Fix build error (immédiat)
+Je te demanderai ces secrets via l'outil `add_secret` dès que tu valides ce plan. **Ne colle jamais de clés directement dans le chat** — utilise la popup sécurisée qui s'ouvrira.
 
-`src/routes/activate.tsx` ligne 70 : ajouter `search: {} as never` au `navigate({ to: "/activated" })`. Vérifier que `activated.tsx` a bien un `validateSearch` qui rend tout optionnel.
+### Ce que je vais construire
 
-### Partie 2 — Modale Paywall bloquante (Phase 1)
+**1. Table `payments` (migration SQL)**
+- `id`, `plan` (`MENSUEL`/`TRIMESTRIEL`), `amount`, `status` (`pending`/`paid`/`failed`/`cancelled`)
+- `provider` (`paydunya`), `provider_token` (token de la facture), `provider_ref` (transaction id)
+- `code_id` (FK → `activation_codes`, rempli après paiement validé)
+- `customer_phone`, `customer_name` (optionnels), `created_at`, `paid_at`
+- RLS : `no_direct_access` (comme les autres tables) — accès uniquement via RPC/service role
 
-**Création** :
-- `src/components/app/PaywallModal.tsx` : `Dialog` non fermable, titre « Vos 5 essais gratuits sont terminés », 2 cartes prix (2 000 / 5 000 FCFA), mention « Paiement Mixx by Yas ou Flooz », bouton « J'ai déjà un code » → `/activate`
-- `src/lib/paywall.tsx` : context global `PaywallProvider` + hook `usePaywall()` avec `openPaywall()` / `closePaywall()`
+**2. Server function `createCheckoutSession`** (`src/utils/payments.functions.ts`)
+- Input : `{ plan: "MENSUEL" | "TRIMESTRIEL" }`
+- Crée une ligne `payments` avec `status=pending`
+- Appelle l'API PayDunya `/checkout-invoice/create` avec :
+  - Montant (2 000 ou 5 000 FCFA)
+  - URLs de retour : `/payment-success?ref=...`, `/payment-cancel?ref=...`
+  - URL callback webhook : `/api/public/paydunya-webhook`
+  - `custom_data` : id de la ligne `payments` pour relier au callback
+- Retourne `{ checkout_url, token }`
 
-**Édition** :
-- `src/routes/__root.tsx` : monter `<PaywallProvider>`
-- `src/components/app/AppShell.tsx` : monter `<PaywallModal />` une fois pour `/app/*`
-- `src/hooks/useConsume.ts` : sur `reason === "exhausted"` → `openPaywall()`
+**3. Webhook `/api/public/paydunya-webhook`** (`src/routes/api/public/paydunya-webhook.ts`)
+- Reçoit le POST IPN de PayDunya
+- **Vérifie l'authenticité** via le hash `data[hash]` = SHA-512 de `PAYDUNYA_MASTER_KEY` (méthode officielle PayDunya)
+- Si `status === "completed"` :
+  - Génère un code activation via une nouvelle RPC `system_create_paid_code(_payment_id, _type)` (équivalent admin sans password, appelée avec service role uniquement)
+  - Met à jour `payments` : `status=paid`, `code_id=...`, `paid_at=now()`
+- Si `cancelled` / `failed` : met à jour le status
 
-**CTA Phase 1** : les 2 boutons pointent vers WhatsApp avec contexte enrichi (plan choisi + code masqué). Conversion immédiate, zéro setup externe.
+**4. Modale Paywall mise à jour**
+- Les 2 boutons « Choisir ce plan » appellent `createCheckoutSession` au lieu d'ouvrir WhatsApp
+- Pendant le chargement : spinner + texte « Redirection vers paiement… »
+- Sur succès : `window.location.href = checkout_url`
+- Garde le lien WhatsApp comme **fallback discret** (« Problème ? Nous contacter »)
 
-### Partie 3 — Paiement automatique (Phase 2, après ouverture compte PayDunya)
+**5. Pages de retour**
+- `src/routes/payment-success.tsx` :
+  - Lit `?ref=...`
+  - Polling toutes les 2s sur une server fn `getPaymentStatus({ ref })` (max 30s)
+  - Quand `status=paid` : affiche le code généré en grand, bouton « Activer maintenant » → `/activate` avec code pré-rempli
+  - Si timeout : message « Paiement en cours de validation, vous recevrez le code par WhatsApp »
+- `src/routes/payment-cancel.tsx` : message d'annulation + retour au paywall
 
-**Provider retenu** : **PayDunya** — seule intégration qui couvre **Mixx by Yas** + **Flooz Moov Money** au Togo via une seule API.
+**6. Page `/activate` améliorée**
+- Lit `?code=...` dans l'URL et pré-remplit le champ → permet le flux fluide depuis `payment-success`
 
-**Flux** :
-```text
-Modale Paywall → Clic plan
-  → Server fn createCheckout(plan)
-  → API PayDunya: invoice (Mixx by Yas + Flooz)
-  → Redirection page hosted PayDunya
-  → User paie via USSD
-  → Callback webhook /api/public/paydunya-webhook
-  → Vérif HMAC → génère code via RPC admin → stocke transaction
-  → Redirige /payment-success?ref=XXX → affiche code + bouton activer
+### Détails techniques PayDunya
+
+**Endpoints utilisés** (mode test : `https://app.paydunya.com/sandbox-api/v1/`, mode live : `https://app.paydunya.com/api/v1/`) :
+- `POST /checkout-invoice/create` — créer la facture
+- `GET /checkout-invoice/confirm/{token}` — vérifier le statut (utilisé en backup par la page success si webhook lent)
+
+**Headers requis sur chaque appel** :
+```
+PAYDUNYA-MASTER-KEY: ...
+PAYDUNYA-PRIVATE-KEY: ...
+PAYDUNYA-TOKEN: ...
+PAYDUNYA-MODE: test
 ```
 
-**Création (Phase 2)** :
-- `src/utils/payments.functions.ts` — `createCheckoutSession({ plan })`
-- `src/routes/api/public/paydunya-webhook.ts` — webhook + vérif HMAC
-- `src/routes/payment-success.tsx` — polling status + affichage code
+**Vérification webhook** : PayDunya envoie un champ `data[hash]` = SHA-512 hex de la `MASTER_KEY`. On compare avec `crypto.createHash('sha512').update(masterKey).digest('hex')` en `timingSafeEqual`.
+
+### Fichiers touchés
+
+**Création** :
+- Migration : table `payments` + RPC `system_create_paid_code`
+- `src/utils/payments.functions.ts` — `createCheckoutSession`, `getPaymentStatus`
+- `src/utils/paydunya.server.ts` — wrapper API + vérif hash
+- `src/routes/api/public/paydunya-webhook.ts` — IPN handler
+- `src/routes/payment-success.tsx` — polling + affichage code
 - `src/routes/payment-cancel.tsx`
-- Migration : table `payments` (id, plan, amount, status `pending|paid|failed`, provider_ref, code_id FK, created_at, paid_at)
 
-**Secrets requis (à demander avant Phase 2)** :
-- `PAYDUNYA_MASTER_KEY`
-- `PAYDUNYA_PRIVATE_KEY`
-- `PAYDUNYA_TOKEN`
-- `PAYDUNYA_MODE` (`test` / `live`)
+**Édition** :
+- `src/components/app/PaywallModal.tsx` — boutons branchés sur `createCheckoutSession`
+- `src/routes/activate.tsx` — support `?code=...` pré-rempli
 
-### Plan d'exécution proposé
+### Étapes d'exécution une fois validé
 
-**Maintenant** : Tarifs corrigés + Fix build + Phase 1 (paywall bloquant + WhatsApp).
-**Plus tard** : Phase 2 (PayDunya automatique) quand tu auras créé le compte sur paydunya.com.
+1. Tu valides le plan
+2. Je te demande les 4 secrets PayDunya via popup sécurisée
+3. Tu colles les valeurs (depuis ton dashboard PayDunya en mode test)
+4. Je crée la migration + tout le code
+5. Test : lance un paiement test depuis le paywall → PayDunya simulera le paiement → webhook reçu → code généré → page success affiche le code
 
-### Question avant exécution
+### Question
 
-1. On valide bien les tarifs **2 000 FCFA mensuel / 5 000 FCFA trimestriel** partout (landing + activate + paywall) ?
-2. As-tu déjà ouvert ton compte **PayDunya**, ou on fait **Phase 1 maintenant** et Phase 2 quand tu l'auras ?
+Tu confirmes qu'on part sur ce flux ? Je lance la demande des secrets dès que tu dis OK.
 
