@@ -30,7 +30,10 @@ export function Hero() {
         navigate({ to: "/activate", search: { code: res.code } as never });
         return;
       }
-      setErr("Impossible de générer un code. Réessayez.");
+      if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
+      setErr(res.error ?? "Impossible de générer un code. Réessayez.");
+      const el = document.getElementById("pricing");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
     } catch (e) {
       console.error(e);
       setErr("Erreur réseau. Réessayez.");
