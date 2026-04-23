@@ -1,8 +1,11 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useI18n, buildWhatsappLink } from "@/lib/i18n";
 import { usePaywall } from "@/lib/paywall";
 import { getSession } from "@/lib/session";
+import { createCheckoutSession } from "@/utils/payments.functions";
 
 const Check = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
@@ -20,6 +23,9 @@ export function PaywallModal() {
   const { lang } = useI18n();
   const { isOpen, page, closePaywall } = usePaywall();
   const session = getSession();
+  const checkout = useServerFn(createCheckoutSession);
+  const [loadingPlan, setLoadingPlan] = useState<"MENSUEL" | "TRIMESTRIEL" | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const isFr = lang === "fr";
   const t = {
@@ -36,21 +42,36 @@ export function PaywallModal() {
     feat1q: isFr ? "Accès illimité 90 jours" : "Unlimited access 90 days",
     feat2: isFr ? "Tous les modes de calcul" : "All calculation modes",
     feat3: isFr ? "Export PDF" : "PDF export",
-    cta: isFr ? "Choisir ce plan" : "Choose this plan",
-    pay: isFr ? "Paiement Mixx by Yas ou Flooz" : "Pay with Mixx by Yas or Flooz",
+    cta: isFr ? "Payer ce plan" : "Pay this plan",
+    loading: isFr ? "Redirection vers paiement…" : "Redirecting to payment…",
+    pay: isFr ? "Mixx by Yas ou Moov Money" : "Mixx by Yas or Moov Money",
     have: isFr ? "J'ai déjà un code" : "I already have a code",
     note: isFr
-      ? "Activation manuelle sous 5 minutes via WhatsApp après réception du paiement."
-      : "Manual activation within 5 minutes via WhatsApp after payment.",
+      ? "Code activation envoyé immédiatement après confirmation du paiement."
+      : "Activation code delivered instantly after payment confirmation.",
+    fallback: isFr ? "Problème ? Nous contacter" : "Issue? Contact us",
+    err: isFr ? "Erreur de paiement, réessayez ou contactez-nous." : "Payment error, retry or contact us.",
   };
 
-  const monthHref = buildWhatsappLink(lang, "mensuel", {
-    plan: t.monthName,
-    code: session?.code,
-    page,
-  });
-  const quarterHref = buildWhatsappLink(lang, "trimestriel", {
-    plan: t.quarterName,
+  const onChoose = async (plan: "MENSUEL" | "TRIMESTRIEL") => {
+    setError(null);
+    setLoadingPlan(plan);
+    try {
+      const res = await checkout({ data: { plan } });
+      if (res.ok && res.checkoutUrl) {
+        window.location.href = res.checkoutUrl;
+        return;
+      }
+      setError(t.err);
+    } catch (e) {
+      console.error(e);
+      setError(t.err);
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
+  const fallbackHref = buildWhatsappLink(lang, "general", {
     code: session?.code,
     page,
   });
