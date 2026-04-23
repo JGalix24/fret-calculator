@@ -4,9 +4,11 @@ import {
   adminCreate,
   adminDelete,
   adminList,
+  adminLookupDemoRef,
   adminSetActive,
   type ActivationType,
   type CodeRow,
+  type DemoLookup,
 } from "@/lib/activation";
 
 export const Route = createFileRoute("/admin")({
