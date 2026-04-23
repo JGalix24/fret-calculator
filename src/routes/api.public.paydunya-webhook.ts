@@ -95,7 +95,7 @@ export const Route = createFileRoute("/api/public/paydunya-webhook")({
           await supabaseAdmin.rpc("system_mark_payment_status", {
             _payment_id: resolvedId,
             _status: "failed",
-            _provider_ref: token ?? null,
+            _provider_ref: token ?? undefined,
           });
           return new Response("ok");
         }
