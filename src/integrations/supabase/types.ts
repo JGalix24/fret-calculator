@@ -212,6 +212,13 @@ export type Database = {
         Args: { _payment_id: string; _token: string }
         Returns: undefined
       }
+      system_create_demo_code: {
+        Args: never
+        Returns: {
+          code: string
+          code_id: string
+        }[]
+      }
       system_create_paid_code: {
         Args: { _payment_id: string }
         Returns: {
