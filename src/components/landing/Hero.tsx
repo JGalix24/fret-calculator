@@ -2,29 +2,27 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, buildWhatsappLink } from "@/lib/i18n";
 import { createDemoCode } from "@/utils/payments.functions";
+import { getClientFingerprint } from "@/lib/fingerprint";
 
 const DEMO_USED_KEY = "fc.demo.used";
 
 export function Hero() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const navigate = useNavigate();
   const demoFn = useServerFn(createDemoCode);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [shortRef, setShortRef] = useState<string | null>(null);
 
   const startDemo = async () => {
     setErr(null);
-    if (typeof window !== "undefined" && window.localStorage.getItem(DEMO_USED_KEY)) {
-      const el = document.getElementById("pricing");
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-      setErr("Vous avez déjà utilisé votre essai gratuit. Choisissez un plan ci-dessous.");
-      return;
-    }
+    setShortRef(null);
     setLoading(true);
     try {
-      const res = await demoFn();
+      const fp = getClientFingerprint();
+      const res = await demoFn({ data: { signal: fp.signal } });
       if (res.ok && res.code) {
         if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
         navigate({ to: "/activate", search: { code: res.code } as never });
@@ -32,6 +30,7 @@ export function Hero() {
       }
       if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
       setErr(res.error ?? "Impossible de générer un code. Réessayez.");
+      if ("shortRef" in res && res.shortRef) setShortRef(res.shortRef as string);
       const el = document.getElementById("pricing");
       if (el) el.scrollIntoView({ behavior: "smooth" });
     } catch (e) {
