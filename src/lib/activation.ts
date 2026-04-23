@@ -88,3 +88,28 @@ export async function adminDelete(password: string, id: string): Promise<void> {
   });
   if (error) throw error;
 }
+
+export type DemoLookup = {
+  found: boolean;
+  short_ref: string | null;
+  granted_at: string | null;
+  code: string | null;
+  code_type: ActivationType | null;
+  usage_count: number | null;
+  max_usage: number | null;
+  is_active: boolean | null;
+  expires_at: string | null;
+};
+
+export async function adminLookupDemoRef(password: string, shortRef: string): Promise<DemoLookup> {
+  const { data, error } = await supabase.rpc("admin_lookup_demo_ref", {
+    _password: password,
+    _short_ref: shortRef,
+  });
+  if (error) throw error;
+  const row = (data ?? [])[0];
+  if (!row) {
+    return { found: false, short_ref: null, granted_at: null, code: null, code_type: null, usage_count: null, max_usage: null, is_active: null, expires_at: null };
+  }
+  return row as DemoLookup;
+}
