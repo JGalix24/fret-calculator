@@ -24,6 +24,7 @@ export function Pricing() {
 
   const [loadingPlan, setLoadingPlan] = useState<PaidPlan | "DEMO" | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [shortRef, setShortRef] = useState<string | null>(null);
 
   const handlePay = async (plan: PaidPlan) => {
     setErrorMsg(null);
