@@ -106,52 +106,55 @@ export function generateFreightPdf(payload: FreightPdfPayload): void {
     true,
   );
 
-  // ---- Transit / Arrival (highlighted hero block) ----
+  // ---- Transit / Arrival (professional emphasized block) ----
   if (payload.transit || payload.arrival) {
-    y += 24;
+    y += 26;
     const boxX = M;
     const boxW = W - 2 * M;
-    const boxH = 96;
+    const boxH = 110;
 
-    // Gradient-like layered fills (blue accent)
+    // Card background (very light blue tint)
+    doc.setFillColor(248, 250, 252); // slate-50
+    doc.setDrawColor(203, 213, 225); // slate-300
+    doc.setLineWidth(0.8);
+    doc.roundedRect(boxX, y, boxW, boxH, 10, 10, "FD");
+
+    // Left accent stripe (blue)
     doc.setFillColor(37, 99, 235); // blue-600
-    doc.roundedRect(boxX, y, boxW, boxH, 12, 12, "F");
+    doc.roundedRect(boxX, y, 5, boxH, 2, 2, "F");
 
-    // Soft inner overlay for depth
-    doc.setFillColor(59, 130, 246); // blue-500
-    doc.roundedRect(boxX + 4, y + 4, boxW - 8, boxH - 8, 10, 10, "F");
-
-    // Left accent bar
-    doc.setFillColor(255, 255, 255);
-    doc.roundedRect(boxX + 16, y + 18, 4, boxH - 36, 2, 2, "F");
-
-    let ty = y + 32;
+    // Eyebrow label
+    let ty = y + 26;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
-    doc.setTextColor(219, 234, 254); // blue-100
+    doc.setTextColor(37, 99, 235); // blue-600
     doc.text(
       (isFr ? "Délai estimé" : "Estimated transit").toUpperCase(),
-      boxX + 32,
+      boxX + boxW / 2,
       ty,
+      { align: "center" },
     );
-    ty += 20;
+    ty += 24;
 
+    // Big transit value
     if (payload.transit) {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(20);
-      doc.setTextColor(255, 255, 255);
-      doc.text(payload.transit, boxX + 32, ty);
-      ty += 18;
-    }
-    if (payload.arrival) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor(226, 232, 240); // slate-200
-      const lines = doc.splitTextToSize(payload.arrival, boxW - 64);
-      doc.text(lines, boxX + 32, ty);
+      doc.setFontSize(22);
+      doc.setTextColor(15, 23, 42); // slate-900
+      doc.text(payload.transit, boxX + boxW / 2, ty, { align: "center" });
+      ty += 22;
     }
 
-    y += boxH + 8;
+    // Arrival sentence
+    if (payload.arrival) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor(71, 85, 105); // slate-600
+      const lines = doc.splitTextToSize(payload.arrival, boxW - 48);
+      doc.text(lines, boxX + boxW / 2, ty, { align: "center" });
+    }
+
+    y += boxH + 10;
   }
 
   // ---- Footer ----
