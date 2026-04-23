@@ -5,10 +5,10 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
   PLAN_AMOUNTS,
-  createInvoice,
-  confirmInvoice,
-  type PaydunyaPlan,
-} from "./paydunya.server";
+  createTransaction,
+  fetchTransaction,
+  type FedaPayPlan,
+} from "./fedapay.server";
 
 function getClientIp(): string | null {
   try {
@@ -30,7 +30,7 @@ function getClientIp(): string | null {
 }
 
 function sha256(input: string): string {
-  const salt = process.env.PAYDUNYA_MASTER_KEY ?? "fc-demo-salt";
+  const salt = process.env.FEDAPAY_WEBHOOK_SECRET ?? process.env.FEDAPAY_SECRET_KEY ?? "fc-demo-salt";
   return crypto.createHash("sha256").update(`${salt}:${input}`).digest("hex");
 }
 
@@ -51,7 +51,7 @@ function getOrigin(): string {
 export const createCheckoutSession = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => PlanSchema.parse(input))
   .handler(async ({ data }) => {
-    const plan = data.plan as PaydunyaPlan;
+    const plan = data.plan as FedaPayPlan;
     const amount = PLAN_AMOUNTS[plan];
 
     const { data: paymentId, error: insErr } = await supabaseAdmin.rpc(
@@ -65,26 +65,25 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
     const origin = getOrigin();
     try {
-      const invoice = await createInvoice({
+      const tx = await createTransaction({
         plan,
         paymentId: paymentId as string,
-        returnUrl: `${origin}/payment-success?ref=${paymentId}`,
-        cancelUrl: `${origin}/payment-cancel?ref=${paymentId}`,
-        callbackUrl: `${origin}/api/public/paydunya-webhook`,
+        callbackUrl: `${origin}/payment-success?ref=${paymentId}`,
       });
 
+      // Store FedaPay transaction id as provider_token for later lookup
       await supabaseAdmin.rpc("system_attach_provider_token", {
         _payment_id: paymentId as string,
-        _token: invoice.token,
+        _token: String(tx.transactionId),
       });
 
       return {
         ok: true as const,
         paymentId: paymentId as string,
-        checkoutUrl: invoice.checkout_url,
+        checkoutUrl: tx.checkoutUrl,
       };
     } catch (e) {
-      console.error("paydunya invoice failed", e);
+      console.error("fedapay transaction failed", e);
       await supabaseAdmin.rpc("system_mark_payment_status", {
         _payment_id: paymentId as string,
         _status: "failed",
@@ -156,16 +155,18 @@ export const getPaymentStatus = createServerFn({ method: "POST" })
     }
     const row = rows[0];
 
-    // If still pending, ask PayDunya directly (in case webhook is slow)
+    // If still pending, poll FedaPay directly (in case webhook is slow)
     if (row.status === "pending") {
       const { data: full } = await supabaseAdmin
         .from("payments")
         .select("provider_token")
         .eq("id", data.ref)
         .single();
-      if (full?.provider_token) {
+      const txIdRaw = full?.provider_token;
+      const txId = txIdRaw ? parseInt(txIdRaw, 10) : NaN;
+      if (!Number.isNaN(txId)) {
         try {
-          const confirm = await confirmInvoice(full.provider_token);
+          const confirm = await fetchTransaction(txId);
           if (confirm.status === "completed") {
             const { data: codeRows } = await supabaseAdmin.rpc(
               "system_create_paid_code",
@@ -187,7 +188,7 @@ export const getPaymentStatus = createServerFn({ method: "POST" })
             return { ok: true as const, status: confirm.status };
           }
         } catch (e) {
-          console.error("confirmInvoice failed", e);
+          console.error("fetchTransaction failed", e);
         }
       }
     }
