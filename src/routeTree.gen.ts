@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PaymentSuccessRouteImport } from './routes/payment-success'
+import { Route as PaymentCancelRouteImport } from './routes/payment-cancel'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ActivatedRouteImport } from './routes/activated'
@@ -25,6 +26,11 @@ import { Route as ApiPublicPaydunyaWebhookRouteImport } from './routes/api.publi
 const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
   id: '/payment-success',
   path: '/payment-success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentCancelRoute = PaymentCancelRouteImport.update({
+  id: '/payment-cancel',
+  path: '/payment-cancel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
+  '/payment-cancel': typeof PaymentCancelRoute
   '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/activate': typeof ActivateRoute
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
+  '/payment-cancel': typeof PaymentCancelRoute
   '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/activated': typeof ActivatedRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
+  '/payment-cancel': typeof PaymentCancelRoute
   '/payment-success': typeof PaymentSuccessRoute
   '/app/air': typeof AppAirRoute
   '/app/compare': typeof AppCompareRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/activated'
     | '/admin'
     | '/app'
+    | '/payment-cancel'
     | '/payment-success'
     | '/app/air'
     | '/app/compare'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/activate'
     | '/activated'
     | '/admin'
+    | '/payment-cancel'
     | '/payment-success'
     | '/app/air'
     | '/app/compare'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/activated'
     | '/admin'
     | '/app'
+    | '/payment-cancel'
     | '/payment-success'
     | '/app/air'
     | '/app/compare'
@@ -176,6 +188,7 @@ export interface RootRouteChildren {
   ActivatedRoute: typeof ActivatedRoute
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
+  PaymentCancelRoute: typeof PaymentCancelRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
   ApiPublicPaydunyaWebhookRoute: typeof ApiPublicPaydunyaWebhookRoute
 }
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/payment-success'
       fullPath: '/payment-success'
       preLoaderRoute: typeof PaymentSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-cancel': {
+      id: '/payment-cancel'
+      path: '/payment-cancel'
+      fullPath: '/payment-cancel'
+      preLoaderRoute: typeof PaymentCancelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -293,6 +313,7 @@ const rootRouteChildren: RootRouteChildren = {
   ActivatedRoute: ActivatedRoute,
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
+  PaymentCancelRoute: PaymentCancelRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
   ApiPublicPaydunyaWebhookRoute: ApiPublicPaydunyaWebhookRoute,
 }
