@@ -194,8 +194,8 @@ function drawSection(
   y += 12;
 
   // Card
-  const rowH = 32;
-  const padding = 16;
+  const rowH = 40;
+  const padding = 18;
   const cardH = padding * 2 + rows.length * rowH;
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(226, 232, 240);
@@ -203,23 +203,24 @@ function drawSection(
   doc.roundedRect(x, y, width, cardH, 8, 8, "FD");
 
   const centerX = x + width / 2;
-  let ry = y + padding + 12;
+  let ry = y + padding + 10;
   rows.forEach((row, i) => {
     if (i > 0) {
+      // Separator drawn safely above the label, never crossing the previous value
       doc.setDrawColor(241, 245, 249);
-      doc.line(x + 16, ry - 22, x + width - 16, ry - 22);
+      doc.line(x + 20, ry - 10, x + width - 20, ry - 10);
     }
-    // Label (centered, small caps feel)
+    // Label
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(100, 116, 139);
     doc.text(row.label, centerX, ry, { align: "center" });
 
-    // Value (centered, bold below)
+    // Value
     doc.setFont("helvetica", "bold");
     doc.setFontSize(emphasize ? 14 : 12);
     doc.setTextColor(15, 23, 42);
-    doc.text(row.value, centerX, ry + 14, { align: "center" });
+    doc.text(row.value, centerX, ry + 16, { align: "center" });
 
     ry += rowH;
   });
