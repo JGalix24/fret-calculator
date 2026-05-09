@@ -41,7 +41,7 @@ const fr: Dict = {
   "pricing.month.feat2": "Tous les modes de calcul",
   "pricing.month.feat3": "Export PDF",
   "pricing.quarter.name": "Trimestriel",
-  "pricing.quarter.price": "4 000",
+  "pricing.quarter.price": "3 500",
   "pricing.quarter.unit": "FCFA / 3 mois",
   "pricing.quarter.feat1": "Accès illimité 90 jours",
   "pricing.quarter.feat2": "Tous les modes de calcul",
