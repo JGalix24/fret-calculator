@@ -1,0 +1,1 @@
+ALTER TABLE public.payments ALTER COLUMN provider SET DEFAULT 'moneyfusion';

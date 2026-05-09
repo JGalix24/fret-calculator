@@ -5,10 +5,10 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
   PLAN_AMOUNTS,
-  createTransaction,
-  fetchTransaction,
-  type FedaPayPlan,
-} from "./fedapay.server";
+  createPayment,
+  checkPaymentStatus,
+  type MoneyFusionPlan,
+} from "./moneyfusion.server";
 
 function getClientIp(): string | null {
   try {
@@ -30,7 +30,7 @@ function getClientIp(): string | null {
 }
 
 function sha256(input: string): string {
-  const salt = process.env.FEDAPAY_WEBHOOK_SECRET ?? process.env.FEDAPAY_SECRET_KEY ?? "fc-demo-salt";
+  const salt = process.env.MONEYFUSION_API_URL ?? "fc-demo-salt";
   return crypto.createHash("sha256").update(`${salt}:${input}`).digest("hex");
 }
 
@@ -51,7 +51,7 @@ function getOrigin(): string {
 export const createCheckoutSession = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => PlanSchema.parse(input))
   .handler(async ({ data }) => {
-    const plan = data.plan as FedaPayPlan;
+    const plan = data.plan as MoneyFusionPlan;
     const amount = PLAN_AMOUNTS[plan];
 
     const { data: paymentId, error: insErr } = await supabaseAdmin.rpc(
@@ -65,16 +65,17 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
 
     const origin = getOrigin();
     try {
-      const tx = await createTransaction({
+      const tx = await createPayment({
         plan,
         paymentId: paymentId as string,
         callbackUrl: `${origin}/payment-success?ref=${paymentId}`,
+        webhookUrl: `${origin}/api/public/moneyfusion-webhook`,
       });
 
-      // Store FedaPay transaction id as provider_token for later lookup
+      // Store MoneyFusion token as provider_token for later lookup
       await supabaseAdmin.rpc("system_attach_provider_token", {
         _payment_id: paymentId as string,
-        _token: String(tx.transactionId),
+        _token: tx.token,
       });
 
       return {
@@ -83,7 +84,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         checkoutUrl: tx.checkoutUrl,
       };
     } catch (e) {
-      console.error("fedapay transaction failed", e);
+      console.error("moneyfusion payment failed", e);
       await supabaseAdmin.rpc("system_mark_payment_status", {
         _payment_id: paymentId as string,
         _status: "failed",
@@ -155,19 +156,18 @@ export const getPaymentStatus = createServerFn({ method: "POST" })
     }
     const row = rows[0];
 
-    // If still pending, poll FedaPay directly (in case webhook is slow)
+    // If still pending, poll MoneyFusion directly (in case webhook is slow)
     if (row.status === "pending") {
       const { data: full } = await supabaseAdmin
         .from("payments")
         .select("provider_token")
         .eq("id", data.ref)
         .single();
-      const txIdRaw = full?.provider_token;
-      const txId = txIdRaw ? parseInt(txIdRaw, 10) : NaN;
-      if (!Number.isNaN(txId)) {
+      const token = full?.provider_token;
+      if (token) {
         try {
-          const confirm = await fetchTransaction(txId);
-          if (confirm.status === "completed") {
+          const confirm = await checkPaymentStatus(token);
+          if (confirm.status === "paid") {
             const { data: codeRows } = await supabaseAdmin.rpc(
               "system_create_paid_code",
               { _payment_id: data.ref },
@@ -188,7 +188,7 @@ export const getPaymentStatus = createServerFn({ method: "POST" })
             return { ok: true as const, status: confirm.status };
           }
         } catch (e) {
-          console.error("fetchTransaction failed", e);
+          console.error("checkPaymentStatus failed", e);
         }
       }
     }
