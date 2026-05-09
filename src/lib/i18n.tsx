@@ -47,7 +47,7 @@ const fr: Dict = {
   "pricing.quarter.feat2": "Tous les modes de calcul",
   "pricing.quarter.feat3": "Export PDF",
   "pricing.quarter.badge": "Le plus avantageux",
-  "pricing.quarter.save": "Économie de 500 FCFA",
+  "pricing.quarter.save": "Économie de 997 FCFA",
   "pricing.note": "Paiement via Moov Money ou Mixx by Yas · Activation immédiate via WhatsApp",
   "pricing.cta": "Contacter sur WhatsApp",
 
