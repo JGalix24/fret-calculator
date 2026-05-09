@@ -167,9 +167,9 @@ const WA_MESSAGES_FR: Record<WhatsappContext, string> = {
   demo:
     "Bonjour Mr.G, je viens de tester Freight-Calculator (5 calculs offerts). J'aimerais en savoir plus avant de m'abonner.",
   mensuel:
-    "Bonjour Mr.G, je souhaite activer l'offre Mensuelle (1 500 FCFA / 30 jours) de Freight-Calculator. Voici mon reçu de paiement :",
+    "Bonjour Mr.G, je souhaite activer l'offre Mensuelle (1 499 FCFA / 30 jours) de Freight-Calculator. Voici mon reçu de paiement :",
   trimestriel:
-    "Bonjour Mr.G, je souhaite activer l'offre Trimestrielle (4 000 FCFA / 90 jours) de Freight-Calculator. Voici mon reçu de paiement :",
+    "Bonjour Mr.G, je souhaite activer l'offre Trimestrielle (3 500 FCFA / 90 jours) de Freight-Calculator. Voici mon reçu de paiement :",
   renew:
     "Bonjour Mr.G, mon accès Freight-Calculator a expiré, je souhaite le renouveler.",
   exhausted:
