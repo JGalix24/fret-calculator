@@ -114,6 +114,7 @@ function AdminPage() {
     demo: codes.filter((c) => c.type === "DEMO" && c.is_active && (c.max_usage === null || c.usage_count < (c.max_usage ?? 0))).length,
     monthly: codes.filter((c) => c.type === "MENSUEL" && c.is_active).length,
     quarterly: codes.filter((c) => c.type === "TRIMESTRIEL" && c.is_active).length,
+    annual: codes.filter((c) => c.type === "ANNUEL" && c.is_active).length,
     expired: codes.filter((c) => (c.expires_at && new Date(c.expires_at) < new Date()) || (c.max_usage !== null && c.usage_count >= (c.max_usage ?? 0))).length,
   };
 
@@ -168,6 +169,7 @@ function AdminPage() {
             { label: "DEMO en cours", value: stats.demo },
             { label: "MENSUEL actifs", value: stats.monthly },
             { label: "TRIMESTRIEL actifs", value: stats.quarterly },
+            { label: "ANNUEL actifs", value: stats.annual },
             { label: "Expirés / épuisés", value: stats.expired },
           ].map((s) => (
             <div key={s.label} className="glass rounded-2xl p-4">
@@ -188,6 +190,7 @@ function AdminPage() {
               <option value="DEMO">DEMO (5 calculs)</option>
               <option value="MENSUEL">MENSUEL (30 jours)</option>
               <option value="TRIMESTRIEL">TRIMESTRIEL (90 jours)</option>
+              <option value="ANNUEL">ANNUEL (365 jours)</option>
             </select>
             <button
               onClick={onCreate}

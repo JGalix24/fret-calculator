@@ -1,16 +1,18 @@
 // MoneyFusion API wrapper. Server-only.
 // Docs: https://docs.moneyfusion.net/
 
-export type MoneyFusionPlan = "MENSUEL" | "TRIMESTRIEL";
+export type MoneyFusionPlan = "MENSUEL" | "TRIMESTRIEL" | "ANNUEL";
 
 export const PLAN_AMOUNTS: Record<MoneyFusionPlan, number> = {
   MENSUEL: 1499,
   TRIMESTRIEL: 3500,
+  ANNUEL: 9999,
 };
 
 export const PLAN_LABELS: Record<MoneyFusionPlan, string> = {
   MENSUEL: "Abonnement Mensuel — Freight Calculator",
   TRIMESTRIEL: "Abonnement Trimestriel — Freight Calculator",
+  ANNUEL: "Abonnement Annuel — Freight Calculator",
 };
 
 function getApiUrl(): string {

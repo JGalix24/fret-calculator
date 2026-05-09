@@ -343,7 +343,7 @@ export type Database = {
       }
     }
     Enums: {
-      activation_code_type: "DEMO" | "MENSUEL" | "TRIMESTRIEL"
+      activation_code_type: "DEMO" | "MENSUEL" | "TRIMESTRIEL" | "ANNUEL"
       payment_status: "pending" | "paid" | "failed" | "cancelled"
     }
     CompositeTypes: {
@@ -472,7 +472,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      activation_code_type: ["DEMO", "MENSUEL", "TRIMESTRIEL"],
+      activation_code_type: ["DEMO", "MENSUEL", "TRIMESTRIEL", "ANNUEL"],
       payment_status: ["pending", "paid", "failed", "cancelled"],
     },
   },

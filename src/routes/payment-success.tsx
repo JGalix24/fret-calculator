@@ -9,11 +9,12 @@ import { validateCode } from "@/lib/activation";
 import { setSession } from "@/lib/session";
 import { buildWhatsappLink, useI18n } from "@/lib/i18n";
 
-type PaidPlan = "MENSUEL" | "TRIMESTRIEL" | "DEMO";
+type PaidPlan = "MENSUEL" | "TRIMESTRIEL" | "ANNUEL" | "DEMO";
 
 const PLAN_LABEL: Record<string, { name: string; days: string }> = {
   MENSUEL: { name: "Mensuel", days: "30 jours" },
   TRIMESTRIEL: { name: "Trimestriel", days: "90 jours" },
+  ANNUEL: { name: "Annuel", days: "365 jours" },
   DEMO: { name: "Démo", days: "5 calculs" },
 };
 

@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type ActivationType = "DEMO" | "MENSUEL" | "TRIMESTRIEL";
+export type ActivationType = "DEMO" | "MENSUEL" | "TRIMESTRIEL" | "ANNUEL";
 
 export type ValidateResult =
   | { ok: true; type: ActivationType; remaining: number | null; expiresAt: string | null }

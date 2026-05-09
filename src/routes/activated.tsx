@@ -33,11 +33,13 @@ const PLAN_LABEL: Record<string, { fr: string; en: string }> = {
   DEMO: { fr: "Démo (5 calculs offerts)", en: "Demo (5 free calculations)" },
   MENSUEL: { fr: "Mensuel (30 jours)", en: "Monthly (30 days)" },
   TRIMESTRIEL: { fr: "Trimestriel (90 jours)", en: "Quarterly (90 days)" },
+  ANNUEL: { fr: "Annuel (365 jours)", en: "Annual (365 days)" },
 };
 
 const PLAN_DURATION_DAYS: Record<string, number> = {
   MENSUEL: 30,
   TRIMESTRIEL: 90,
+  ANNUEL: 365,
 };
 
 function formatDate(iso: string | null | undefined, lang: "fr" | "en"): string | null {
