@@ -57,7 +57,7 @@ export function PaywallModal() {
         window.location.href = res.checkoutUrl;
         return;
       }
-      setError(t.err);
+      setError(("error" in res && res.error) ? res.error : t.err);
     } catch (e) {
       console.error(e);
       setError(t.err);
