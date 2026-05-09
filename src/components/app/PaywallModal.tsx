@@ -119,7 +119,7 @@ export function PaywallModal() {
           />
           <PlanCard
             name={t.quarterName}
-            price="5 000"
+            price="4 000"
             unit={t.quarterUnit}
             features={[t.feat1q, t.feat2, t.feat3]}
             cta={loadingPlan === "TRIMESTRIEL" ? t.loading : t.cta}
