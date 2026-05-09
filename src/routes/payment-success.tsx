@@ -262,7 +262,7 @@ function PaymentSuccessPage() {
           <>
             <h1 className="text-xl font-bold">Paiement en cours de validation</h1>
             <p className="mt-3 text-sm text-muted-foreground">
-              Votre paiement est en cours de traitement par PayDunya. Dès qu'il sera confirmé, vous
+              Votre paiement est en cours de traitement par MoneyFusion. Dès qu'il sera confirmé, vous
               recevrez votre code par WhatsApp. Vous pouvez aussi rafraîchir cette page dans une minute.
             </p>
             <button
