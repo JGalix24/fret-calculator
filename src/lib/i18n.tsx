@@ -46,8 +46,16 @@ const fr: Dict = {
   "pricing.quarter.feat1": "Accès illimité 90 jours",
   "pricing.quarter.feat2": "Tous les modes de calcul",
   "pricing.quarter.feat3": "Export PDF",
-  "pricing.quarter.badge": "Le plus avantageux",
+  "pricing.quarter.badge": "Populaire",
   "pricing.quarter.save": "Économie de 997 FCFA",
+  "pricing.year.name": "Annuel",
+  "pricing.year.price": "9 999",
+  "pricing.year.unit": "FCFA / an",
+  "pricing.year.feat1": "Accès illimité 365 jours",
+  "pricing.year.feat2": "Tous les modes de calcul",
+  "pricing.year.feat3": "Export PDF",
+  "pricing.year.badge": "Le plus avantageux",
+  "pricing.year.save": "Économie de 7 989 FCFA",
   "pricing.note": "Paiement via Moov Money ou Mixx by Yas · Activation immédiate via WhatsApp",
   "pricing.cta": "Contacter sur WhatsApp",
 
@@ -95,7 +103,7 @@ const fr: Dict = {
   "activate.validate": "Valider mon code",
   "activate.no_code": "Tu n'as pas encore de code ? Contacte-nous sur WhatsApp",
   "activate.whatsapp": "Ouvrir WhatsApp",
-  "activate.pricing": "1 499 FCFA / mois · 3 500 FCFA / 3 mois",
+  "activate.pricing": "1 499 FCFA / mois · 3 500 FCFA / 3 mois · 9 999 FCFA / an",
   "activate.payments": "Moyens de paiement : Moov Money · Mixx by Yas",
   "activate.back": "Retour à l'accueil",
   "activate.checking": "Vérification…",
@@ -159,6 +167,7 @@ export type WhatsappContext =
   | "demo"
   | "mensuel"
   | "trimestriel"
+  | "annuel"
   | "renew"
   | "exhausted"
   | "general";
@@ -170,6 +179,8 @@ const WA_MESSAGES_FR: Record<WhatsappContext, string> = {
     "Bonjour Mr.G, je souhaite activer l'offre Mensuelle (1 499 FCFA / 30 jours) de Freight-Calculator. Voici mon reçu de paiement :",
   trimestriel:
     "Bonjour Mr.G, je souhaite activer l'offre Trimestrielle (3 500 FCFA / 90 jours) de Freight-Calculator. Voici mon reçu de paiement :",
+  annuel:
+    "Bonjour Mr.G, je souhaite activer l'offre Annuelle (9 999 FCFA / 365 jours) de Freight-Calculator. Voici mon reçu de paiement :",
   renew:
     "Bonjour Mr.G, mon accès Freight-Calculator a expiré, je souhaite le renouveler.",
   exhausted:
@@ -182,9 +193,11 @@ const WA_MESSAGES_EN: Record<WhatsappContext, string> = {
   demo:
     "Hello Mr.G, I just tried Freight-Calculator (5 free calculations). I'd like to know more before subscribing.",
   mensuel:
-    "Hello Mr.G, I want to activate the Monthly plan (2,000 FCFA / 30 days) of Freight-Calculator. Here is my payment receipt:",
+    "Hello Mr.G, I want to activate the Monthly plan (1,499 FCFA / 30 days) of Freight-Calculator. Here is my payment receipt:",
   trimestriel:
-    "Hello Mr.G, I want to activate the Quarterly plan (5,000 FCFA / 90 days) of Freight-Calculator. Here is my payment receipt:",
+    "Hello Mr.G, I want to activate the Quarterly plan (3,500 FCFA / 90 days) of Freight-Calculator. Here is my payment receipt:",
+  annuel:
+    "Hello Mr.G, I want to activate the Annual plan (9,999 FCFA / 365 days) of Freight-Calculator. Here is my payment receipt:",
   renew:
     "Hello Mr.G, my Freight-Calculator access has expired, I'd like to renew it.",
   exhausted:
