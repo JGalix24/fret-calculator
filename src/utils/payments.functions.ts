@@ -89,7 +89,17 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
         _payment_id: paymentId as string,
         _status: "failed",
       });
-      return { ok: false as const, error: "Payment provider error" };
+      const raw = e instanceof Error ? e.message : String(e);
+      // Strip our wrapper prefix to keep only MoneyFusion's message
+      const cleaned = raw.replace(/^MoneyFusion payment creation failed:\s*/i, "").trim();
+      const lower = cleaned.toLowerCase();
+      let friendly = cleaned || "Le service de paiement est indisponible.";
+      if (lower.includes("non approuvée") || lower.includes("not approved")) {
+        friendly = "Notre application de paiement est en cours d'approbation par MoneyFusion. Réessayez d'ici quelques heures, ou contactez-nous sur WhatsApp pour activer votre code manuellement.";
+      } else if (lower.includes("unauthorized ip") || lower.includes("ip non autorisée")) {
+        friendly = "Le service de paiement bloque temporairement l'accès. Contactez-nous sur WhatsApp pour activer votre code manuellement.";
+      }
+      return { ok: false as const, error: friendly };
     }
   });
 

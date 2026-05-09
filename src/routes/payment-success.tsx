@@ -5,6 +5,8 @@ import { z } from "zod";
 import { motion } from "framer-motion";
 import { useServerFn } from "@tanstack/react-start";
 import { getPaymentStatus } from "@/utils/payments.functions";
+import { validateCode } from "@/lib/activation";
+import { setSession } from "@/lib/session";
 import { buildWhatsappLink, useI18n } from "@/lib/i18n";
 
 type PaidPlan = "MENSUEL" | "TRIMESTRIEL" | "DEMO";
@@ -36,6 +38,7 @@ function PaymentSuccessPage() {
   const [code, setCode] = useState<string | null>(null);
   const [plan, setPlan] = useState<PaidPlan | null>(null);
   const [copied, setCopied] = useState(false);
+  const [redirectIn, setRedirectIn] = useState<number | null>(null);
   const stoppedRef = useRef(false);
 
   useEffect(() => {
@@ -55,6 +58,22 @@ function PaymentSuccessPage() {
           setCode(res.code);
           if ("plan" in res && res.plan) setPlan(res.plan as PaidPlan);
           setStatus("paid");
+          // Auto-activate the session so the user lands directly in /app
+          try {
+            const v = await validateCode(res.code);
+            if (v.ok) {
+              setSession({
+                code: res.code,
+                type: v.type,
+                remaining: v.remaining,
+                expiresAt: v.expiresAt,
+                activatedAt: new Date().toISOString(),
+              });
+              setRedirectIn(5);
+            }
+          } catch (err) {
+            console.error("auto-activate failed", err);
+          }
           return;
         }
         if (res.ok && (res.status === "failed" || res.status === "cancelled")) {
@@ -78,6 +97,17 @@ function PaymentSuccessPage() {
     };
   }, [ref, getStatus]);
 
+  // Countdown then redirect to /app
+  useEffect(() => {
+    if (redirectIn === null) return;
+    if (redirectIn <= 0) {
+      navigate({ to: "/app" });
+      return;
+    }
+    const id = window.setTimeout(() => setRedirectIn((n) => (n === null ? null : n - 1)), 1000);
+    return () => window.clearTimeout(id);
+  }, [redirectIn, navigate]);
+
   const onCopy = async () => {
     if (!code) return;
     try {
@@ -89,10 +119,6 @@ function PaymentSuccessPage() {
     }
   };
 
-  const onActivate = () => {
-    if (!code) return;
-    navigate({ to: "/activate", search: { code } as never });
-  };
 
   return (
     <div
@@ -177,11 +203,18 @@ function PaymentSuccessPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.85 }}
-              onClick={onActivate}
+              onClick={() => navigate({ to: "/app" })}
               className="mt-6 w-full rounded-xl bg-[image:var(--gradient-primary)] px-5 py-4 text-base font-semibold text-primary-foreground shadow-[var(--shadow-glow-blue)] hover:scale-[1.02] transition-transform"
             >
-              Activer maintenant →
+              {redirectIn !== null && redirectIn > 0
+                ? `Accéder au calculateur (${redirectIn})`
+                : "Accéder au calculateur →"}
             </motion.button>
+            {redirectIn !== null && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Redirection automatique vers le calculateur…
+              </p>
+            )}
             <div className="mt-8 pt-6 border-t border-border">
               <p className="text-xs text-muted-foreground">
                 Un problème ? Contactez Mr G
@@ -229,7 +262,7 @@ function PaymentSuccessPage() {
           <>
             <h1 className="text-xl font-bold">Paiement en cours de validation</h1>
             <p className="mt-3 text-sm text-muted-foreground">
-              Votre paiement est en cours de traitement par PayDunya. Dès qu'il sera confirmé, vous
+              Votre paiement est en cours de traitement par MoneyFusion. Dès qu'il sera confirmé, vous
               recevrez votre code par WhatsApp. Vous pouvez aussi rafraîchir cette page dans une minute.
             </p>
             <button

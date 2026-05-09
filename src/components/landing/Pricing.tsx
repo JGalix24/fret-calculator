@@ -35,7 +35,11 @@ export function Pricing() {
         window.location.href = res.checkoutUrl;
         return;
       }
-      setErrorMsg("Impossible de démarrer le paiement. Réessayez ou contactez-nous sur WhatsApp.");
+      setErrorMsg(
+        ("error" in res && res.error)
+          ? res.error
+          : "Impossible de démarrer le paiement. Réessayez ou contactez-nous sur WhatsApp.",
+      );
     } catch (e) {
       console.error(e);
       setErrorMsg("Erreur réseau. Vérifiez votre connexion et réessayez.");
