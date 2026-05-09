@@ -107,7 +107,7 @@ export function PaywallModal() {
         <div className="px-6 pb-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <PlanCard
             name={t.monthName}
-            price="1 500"
+            price="1 499"
             unit={t.monthUnit}
             features={[t.feat1m, t.feat2, t.feat3]}
             cta={loadingPlan === "MENSUEL" ? t.loading : t.cta}
