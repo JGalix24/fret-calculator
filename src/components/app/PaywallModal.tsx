@@ -32,7 +32,7 @@ export function PaywallModal() {
     quarterName: isFr ? "Trimestriel" : "Quarterly",
     monthUnit: isFr ? "FCFA / mois" : "FCFA / month",
     quarterUnit: isFr ? "FCFA / 3 mois" : "FCFA / 3 months",
-    badge: isFr ? "Économie 1 000 FCFA" : "Save 1,000 FCFA",
+    badge: isFr ? "Économie 500 FCFA" : "Save 500 FCFA",
     feat1m: isFr ? "Accès illimité 30 jours" : "Unlimited access 30 days",
     feat1q: isFr ? "Accès illimité 90 jours" : "Unlimited access 90 days",
     feat2: isFr ? "Tous les modes de calcul" : "All calculation modes",
