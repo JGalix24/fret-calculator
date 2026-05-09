@@ -19,7 +19,7 @@ export function PaywallModal() {
   const { isOpen, page, closePaywall } = usePaywall();
   const session = getSession();
   const checkout = useServerFn(createCheckoutSession);
-  const [loadingPlan, setLoadingPlan] = useState<"MENSUEL" | "TRIMESTRIEL" | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<"MENSUEL" | "TRIMESTRIEL" | "ANNUEL" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const isFr = lang === "fr";
@@ -30,11 +30,15 @@ export function PaywallModal() {
       : "Choose a plan to keep calculating without limits.",
     monthName: isFr ? "Mensuel" : "Monthly",
     quarterName: isFr ? "Trimestriel" : "Quarterly",
+    yearName: isFr ? "Annuel" : "Annual",
     monthUnit: isFr ? "FCFA / mois" : "FCFA / month",
     quarterUnit: isFr ? "FCFA / 3 mois" : "FCFA / 3 months",
-    badge: isFr ? "Économie 997 FCFA" : "Save 997 FCFA",
+    yearUnit: isFr ? "FCFA / an" : "FCFA / year",
+    badgeQuarter: isFr ? "Économie 997 FCFA" : "Save 997 FCFA",
+    badgeYear: isFr ? "Le + avantageux" : "Best value",
     feat1m: isFr ? "Accès illimité 30 jours" : "Unlimited access 30 days",
     feat1q: isFr ? "Accès illimité 90 jours" : "Unlimited access 90 days",
+    feat1y: isFr ? "Accès illimité 365 jours" : "Unlimited access 365 days",
     feat2: isFr ? "Tous les modes de calcul" : "All calculation modes",
     feat3: isFr ? "Export PDF" : "PDF export",
     cta: isFr ? "Payer ce plan" : "Pay this plan",
@@ -48,7 +52,7 @@ export function PaywallModal() {
     err: isFr ? "Erreur de paiement, réessayez ou contactez-nous." : "Payment error, retry or contact us.",
   };
 
-  const onChoose = async (plan: "MENSUEL" | "TRIMESTRIEL") => {
+  const onChoose = async (plan: "MENSUEL" | "TRIMESTRIEL" | "ANNUEL") => {
     setError(null);
     setLoadingPlan(plan);
     try {
