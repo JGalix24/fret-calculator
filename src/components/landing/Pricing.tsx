@@ -14,7 +14,7 @@ const Check = () => (
   </svg>
 );
 
-type PaidPlan = "MENSUEL" | "TRIMESTRIEL";
+type PaidPlan = "MENSUEL" | "TRIMESTRIEL" | "ANNUEL";
 
 export function Pricing() {
   const { lang, t } = useI18n();
@@ -86,7 +86,7 @@ export function Pricing() {
           <span className="text-gradient">{t("pricing.title")}</span>
         </motion.h2>
 
-        <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           <PriceCard
             tone="demo"
             name="Démo gratuit"
@@ -120,7 +120,7 @@ export function Pricing() {
             whatsappHref={buildWhatsappLink(lang, "mensuel")}
           />
           <PriceCard
-            tone="violet"
+            tone="blue"
             badge={t("pricing.quarter.badge")}
             name={t("pricing.quarter.name")}
             price={t("pricing.quarter.price")}
@@ -136,6 +136,24 @@ export function Pricing() {
             disabled={loadingPlan !== null}
             note="Mixx by Yas · Moov Money · Carte"
             whatsappHref={buildWhatsappLink(lang, "trimestriel")}
+          />
+          <PriceCard
+            tone="violet"
+            badge={t("pricing.year.badge")}
+            name={t("pricing.year.name")}
+            price={t("pricing.year.price")}
+            unit={t("pricing.year.unit")}
+            extra={t("pricing.year.save")}
+            features={[
+              t("pricing.year.feat1"),
+              t("pricing.year.feat2"),
+              t("pricing.year.feat3"),
+            ]}
+            cta={loadingPlan === "ANNUEL" ? "Redirection vers paiement…" : "Payer maintenant"}
+            onClick={() => handlePay("ANNUEL")}
+            disabled={loadingPlan !== null}
+            note="Mixx by Yas · Moov Money · Carte"
+            whatsappHref={buildWhatsappLink(lang, "annuel")}
           />
         </div>
 
