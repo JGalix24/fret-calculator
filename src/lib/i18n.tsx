@@ -35,19 +35,19 @@ const fr: Dict = {
 
   "pricing.title": "Un investissement qui se rentabilise dès le premier calcul",
   "pricing.month.name": "Mensuel",
-  "pricing.month.price": "2 000",
+  "pricing.month.price": "1 500",
   "pricing.month.unit": "FCFA / mois",
   "pricing.month.feat1": "Accès illimité 30 jours",
   "pricing.month.feat2": "Tous les modes de calcul",
   "pricing.month.feat3": "Export PDF",
   "pricing.quarter.name": "Trimestriel",
-  "pricing.quarter.price": "5 000",
+  "pricing.quarter.price": "4 000",
   "pricing.quarter.unit": "FCFA / 3 mois",
   "pricing.quarter.feat1": "Accès illimité 90 jours",
   "pricing.quarter.feat2": "Tous les modes de calcul",
   "pricing.quarter.feat3": "Export PDF",
   "pricing.quarter.badge": "Le plus avantageux",
-  "pricing.quarter.save": "Économie de 1 000 FCFA",
+  "pricing.quarter.save": "Économie de 500 FCFA",
   "pricing.note": "Paiement via Moov Money ou Mixx by Yas · Activation immédiate via WhatsApp",
   "pricing.cta": "Contacter sur WhatsApp",
 
@@ -95,7 +95,7 @@ const fr: Dict = {
   "activate.validate": "Valider mon code",
   "activate.no_code": "Tu n'as pas encore de code ? Contacte-nous sur WhatsApp",
   "activate.whatsapp": "Ouvrir WhatsApp",
-  "activate.pricing": "2 000 FCFA / mois · 5 000 FCFA / 3 mois",
+  "activate.pricing": "1 500 FCFA / mois · 4 000 FCFA / 3 mois",
   "activate.payments": "Moyens de paiement : Moov Money · Mixx by Yas",
   "activate.back": "Retour à l'accueil",
   "activate.checking": "Vérification…",
@@ -167,9 +167,9 @@ const WA_MESSAGES_FR: Record<WhatsappContext, string> = {
   demo:
     "Bonjour Mr.G, je viens de tester Freight-Calculator (5 calculs offerts). J'aimerais en savoir plus avant de m'abonner.",
   mensuel:
-    "Bonjour Mr.G, je souhaite activer l'offre Mensuelle (2 000 FCFA / 30 jours) de Freight-Calculator. Voici mon reçu de paiement :",
+    "Bonjour Mr.G, je souhaite activer l'offre Mensuelle (1 500 FCFA / 30 jours) de Freight-Calculator. Voici mon reçu de paiement :",
   trimestriel:
-    "Bonjour Mr.G, je souhaite activer l'offre Trimestrielle (5 000 FCFA / 90 jours) de Freight-Calculator. Voici mon reçu de paiement :",
+    "Bonjour Mr.G, je souhaite activer l'offre Trimestrielle (4 000 FCFA / 90 jours) de Freight-Calculator. Voici mon reçu de paiement :",
   renew:
     "Bonjour Mr.G, mon accès Freight-Calculator a expiré, je souhaite le renouveler.",
   exhausted:

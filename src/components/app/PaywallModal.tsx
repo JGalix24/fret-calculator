@@ -32,7 +32,7 @@ export function PaywallModal() {
     quarterName: isFr ? "Trimestriel" : "Quarterly",
     monthUnit: isFr ? "FCFA / mois" : "FCFA / month",
     quarterUnit: isFr ? "FCFA / 3 mois" : "FCFA / 3 months",
-    badge: isFr ? "Économie 1 000 FCFA" : "Save 1,000 FCFA",
+    badge: isFr ? "Économie 500 FCFA" : "Save 500 FCFA",
     feat1m: isFr ? "Accès illimité 30 jours" : "Unlimited access 30 days",
     feat1q: isFr ? "Accès illimité 90 jours" : "Unlimited access 90 days",
     feat2: isFr ? "Tous les modes de calcul" : "All calculation modes",
@@ -107,7 +107,7 @@ export function PaywallModal() {
         <div className="px-6 pb-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <PlanCard
             name={t.monthName}
-            price="2 000"
+            price="1 500"
             unit={t.monthUnit}
             features={[t.feat1m, t.feat2, t.feat3]}
             cta={loadingPlan === "MENSUEL" ? t.loading : t.cta}
@@ -119,7 +119,7 @@ export function PaywallModal() {
           />
           <PlanCard
             name={t.quarterName}
-            price="5 000"
+            price="4 000"
             unit={t.quarterUnit}
             features={[t.feat1q, t.feat2, t.feat3]}
             cta={loadingPlan === "TRIMESTRIEL" ? t.loading : t.cta}
