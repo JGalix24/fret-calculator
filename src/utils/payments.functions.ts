@@ -35,7 +35,7 @@ function sha256(input: string): string {
 }
 
 const PlanSchema = z.object({
-  plan: z.enum(["MENSUEL", "TRIMESTRIEL"]),
+  plan: z.enum(["MENSUEL", "TRIMESTRIEL", "ANNUEL"]),
 });
 
 function getOrigin(): string {
