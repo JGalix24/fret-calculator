@@ -95,7 +95,7 @@ const fr: Dict = {
   "activate.validate": "Valider mon code",
   "activate.no_code": "Tu n'as pas encore de code ? Contacte-nous sur WhatsApp",
   "activate.whatsapp": "Ouvrir WhatsApp",
-  "activate.pricing": "2 000 FCFA / mois · 5 000 FCFA / 3 mois",
+  "activate.pricing": "1 500 FCFA / mois · 4 000 FCFA / 3 mois",
   "activate.payments": "Moyens de paiement : Moov Money · Mixx by Yas",
   "activate.back": "Retour à l'accueil",
   "activate.checking": "Vérification…",
