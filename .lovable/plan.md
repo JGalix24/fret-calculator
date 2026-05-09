@@ -1,48 +1,33 @@
-## Migration FedaPay → MoneyFusion
+## Baisse des tarifs : 2000F / 5000F → 1500F / 4000F
 
-Remplacement complet de FedaPay par MoneyFusion comme passerelle de paiement unique.
+### Calcul de l'économie trimestrielle
+- Nouveau mensuel sur 3 mois : 1500 × 3 = **4500 FCFA**
+- Nouveau trimestriel : **4000 FCFA**
+- Économie réelle : **500 FCFA** (au lieu de 1000 actuellement)
 
-### 1. Secret à ajouter
-Une popup te demandera de coller :
-- **`MONEYFUSION_API_URL`** = `https://pay.moneyfusion.net/FRET_CALCULATOR/ee69a3f2bf4d0730/pay/`
+### Fichiers à modifier
 
-(les anciens secrets FedaPay seront supprimés ensuite)
-
-### 2. Migration base de données
-- Changer le `default` de `payments.provider` : `'paydunya'` → `'moneyfusion'`
-
-### 3. Nouveaux fichiers
-- **`src/utils/moneyfusion.server.ts`** — wrapper API MoneyFusion :
-  - `createPayment({ plan, paymentId, callbackUrl, webhookUrl })` → POST sur l'URL d'API → retourne `{ token, checkoutUrl }`
-  - `checkPaymentStatus(token)` → GET `https://www.pay.moneyfusion.net/paiementNotif/{token}` → normalise `paid` / `pending` / `failed` / `cancelled`
-
-- **`src/routes/api.public.moneyfusion-webhook.ts`** — handler webhook :
-  - Parse le payload JSON
-  - Extrait `personal_Info[0].payment_id` et `tokenPay`
-  - **Re-vérifie systématiquement** le statut via `checkPaymentStatus` (sécurité contre faux webhooks — MoneyFusion ne signe pas ses webhooks)
-  - Mappe l'event vers le statut interne et appelle `system_create_paid_code` ou `system_mark_payment_status`
-  - Idempotent (skip si déjà `paid`/`cancelled`)
-
-### 4. Fichiers modifiés
-- **`src/utils/payments.functions.ts`** :
-  - `createCheckoutSession` appelle `moneyfusion.createPayment` au lieu de FedaPay
-  - `getPaymentStatus` poll via `moneyfusion.checkPaymentStatus`
-
-### 5. Fichiers supprimés
-- `src/utils/fedapay.server.ts`
-- `src/routes/api.public.fedapay-webhook.ts`
-
-### 6. Configuration côté MoneyFusion (à faire après le déploiement)
-Dans le dashboard MoneyFusion, configure le webhook sur :
+**1. `src/utils/moneyfusion.server.ts`** (montants envoyés à MoneyFusion)
 ```
-https://fret-calculator.lovable.app/api/public/moneyfusion-webhook
+PLAN_AMOUNTS: { MENSUEL: 1500, TRIMESTRIEL: 4000 }
 ```
 
-### Sécurité
-MoneyFusion **ne signe pas** ses webhooks. Pour empêcher un attaquant d'envoyer un faux paiement validé, le webhook re-vérifie **toujours** le statut via l'API MoneyFusion (`paiementNotif/{token}`) avant de générer un code d'activation. Aucun code n'est créé sur la base du seul payload reçu.
+**2. `src/lib/i18n.tsx`** (textes affichés)
+- `pricing.month.price` → `"1 500"`
+- `pricing.quarter.price` → `"4 000"`
+- `pricing.quarter.save` → `"Économie de 500 FCFA"`
+- `activate.pricing` → `"1 500 FCFA / mois · 4 000 FCFA / 3 mois"`
+- 2 templates WhatsApp (mensuel/trimestriel) → mettre à jour les montants
 
-### Test après implémentation
-1. Modifier temporairement le prix d'un plan à 100 XOF
-2. Faire un vrai paiement (test si l'app MoneyFusion est approuvée, sinon attendre l'approbation)
-3. Vérifier que le code d'activation est généré et reçu
-4. Restaurer les prix normaux
+**3. `src/components/app/PaywallModal.tsx`** (modal paywall)
+- `price="2 000"` → `"1 500"`
+- `price="5 000"` → `"4 000"`
+- Badge `"Économie 1 000 FCFA"` (FR + EN) → `"Économie 500 FCFA"` / `"Save 500 FCFA"`
+
+### Hors scope (à ne pas toucher)
+- `src/routes/activated.tsx` : durées en jours (30/90), pas un prix
+- `src/routes/admin.tsx` : labels MENSUEL/TRIMESTRIEL, pas un prix
+- `src/components/landing/Hero.tsx` : "20 000 FCFA / 42 000 FCFA" sont des **exemples de coûts de fret** illustratifs, pas les prix de l'abonnement → on ne touche pas
+
+### Pas besoin de migration BDD
+La table `payments` stocke le `amount` au moment de l'achat ; les anciens paiements gardent leur montant historique. Les nouveaux paiements utiliseront 1500/4000 automatiquement.

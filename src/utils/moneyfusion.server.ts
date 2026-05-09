@@ -4,8 +4,8 @@
 export type MoneyFusionPlan = "MENSUEL" | "TRIMESTRIEL";
 
 export const PLAN_AMOUNTS: Record<MoneyFusionPlan, number> = {
-  MENSUEL: 2000,
-  TRIMESTRIEL: 5000,
+  MENSUEL: 1500,
+  TRIMESTRIEL: 4000,
 };
 
 export const PLAN_LABELS: Record<MoneyFusionPlan, string> = {
