@@ -5,6 +5,8 @@ import { z } from "zod";
 import { motion } from "framer-motion";
 import { useServerFn } from "@tanstack/react-start";
 import { getPaymentStatus } from "@/utils/payments.functions";
+import { validateCode } from "@/lib/activation";
+import { setSession } from "@/lib/session";
 import { buildWhatsappLink, useI18n } from "@/lib/i18n";
 
 type PaidPlan = "MENSUEL" | "TRIMESTRIEL" | "DEMO";
