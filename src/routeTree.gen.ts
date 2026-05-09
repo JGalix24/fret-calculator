@@ -22,7 +22,6 @@ import { Route as AppMultiRouteImport } from './routes/app.multi'
 import { Route as AppCompareRouteImport } from './routes/app.compare'
 import { Route as AppAirRouteImport } from './routes/app.air'
 import { Route as ApiPublicMoneyfusionWebhookRouteImport } from './routes/api.public.moneyfusion-webhook'
-import { Route as ApiPublicFedapayWebhookRouteImport } from './routes/api.public.fedapay-webhook'
 
 const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
   id: '/payment-success',
@@ -90,11 +89,6 @@ const ApiPublicMoneyfusionWebhookRoute =
     path: '/api/public/moneyfusion-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicFedapayWebhookRoute = ApiPublicFedapayWebhookRouteImport.update({
-  id: '/api/public/fedapay-webhook',
-  path: '/api/public/fedapay-webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -109,7 +103,6 @@ export interface FileRoutesByFullPath {
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app/': typeof AppIndexRoute
-  '/api/public/fedapay-webhook': typeof ApiPublicFedapayWebhookRoute
   '/api/public/moneyfusion-webhook': typeof ApiPublicMoneyfusionWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -124,7 +117,6 @@ export interface FileRoutesByTo {
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app': typeof AppIndexRoute
-  '/api/public/fedapay-webhook': typeof ApiPublicFedapayWebhookRoute
   '/api/public/moneyfusion-webhook': typeof ApiPublicMoneyfusionWebhookRoute
 }
 export interface FileRoutesById {
@@ -141,7 +133,6 @@ export interface FileRoutesById {
   '/app/multi': typeof AppMultiRoute
   '/app/sea': typeof AppSeaRoute
   '/app/': typeof AppIndexRoute
-  '/api/public/fedapay-webhook': typeof ApiPublicFedapayWebhookRoute
   '/api/public/moneyfusion-webhook': typeof ApiPublicMoneyfusionWebhookRoute
 }
 export interface FileRouteTypes {
@@ -159,7 +150,6 @@ export interface FileRouteTypes {
     | '/app/multi'
     | '/app/sea'
     | '/app/'
-    | '/api/public/fedapay-webhook'
     | '/api/public/moneyfusion-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -174,7 +164,6 @@ export interface FileRouteTypes {
     | '/app/multi'
     | '/app/sea'
     | '/app'
-    | '/api/public/fedapay-webhook'
     | '/api/public/moneyfusion-webhook'
   id:
     | '__root__'
@@ -190,7 +179,6 @@ export interface FileRouteTypes {
     | '/app/multi'
     | '/app/sea'
     | '/app/'
-    | '/api/public/fedapay-webhook'
     | '/api/public/moneyfusion-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -202,7 +190,6 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   PaymentCancelRoute: typeof PaymentCancelRoute
   PaymentSuccessRoute: typeof PaymentSuccessRoute
-  ApiPublicFedapayWebhookRoute: typeof ApiPublicFedapayWebhookRoute
   ApiPublicMoneyfusionWebhookRoute: typeof ApiPublicMoneyfusionWebhookRoute
 }
 
@@ -299,13 +286,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMoneyfusionWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/fedapay-webhook': {
-      id: '/api/public/fedapay-webhook'
-      path: '/api/public/fedapay-webhook'
-      fullPath: '/api/public/fedapay-webhook'
-      preLoaderRoute: typeof ApiPublicFedapayWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -335,9 +315,17 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   PaymentCancelRoute: PaymentCancelRoute,
   PaymentSuccessRoute: PaymentSuccessRoute,
-  ApiPublicFedapayWebhookRoute: ApiPublicFedapayWebhookRoute,
   ApiPublicMoneyfusionWebhookRoute: ApiPublicMoneyfusionWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
