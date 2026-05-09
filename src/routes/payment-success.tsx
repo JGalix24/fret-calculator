@@ -119,10 +119,6 @@ function PaymentSuccessPage() {
     }
   };
 
-  const onActivate = () => {
-    if (!code) return;
-    navigate({ to: "/activate", search: { code } as never });
-  };
 
   return (
     <div
