@@ -35,7 +35,7 @@ const fr: Dict = {
 
   "pricing.title": "Un investissement qui se rentabilise dès le premier calcul",
   "pricing.month.name": "Mensuel",
-  "pricing.month.price": "1 500",
+  "pricing.month.price": "1 499",
   "pricing.month.unit": "FCFA / mois",
   "pricing.month.feat1": "Accès illimité 30 jours",
   "pricing.month.feat2": "Tous les modes de calcul",
