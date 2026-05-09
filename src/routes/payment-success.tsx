@@ -207,11 +207,18 @@ function PaymentSuccessPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.85 }}
-              onClick={onActivate}
+              onClick={() => navigate({ to: "/app" })}
               className="mt-6 w-full rounded-xl bg-[image:var(--gradient-primary)] px-5 py-4 text-base font-semibold text-primary-foreground shadow-[var(--shadow-glow-blue)] hover:scale-[1.02] transition-transform"
             >
-              Activer maintenant →
+              {redirectIn !== null && redirectIn > 0
+                ? `Accéder au calculateur (${redirectIn})`
+                : "Accéder au calculateur →"}
             </motion.button>
+            {redirectIn !== null && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Redirection automatique vers le calculateur…
+              </p>
+            )}
             <div className="mt-8 pt-6 border-t border-border">
               <p className="text-xs text-muted-foreground">
                 Un problème ? Contactez Mr G
