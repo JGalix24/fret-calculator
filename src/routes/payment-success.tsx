@@ -38,6 +38,7 @@ function PaymentSuccessPage() {
   const [code, setCode] = useState<string | null>(null);
   const [plan, setPlan] = useState<PaidPlan | null>(null);
   const [copied, setCopied] = useState(false);
+  const [redirectIn, setRedirectIn] = useState<number | null>(null);
   const stoppedRef = useRef(false);
 
   useEffect(() => {
@@ -57,6 +58,22 @@ function PaymentSuccessPage() {
           setCode(res.code);
           if ("plan" in res && res.plan) setPlan(res.plan as PaidPlan);
           setStatus("paid");
+          // Auto-activate the session so the user lands directly in /app
+          try {
+            const v = await validateCode(res.code);
+            if (v.ok) {
+              setSession({
+                code: res.code,
+                type: v.type,
+                remaining: v.remaining,
+                expiresAt: v.expiresAt,
+                activatedAt: new Date().toISOString(),
+              });
+              setRedirectIn(5);
+            }
+          } catch (err) {
+            console.error("auto-activate failed", err);
+          }
           return;
         }
         if (res.ok && (res.status === "failed" || res.status === "cancelled")) {
@@ -79,6 +96,17 @@ function PaymentSuccessPage() {
       stoppedRef.current = true;
     };
   }, [ref, getStatus]);
+
+  // Countdown then redirect to /app
+  useEffect(() => {
+    if (redirectIn === null) return;
+    if (redirectIn <= 0) {
+      navigate({ to: "/app" });
+      return;
+    }
+    const id = window.setTimeout(() => setRedirectIn((n) => (n === null ? null : n - 1)), 1000);
+    return () => window.clearTimeout(id);
+  }, [redirectIn, navigate]);
 
   const onCopy = async () => {
     if (!code) return;
