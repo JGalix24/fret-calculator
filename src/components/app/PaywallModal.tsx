@@ -104,7 +104,7 @@ export function PaywallModal() {
           </DialogDescription>
         </div>
 
-        <div className="px-6 pb-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="px-6 pb-2 grid grid-cols-1 sm:grid-cols-3 gap-3">
           <PlanCard
             name={t.monthName}
             price="1 499"
@@ -127,8 +127,21 @@ export function PaywallModal() {
             disabled={loadingPlan !== null}
             loading={loadingPlan === "TRIMESTRIEL"}
             pay={t.pay}
+            highlight={false}
+            badge={t.badgeQuarter}
+          />
+          <PlanCard
+            name={t.yearName}
+            price="9 999"
+            unit={t.yearUnit}
+            features={[t.feat1y, t.feat2, t.feat3]}
+            cta={loadingPlan === "ANNUEL" ? t.loading : t.cta}
+            onClick={() => onChoose("ANNUEL")}
+            disabled={loadingPlan !== null}
+            loading={loadingPlan === "ANNUEL"}
+            pay={t.pay}
             highlight
-            badge={t.badge}
+            badge={t.badgeYear}
           />
         </div>
 
