@@ -171,6 +171,24 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          id: boolean
+          landing_skin: string
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          landing_skin?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          landing_skin?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -254,6 +272,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      admin_set_landing_skin: {
+        Args: { _password: string; _skin: string }
+        Returns: string
+      }
       consume_activation_code: {
         Args: { _code: string }
         Returns: {
@@ -262,6 +284,7 @@ export type Database = {
           remaining: number
         }[]
       }
+      get_landing_skin: { Args: never; Returns: string }
       is_admin_password: { Args: { _password: string }; Returns: boolean }
       system_attach_provider_token: {
         Args: { _payment_id: string; _token: string }
