@@ -8,212 +8,23 @@ import { OceanHero } from "./OceanHero";
 
 const DEMO_USED_KEY = "fc.demo.used";
 
-/* ---------------- Header ---------------- */
-function EdHeader() {
-  const { lang, setLang } = useI18n();
+/* ---------------- Marquee strip (kept under hero) ---------------- */
+function EdMarquee() {
   return (
-    <header className="border-b ed-line bg-[color:var(--ed-paper)]">
-      <div className="container mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="grid h-9 w-9 place-items-center bg-[color:var(--ed-ink)] text-white">
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="square">
-              <path d="M3 18 L9 6 L11 14 L15 6 L21 18" />
-            </svg>
+    <div className="border-y ed-line py-4 overflow-hidden bg-[color:var(--ed-paper)]">
+      <div className="flex ed-marquee whitespace-nowrap ed-mono text-xs uppercase tracking-widest font-bold ed-soft">
+        {Array.from({ length: 2 }).map((_, k) => (
+          <div key={k} className="flex gap-8 pr-8 shrink-0">
+            {["SHA → LFW", "GUANGZHOU", "FCL · LCL", "CBM exact", "AIR CARGO", "PORT AUTONOME DE LOMÉ", "TOGO IMPORT", "MULTI-COLIS", "EXPORT CHINE"].map((s) => (
+              <span key={k + s} className="flex items-center gap-8">
+                {s}
+                <span className="ed-orange-text">●</span>
+              </span>
+            ))}
           </div>
-          <div className="leading-none">
-            <div className="ed-serif text-xl md:text-2xl font-semibold tracking-tight">Freight-Calculator</div>
-            <div className="ed-mono mt-1 text-[9px] uppercase tracking-[0.2em] ed-soft">Lomé · West Africa</div>
-          </div>
-        </Link>
-        <nav className="hidden md:flex items-center gap-8 ed-mono text-[11px] uppercase tracking-widest font-semibold">
-          <a href="#calculators" className="ed-underline-grow">Calculs</a>
-          <a href="#pricing" className="ed-underline-grow">Tarifs</a>
-          <a href="#faq" className="ed-underline-grow">FAQ</a>
-        </nav>
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex border ed-line ed-mono text-[10px] font-bold">
-            <button onClick={() => setLang("fr")} className={`px-2.5 py-1 ${lang === "fr" ? "ed-orange-bg" : ""}`}>FR</button>
-            <button onClick={() => setLang("en")} className={`px-2.5 py-1 ${lang === "en" ? "ed-orange-bg" : ""}`}>EN</button>
-          </div>
-          <Link
-            to="/activate"
-            className="ed-mono uppercase tracking-widest text-[11px] font-bold ed-orange-bg px-4 py-2.5 hover:bg-[color:var(--ed-orange-deep)] transition-colors"
-          >
-            Essayer
-          </Link>
-        </div>
+        ))}
       </div>
-    </header>
-  );
-}
-
-/* ---------------- Hero ---------------- */
-function EdHero() {
-  const { t, lang } = useI18n();
-  const navigate = useNavigate();
-  const demoFn = useServerFn(createDemoCode);
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-  const [shortRef, setShortRef] = useState<string | null>(null);
-
-  const startDemo = async () => {
-    setErr(null); setShortRef(null); setLoading(true);
-    try {
-      const fp = getClientFingerprint();
-      const res = await demoFn({ data: { signal: fp.signal } });
-      if (res.ok && res.code) {
-        if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
-        navigate({ to: "/activate", search: { code: res.code } as never });
-        return;
-      }
-      if (typeof window !== "undefined") window.localStorage.setItem(DEMO_USED_KEY, "1");
-      setErr(res.error ?? "Impossible de générer un code.");
-      if ("shortRef" in res && res.shortRef) setShortRef(res.shortRef as string);
-    } catch (e) {
-      console.error(e);
-      setErr("Erreur réseau. Réessayez.");
-    } finally { setLoading(false); }
-  };
-
-  const annotations: Array<{ label: string; pos: string; line: string }> = [
-    { label: "Cotation instantanée", pos: "top-[8%] left-[2%]", line: "right" },
-    { label: "CBM exact (m³)", pos: "top-[36%] left-[0%]", line: "right" },
-    { label: "Délai estimé", pos: "top-[8%] right-[2%]", line: "left" },
-    { label: "Multi-colis · PDF", pos: "top-[44%] right-[0%]", line: "left" },
-  ];
-
-  return (
-    <section className="relative overflow-hidden">
-      <div className="container mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-10 md:pb-16">
-        {/* Top meta */}
-        <div className="flex items-center justify-between ed-mono text-[10px] uppercase tracking-widest ed-soft">
-          <div className="flex items-center gap-3">
-            <span className="inline-block h-[2px] w-8 bg-[color:var(--ed-ink)]" />
-            <span>Édition №{new Date().getFullYear()} · Cargo Manifesto</span>
-          </div>
-          <div className="hidden md:block">CN · SHA → TG · LFW</div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 mt-8 lg:mt-12 items-center">
-          {/* Headline */}
-          <div className="lg:col-span-6 order-2 lg:order-1">
-            <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              className="ed-serif font-semibold leading-[0.86] tracking-[-0.02em] text-[clamp(3.5rem,9vw,8rem)]"
-            >
-              Calcul.
-              <br />
-              <span className="italic ed-orange-text">Précision.</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="mt-8 max-w-md text-base md:text-lg leading-relaxed ed-soft border-l-2 border-[color:var(--ed-orange)] pl-5"
-            >
-              {t("hero.subtitle")}
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="mt-10 flex flex-wrap items-center gap-4"
-            >
-              <button
-                type="button"
-                onClick={startDemo}
-                disabled={loading}
-                className="group inline-flex items-center gap-3 ed-orange-bg px-7 py-4 ed-mono uppercase text-xs tracking-widest font-bold hover:bg-[color:var(--ed-orange-deep)] transition-colors disabled:opacity-70"
-              >
-                {loading ? "Génération…" : t("hero.cta")}
-                <svg viewBox="0 0 24 24" className="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                  <path d="M5 12h14M13 5l7 7-7 7" />
-                </svg>
-              </button>
-              <a href="#pricing" className="ed-mono uppercase text-xs tracking-widest font-bold border ed-line px-5 py-4 hover:border-[color:var(--ed-ink)] transition-colors">
-                Voir les tarifs
-              </a>
-            </motion.div>
-            <p className="mt-5 ed-mono text-[10px] uppercase tracking-widest ed-soft">{t("hero.badge")}</p>
-
-            {err && (
-              <div className="mt-5 max-w-md space-y-2">
-                <p className="ed-mono text-[11px] text-[color:var(--ed-orange-deep)]">{err}</p>
-                {shortRef && (
-                  <div className="border ed-line p-3 ed-paper">
-                    <div className="ed-mono text-[9px] uppercase tracking-widest ed-soft">Votre référence</div>
-                    <div className="ed-mono text-sm font-bold tracking-widest mt-1">{shortRef}</div>
-                    <a
-                      href={buildWhatsappLink(lang, "demo", { code: shortRef, page: "Hero / Démo bloquée" })}
-                      target="_blank" rel="noopener noreferrer"
-                      className="mt-2 inline-block ed-mono text-[10px] uppercase tracking-widest font-bold ed-orange-bg px-3 py-2"
-                    >
-                      Contacter sur WhatsApp
-                    </a>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Container art */}
-          <div className="lg:col-span-6 order-1 lg:order-2 relative">
-            <div className="relative mx-auto max-w-[560px] aspect-square">
-              {/* Cable shadow */}
-              <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[2px] h-[14%] bg-[color:var(--ed-ink)]" />
-              {/* Container */}
-              <motion.img
-                src={cargoImg}
-                alt="Conteneur cargo"
-                width={1024}
-                height={1024}
-                className="ed-swing relative z-10 w-full h-auto select-none"
-                initial={{ y: -200, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                draggable={false}
-              />
-              {/* Annotations */}
-              {annotations.map((a, i) => (
-                <motion.div
-                  key={a.label}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.4, delay: 1 + i * 0.15 }}
-                  className={`absolute ${a.pos} z-20`}
-                >
-                  <div className={`flex items-center gap-2 ${a.line === "left" ? "flex-row-reverse" : ""}`}>
-                    <div className="ed-mono text-[10px] uppercase tracking-widest font-bold whitespace-nowrap bg-[color:var(--ed-paper)] border ed-line px-2 py-1">
-                      {a.label}
-                    </div>
-                    <div className="h-[1px] w-10 bg-[color:var(--ed-ink)]" />
-                    <div className="h-1.5 w-1.5 rounded-full bg-[color:var(--ed-orange)]" />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Marquee */}
-      <div className="border-y ed-line py-4 overflow-hidden">
-        <div className="flex ed-marquee whitespace-nowrap ed-mono text-xs uppercase tracking-widest font-bold ed-soft">
-          {Array.from({ length: 2 }).map((_, k) => (
-            <div key={k} className="flex gap-8 pr-8 shrink-0">
-              {["SHA → LFW", "GUANGZHOU", "FCL · LCL", "CBM exact", "AIR CARGO", "PORT AUTONOME DE LOMÉ", "TOGO IMPORT", "MULTI-COLIS", "EXPORT CHINE"].map((s) => (
-                <span key={k + s} className="flex items-center gap-8">
-                  {s}
-                  <span className="ed-orange-text">●</span>
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }
 
