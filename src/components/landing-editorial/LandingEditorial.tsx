@@ -355,7 +355,7 @@ function EdFinalCTA() {
         <p className="mt-6 max-w-xl mx-auto ed-mono text-xs uppercase tracking-widest opacity-90">{t("final.subtitle")}</p>
         <Link
           to="/activate"
-          className="mt-10 inline-flex items-center gap-3 bg-[color:var(--ed-ink)] text-white px-8 py-4 ed-mono uppercase text-xs tracking-widest font-bold hover:bg-black transition-colors"
+          className="mt-10 inline-flex items-center gap-3 bg-black text-white px-8 py-4 ed-mono uppercase text-xs tracking-widest font-bold hover:bg-[color:var(--ed-bg-deep)] transition-colors ed-glow-orange"
         >
           {t("final.cta")}
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.5}>
@@ -371,7 +371,7 @@ function EdFinalCTA() {
 /* ---------------- Footer ---------------- */
 function EdFooter() {
   return (
-    <footer className="bg-[color:var(--ed-ink)] text-white">
+    <footer className="bg-[color:var(--ed-bg-deep)] text-white border-t ed-line">
       <div className="container mx-auto px-4 md:px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 ed-mono text-[10px] uppercase tracking-widest">
         <div>
           <div className="opacity-50">Édition</div>
