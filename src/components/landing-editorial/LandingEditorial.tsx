@@ -327,11 +327,12 @@ function EdFooter() {
 export function LandingEditorial() {
   return (
     <div className="editorial min-h-screen antialiased">
-      <EdHeader />
+      <OceanHero />
+      <EdMarquee />
       <main>
-        <EdHero />
         <EdManifesto />
         <EdCalculators />
+        <EdAirCargo />
         <EdProof />
         <EdPricing />
         <EdTestimonials />
