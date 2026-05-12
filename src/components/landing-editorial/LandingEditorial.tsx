@@ -118,7 +118,7 @@ function EdAirCargo() {
         <div className="relative h-[420px] md:h-[560px] overflow-hidden group">
           <img
             src={portImg}
-            alt="Port autonome de Lomé au coucher du soleil"
+            alt="Terminal à conteneurs au coucher du soleil"
             loading="lazy"
             width={1600}
             height={1024}
@@ -128,13 +128,13 @@ function EdAirCargo() {
           <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end text-white">
             <div className="ed-mono text-[10px] uppercase tracking-[0.3em] opacity-80 flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ed-orange)]" />
-              Maritime · FCL/LCL
+              Fret maritime · FCL/LCL
             </div>
             <h3 className="mt-3 ed-serif text-4xl md:text-5xl font-medium leading-[0.95]">
-              Le Port de <em>Lomé</em>,<br/>votre porte d'entrée.
+              L'<em>océan</em>,<br/>au mètre cube près.
             </h3>
             <p className="mt-4 max-w-md text-white/85 text-sm md:text-base">
-              Premier port en eau profonde de la côte ouest-africaine. Calculez votre conteneur 20' / 40' au CBM près.
+              Conteneurs 20' / 40', groupage LCL ou complet FCL. Calcul exact au CBM, délais et coûts en clair.
             </p>
             <Link
               to="/app/sea"
@@ -198,9 +198,9 @@ function EdProof() {
           transition={{ duration: 0.7 }}
           className="lg:col-span-7 relative"
         >
-          <img src={dockImg} alt="Docker au Port de Lomé" loading="lazy" width={1280} height={896} className="w-full h-auto grayscale-[0.15]" />
+          <img src={dockImg} alt="Opérateur de fret avec tablette" loading="lazy" width={1280} height={896} className="w-full h-auto grayscale-[0.15]" />
           <div className="absolute bottom-4 left-4 ed-orange-bg ed-mono text-[10px] uppercase tracking-widest font-bold px-3 py-2">
-            Port Autonome de Lomé · Togo
+            Fret maritime &amp; aérien
           </div>
         </motion.div>
         <div className="lg:col-span-5">
