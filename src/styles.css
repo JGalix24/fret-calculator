@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Geist:wght@300..800&family=JetBrains+Mono:wght@400;600&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -326,3 +327,52 @@ select option:hover {
   background-color: oklch(0.32 0.08 264);
   color: oklch(0.99 0.01 250);
 }
+
+/* =========================================================
+   Editorial Cargo skin — used by <LandingEditorial /> only.
+   Scoped under .editorial so it never leaks into other pages.
+   ========================================================= */
+.editorial {
+  --ed-bg: oklch(0.98 0.005 80);
+  --ed-paper: oklch(0.96 0.008 80);
+  --ed-ink: oklch(0.16 0.01 60);
+  --ed-ink-soft: oklch(0.42 0.015 60);
+  --ed-orange: oklch(0.66 0.22 38);
+  --ed-orange-deep: oklch(0.58 0.23 35);
+  --ed-line: oklch(0.16 0.01 60 / 0.12);
+
+  background: var(--ed-bg);
+  color: var(--ed-ink);
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+}
+.editorial ::selection { background: var(--ed-orange); color: #fff; }
+.editorial .ed-serif { font-family: "Fraunces", "Times New Roman", serif; font-optical-sizing: auto; }
+.editorial .ed-mono  { font-family: "JetBrains Mono", "SF Mono", monospace; }
+.editorial .ed-orange-bg { background: var(--ed-orange); color: #fff; }
+.editorial .ed-orange-text { color: var(--ed-orange); }
+.editorial .ed-paper { background: var(--ed-paper); }
+.editorial .ed-line { border-color: var(--ed-line); }
+.editorial .ed-ink { color: var(--ed-ink); }
+.editorial .ed-soft { color: var(--ed-ink-soft); }
+
+@keyframes ed-swing {
+  0%, 100% { transform: rotate(-1.2deg); }
+  50%      { transform: rotate(1.2deg); }
+}
+.editorial .ed-swing { animation: ed-swing 5.5s ease-in-out infinite; transform-origin: top center; }
+
+@keyframes ed-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.editorial .ed-marquee { animation: ed-marquee 40s linear infinite; }
+
+.editorial .ed-underline-grow {
+  background-image: linear-gradient(var(--ed-orange), var(--ed-orange));
+  background-repeat: no-repeat;
+  background-size: 0% 2px;
+  background-position: 0 100%;
+  transition: background-size 0.4s var(--transition-smooth, ease);
+}
+.editorial .ed-underline-grow:hover { background-size: 100% 2px; }
