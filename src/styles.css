@@ -376,3 +376,32 @@ select option:hover {
   transition: background-size 0.4s var(--transition-smooth, ease);
 }
 .editorial .ed-underline-grow:hover { background-size: 100% 2px; }
+
+/* ===== Ocean hero animations ===== */
+@keyframes seagull-fly {
+  0%   { transform: translate(0, 0) scaleX(1); opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { transform: translate(60vw, -20px) scaleX(1); opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translate(120vw, 10px) scaleX(1); opacity: 0; }
+}
+.seagull-fly {
+  animation: seagull-fly 22s linear infinite;
+}
+
+@keyframes plane-fly {
+  0%   { transform: translateX(0); opacity: 0; }
+  8%   { opacity: 0.85; }
+  92%  { opacity: 0.85; }
+  100% { transform: translateX(135vw); opacity: 0; }
+}
+.plane-fly {
+  animation: plane-fly 38s linear infinite;
+  animation-delay: 4s;
+}
+
+@keyframes scroll-pulse {
+  0%, 100% { transform: scaleY(0.4); transform-origin: top; opacity: 0.4; }
+  50%      { transform: scaleY(1); transform-origin: top; opacity: 1; }
+}
+.scroll-pulse { animation: scroll-pulse 2s ease-in-out infinite; }
