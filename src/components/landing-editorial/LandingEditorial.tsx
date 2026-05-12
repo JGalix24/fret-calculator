@@ -1,12 +1,10 @@
-import { useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useI18n, buildWhatsappLink } from "@/lib/i18n";
-import { createDemoCode } from "@/utils/payments.functions";
-import { getClientFingerprint } from "@/lib/fingerprint";
-import cargoImg from "@/assets/cargo-container.png";
-import dockImg from "@/assets/dock-worker.jpg";
+import { useI18n } from "@/lib/i18n";
+import dockImg from "@/assets/dock-worker-real.jpg";
+import portImg from "@/assets/port-lome.jpg";
+import airCargoImg from "@/assets/air-cargo-hold.jpg";
+import { OceanHero } from "./OceanHero";
 
 const DEMO_USED_KEY = "fc.demo.used";
 
