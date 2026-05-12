@@ -109,6 +109,77 @@ function EdCalculators() {
   );
 }
 
+/* ---------------- Air + Sea showcase (real photos) ---------------- */
+function EdAirCargo() {
+  return (
+    <section className="relative">
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        {/* Sea — Port of Lomé */}
+        <div className="relative h-[420px] md:h-[560px] overflow-hidden group">
+          <img
+            src={portImg}
+            alt="Port autonome de Lomé au coucher du soleil"
+            loading="lazy"
+            width={1600}
+            height={1024}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end text-white">
+            <div className="ed-mono text-[10px] uppercase tracking-[0.3em] opacity-80 flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ed-orange)]" />
+              Maritime · FCL/LCL
+            </div>
+            <h3 className="mt-3 ed-serif text-4xl md:text-5xl font-medium leading-[0.95]">
+              Le Port de <em>Lomé</em>,<br/>votre porte d'entrée.
+            </h3>
+            <p className="mt-4 max-w-md text-white/85 text-sm md:text-base">
+              Premier port en eau profonde de la côte ouest-africaine. Calculez votre conteneur 20' / 40' au CBM près.
+            </p>
+            <Link
+              to="/app/sea"
+              className="mt-6 inline-flex items-center gap-2 ed-mono uppercase text-[11px] tracking-widest font-bold ed-orange-bg px-5 py-3 w-fit hover:bg-[color:var(--ed-orange-deep)] transition-colors"
+            >
+              Calcul maritime →
+            </Link>
+          </div>
+        </div>
+
+        {/* Air — Cargo hold */}
+        <div className="relative h-[420px] md:h-[560px] overflow-hidden group">
+          <img
+            src={airCargoImg}
+            alt="Soute d'avion-cargo avec palettes"
+            loading="lazy"
+            width={1600}
+            height={1024}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end text-white">
+            <div className="ed-mono text-[10px] uppercase tracking-[0.3em] opacity-80 flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ed-orange)]" />
+              Aérien · Express
+            </div>
+            <h3 className="mt-3 ed-serif text-4xl md:text-5xl font-medium leading-[0.95]">
+              Quand le délai<br/><em>compte vraiment.</em>
+            </h3>
+            <p className="mt-4 max-w-md text-white/85 text-sm md:text-base">
+              Tarification au poids volumétrique, livraison en 5–7 jours. Idéal pour les marchandises à forte valeur.
+            </p>
+            <Link
+              to="/app/air"
+              className="mt-6 inline-flex items-center gap-2 ed-mono uppercase text-[11px] tracking-widest font-bold bg-white text-black px-5 py-3 w-fit hover:bg-white/90 transition-colors"
+            >
+              Calcul aérien →
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------------- Proof (photo + figures) ---------------- */
 function EdProof() {
   const { t } = useI18n();
