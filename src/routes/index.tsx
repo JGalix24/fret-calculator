@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/landing/Header";
 import { Hero } from "@/components/landing/Hero";
 import { Problem } from "@/components/landing/Problem";
@@ -9,6 +10,8 @@ import { Testimonials } from "@/components/landing/Testimonials";
 import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
+import { LandingEditorial } from "@/components/landing-editorial/LandingEditorial";
+import { getLandingSkin, type LandingSkin } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
