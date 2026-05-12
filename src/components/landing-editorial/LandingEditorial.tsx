@@ -47,9 +47,9 @@ function EdManifesto() {
           </motion.h2>
         </div>
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 ed-mono text-xs uppercase tracking-widest">
-          <div className="border-t-2 border-white/40 pt-3">{t("problem.1")}</div>
-          <div className="border-t-2 border-white/40 pt-3">{t("problem.2")}</div>
-          <div className="border-t-2 border-white/40 pt-3">{t("problem.3")}</div>
+          <div className="border-t-2 border-white/60 pt-3">{t("problem.1")}</div>
+          <div className="border-t-2 border-white/60 pt-3">{t("problem.2")}</div>
+          <div className="border-t-2 border-white/60 pt-3">{t("problem.3")}</div>
         </div>
       </div>
     </section>
@@ -211,7 +211,7 @@ function EdProof() {
           <p className="mt-6 ed-soft leading-relaxed max-w-md">{t("argument.subtitle")}</p>
           <div className="mt-10 grid grid-cols-3 gap-4">
             {stats.map((s) => (
-              <div key={s.k} className="border-t-2 border-[color:var(--ed-ink)] pt-3">
+              <div key={s.k} className="border-t-2 border-[color:var(--ed-orange)] pt-3">
                 <div className="ed-serif text-3xl md:text-4xl font-medium">{s.v}</div>
                 <div className="mt-1 ed-mono text-[9px] uppercase tracking-widest ed-soft">{s.k}</div>
               </div>
@@ -239,7 +239,7 @@ function EdPricing() {
           {t("pricing.title")}
         </h2>
 
-        <div className="mt-12 border-t-2 border-[color:var(--ed-ink)]">
+        <div className="mt-12 border-t-2 border-[color:var(--ed-orange)]">
           {rows.map((r) => (
             <Link
               key={r.name}
@@ -327,7 +327,7 @@ function EdFAQ() {
             {t("faq.title")}
           </h2>
         </div>
-        <div className="lg:col-span-8 border-t-2 border-[color:var(--ed-ink)]">
+        <div className="lg:col-span-8 border-t-2 border-[color:var(--ed-orange)]">
           {items.map((it) => (
             <details key={it.q} className="group border-b ed-line py-6">
               <summary className="cursor-pointer list-none flex items-center justify-between gap-6">
