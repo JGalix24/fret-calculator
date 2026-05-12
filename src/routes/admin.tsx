@@ -10,6 +10,7 @@ import {
   type CodeRow,
   type DemoLookup,
 } from "@/lib/activation";
+import { adminSetLandingSkin, getLandingSkin, type LandingSkin } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Freight-Calculator" }] }),
