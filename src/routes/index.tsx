@@ -34,6 +34,15 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [skin, setSkin] = useState<LandingSkin>("classic");
+  useEffect(() => {
+    let m = true;
+    getLandingSkin().then((s) => { if (m) setSkin(s); }).catch(() => {});
+    return () => { m = false; };
+  }, []);
+
+  if (skin === "editorial") return <LandingEditorial />;
+
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
       <Header />
