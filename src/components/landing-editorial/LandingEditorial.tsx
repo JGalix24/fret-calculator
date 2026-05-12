@@ -88,7 +88,7 @@ function EdCalculators() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="bg-[color:var(--ed-bg)]"
+              className="bg-[color:var(--ed-paper)]/40 ed-glass"
             >
               <Link to={it.to} className="group block p-8 md:p-10 hover:bg-[color:var(--ed-paper)] transition-colors h-full">
                 <div className="flex items-start justify-between">
@@ -293,7 +293,7 @@ function EdTestimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="bg-[color:var(--ed-bg)] p-8 md:p-10"
+              className="ed-glass p-8 md:p-10"
             >
               <div className="ed-serif text-6xl ed-orange-text leading-none">"</div>
               <blockquote className="mt-2 ed-serif text-xl md:text-2xl leading-snug">{it.text}</blockquote>
