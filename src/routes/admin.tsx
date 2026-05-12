@@ -10,8 +10,6 @@ import {
   type CodeRow,
   type DemoLookup,
 } from "@/lib/activation";
-import { adminSetLandingSkin, getLandingSkin, type LandingSkin } from "@/lib/site-settings";
-
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Freight-Calculator" }] }),
   component: AdminPage,
@@ -29,17 +27,7 @@ function AdminPage() {
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupResult, setLookupResult] = useState<DemoLookup | null>(null);
   const [lookupErr, setLookupErr] = useState<string | null>(null);
-  const [skin, setSkin] = useState<LandingSkin>("classic");
-  const [skinSaving, setSkinSaving] = useState(false);
 
-  useEffect(() => { getLandingSkin().then(setSkin).catch(() => {}); }, []);
-
-  const onSetSkin = async (next: LandingSkin) => {
-    setSkinSaving(true);
-    try { setSkin(await adminSetLandingSkin(password, next)); }
-    catch { alert("Erreur : mot de passe invalide ou serveur indisponible."); }
-    finally { setSkinSaving(false); }
-  };
 
   const refresh = async (pw: string) => {
     setLoading(true);

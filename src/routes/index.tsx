@@ -11,6 +11,7 @@ import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { LandingEditorial } from "@/components/landing-editorial/LandingEditorial";
+import { SkinToggle } from "@/components/SkinToggle";
 import { getLandingSkin, type LandingSkin } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/")({
@@ -41,7 +42,12 @@ function Index() {
     return () => { m = false; };
   }, []);
 
-  if (skin === "editorial") return <LandingEditorial />;
+  if (skin === "editorial") return (
+    <>
+      <LandingEditorial />
+      <SkinToggle skin={skin} onChange={setSkin} />
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
@@ -57,6 +63,7 @@ function Index() {
         <FinalCTA />
       </main>
       <Footer />
+      <SkinToggle skin={skin} onChange={setSkin} />
     </div>
   );
 }
