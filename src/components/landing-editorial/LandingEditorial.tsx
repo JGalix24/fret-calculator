@@ -351,10 +351,10 @@ function EdFinalCTA() {
   return (
     <section className="ed-orange-bg">
       <div className="container mx-auto px-4 md:px-6 py-20 md:py-32 text-center">
-        <h2 className="ed-serif font-medium text-[clamp(2.5rem,7vw,6rem)] leading-[0.9] tracking-[-0.02em] max-w-4xl mx-auto">
+        <h2 className="ed-display text-[clamp(2.8rem,8vw,6.5rem)] max-w-4xl mx-auto">
           {t("final.title")}
         </h2>
-        <p className="mt-6 max-w-xl mx-auto ed-mono text-xs uppercase tracking-widest opacity-90">{t("final.subtitle")}</p>
+        <p className="mt-8 max-w-xl mx-auto ed-mono text-xs uppercase tracking-[0.3em] opacity-80">{t("final.subtitle")}</p>
         <Link
           to="/activate"
           className="mt-10 inline-flex items-center gap-3 bg-black text-white px-8 py-4 ed-mono uppercase text-xs tracking-widest font-bold hover:bg-[color:var(--ed-bg-deep)] transition-colors ed-glow-orange"
