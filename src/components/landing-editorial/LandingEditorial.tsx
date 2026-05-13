@@ -206,16 +206,16 @@ function EdProof() {
           </div>
         </motion.div>
         <div className="lg:col-span-5">
-          <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 03 · Sur le terrain</div>
-          <h2 className="mt-3 ed-serif font-medium text-[clamp(2rem,4.6vw,3.6rem)] leading-[0.95] tracking-[-0.02em]">
-            Pensé pour ceux qui <em className="ed-orange-text">importent réellement</em>.
+          <div className="ed-eyebrow">№ 03 · Sur le terrain</div>
+          <h2 className="mt-4 ed-display text-[clamp(2.2rem,4.8vw,3.8rem)]">
+            Pensé pour ceux qui <span className="ed-gradient italic">importent réellement</span>.
           </h2>
-          <p className="mt-6 ed-soft leading-relaxed max-w-md">{t("argument.subtitle")}</p>
+          <p className="mt-6 ed-soft leading-relaxed max-w-md text-[15px]">{t("argument.subtitle")}</p>
           <div className="mt-10 grid grid-cols-3 gap-4">
             {stats.map((s) => (
-              <div key={s.k} className="border-t-2 border-[color:var(--ed-orange)] pt-3">
-                <div className="ed-serif text-3xl md:text-4xl font-medium">{s.v}</div>
-                <div className="mt-1 ed-mono text-[9px] uppercase tracking-widest ed-soft">{s.k}</div>
+              <div key={s.k} className="border-t border-[color:var(--ed-orange)] pt-4">
+                <div className="ed-display text-4xl md:text-5xl ed-orange-text">{s.v}</div>
+                <div className="mt-2 ed-mono text-[10px] uppercase tracking-[0.25em] ed-soft">{s.k}</div>
               </div>
             ))}
           </div>
