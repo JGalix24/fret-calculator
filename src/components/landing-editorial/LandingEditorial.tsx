@@ -236,25 +236,25 @@ function EdPricing() {
   return (
     <section id="pricing" className="py-20 md:py-28">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 04 · Tarifs</div>
-        <h2 className="mt-3 ed-serif font-medium text-[clamp(2rem,5vw,4rem)] leading-[0.95] tracking-[-0.02em] max-w-3xl">
+        <div className="ed-eyebrow">№ 04 · Tarifs</div>
+        <h2 className="mt-4 ed-display text-[clamp(2.2rem,5.5vw,4.4rem)] max-w-3xl">
           {t("pricing.title")}
         </h2>
 
-        <div className="mt-12 border-t-2 border-[color:var(--ed-orange)]">
+        <div className="mt-14 border-t border-[color:var(--ed-orange)]">
           {rows.map((r) => (
             <Link
               key={r.name}
               to="/activate"
-              className={`group grid grid-cols-12 gap-4 items-center border-b ed-line py-6 md:py-8 px-2 md:px-4 transition-colors ${r.highlight ? "bg-[color:var(--ed-paper)]" : "hover:bg-[color:var(--ed-paper)]"}`}
+              className={`group grid grid-cols-12 gap-4 items-center border-b ed-line py-7 md:py-9 px-2 md:px-4 transition-all duration-300 ${r.highlight ? "bg-[color:var(--ed-paper)]/60 ed-glass" : "hover:bg-[color:var(--ed-paper)]/30"}`}
             >
               <div className="col-span-12 md:col-span-3 flex items-center gap-3">
-                <span className="ed-serif text-2xl md:text-3xl font-medium">{r.name}</span>
-                {r.highlight && <span className="ed-mono text-[9px] uppercase tracking-widest font-bold ed-orange-bg px-2 py-1">Populaire</span>}
+                <span className="ed-display text-3xl md:text-4xl">{r.name}</span>
+                {r.highlight && <span className="ed-mono text-[9px] uppercase tracking-[0.25em] font-bold ed-orange-bg px-2.5 py-1">Populaire</span>}
               </div>
-              <div className="col-span-6 md:col-span-3 ed-serif">
-                <span className="text-3xl md:text-4xl font-medium">{r.price}</span>
-                <span className="ed-mono text-[10px] uppercase tracking-widest ml-2 ed-soft">{r.unit}</span>
+              <div className="col-span-6 md:col-span-3">
+                <span className="ed-display text-4xl md:text-5xl ed-gradient">{r.price}</span>
+                <span className="ed-mono text-[10px] uppercase tracking-[0.25em] ml-2 ed-soft">{r.unit}</span>
               </div>
               <div className="col-span-6 md:col-span-4 ed-mono text-xs uppercase tracking-widest ed-soft">{r.feat}</div>
               <div className="col-span-12 md:col-span-2 flex items-center justify-end gap-3 ed-mono text-[10px] uppercase tracking-widest font-bold">
