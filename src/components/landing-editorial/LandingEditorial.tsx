@@ -35,21 +35,22 @@ function EdManifesto() {
     <section className="ed-orange-bg">
       <div className="container mx-auto px-4 md:px-6 py-20 md:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-          <div className="lg:col-span-2 ed-mono text-[10px] uppercase tracking-widest font-bold opacity-80">№ 01<br/>Manifeste</div>
+          <div className="lg:col-span-2 ed-eyebrow !text-black/70">№ 01 — Manifeste</div>
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7 }}
-            className="lg:col-span-10 ed-serif font-medium leading-[0.95] text-[clamp(2.4rem,6vw,5rem)] tracking-[-0.02em]"
+            transition={{ duration: 0.9, ease: [0.7, 0.1, 0.2, 1] }}
+            className="lg:col-span-10 ed-display text-[clamp(2.6rem,7vw,5.8rem)]"
           >
-            Le calcul de fret n'a pas à être une <em>devinette</em>. Chaque mètre cube, chaque kilogramme, chaque jour de transit — <span className="underline decoration-2 underline-offset-8">connu d'avance</span>.
+            Le calcul de fret n'a pas à être une <em className="italic font-light">devinette</em>.<br/>
+            Chaque mètre cube, chaque kilogramme, chaque jour de transit — <span className="ed-draw">connu d'avance</span>.
           </motion.h2>
         </div>
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 ed-mono text-xs uppercase tracking-widest">
-          <div className="border-t-2 border-white/60 pt-3">{t("problem.1")}</div>
-          <div className="border-t-2 border-white/60 pt-3">{t("problem.2")}</div>
-          <div className="border-t-2 border-white/60 pt-3">{t("problem.3")}</div>
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6 ed-mono text-[11px] uppercase tracking-[0.25em] font-semibold">
+          <div className="border-t border-black/30 pt-4">{t("problem.1")}</div>
+          <div className="border-t border-black/30 pt-4">{t("problem.2")}</div>
+          <div className="border-t border-black/30 pt-4">{t("problem.3")}</div>
         </div>
       </div>
     </section>
@@ -70,12 +71,12 @@ function EdCalculators() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-end justify-between flex-wrap gap-6">
           <div>
-            <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 02 · Outils</div>
-            <h2 className="mt-3 ed-serif font-medium text-[clamp(2rem,5vw,4rem)] leading-[0.95] tracking-[-0.02em] max-w-2xl">
-              Quatre calculs, <em className="ed-orange-text">une seule</em> précision.
+            <div className="ed-eyebrow">№ 02 · Outils</div>
+            <h2 className="mt-4 ed-display text-[clamp(2.2rem,5.5vw,4.4rem)] max-w-2xl">
+              Quatre calculs,<br/><span className="ed-gradient italic">une seule</span> précision.
             </h2>
           </div>
-          <Link to="/app" className="ed-mono uppercase text-[11px] tracking-widest font-bold ed-underline-grow">
+          <Link to="/app" className="ed-mono uppercase text-[11px] tracking-[0.3em] font-semibold ed-underline-grow ed-orange-text">
             Tous les outils →
           </Link>
         </div>
@@ -90,16 +91,17 @@ function EdCalculators() {
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="bg-[color:var(--ed-paper)]/40 ed-glass"
             >
-              <Link to={it.to} className="group block p-8 md:p-10 hover:bg-[color:var(--ed-paper)] transition-colors h-full">
-                <div className="flex items-start justify-between">
-                  <div className="ed-serif italic text-5xl md:text-6xl font-light ed-orange-text">{it.n}</div>
-                  <svg viewBox="0 0 24 24" className="h-6 w-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth={1.6}>
+              <Link to={it.to} className="group block p-8 md:p-10 hover:bg-[color:var(--ed-paper-2)]/60 transition-all duration-500 h-full relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[color:var(--ed-orange)]/0 via-transparent to-[color:var(--ed-orange)]/0 group-hover:from-[color:var(--ed-orange)]/10 transition-all duration-700" />
+                <div className="relative flex items-start justify-between">
+                  <div className="ed-display italic text-6xl md:text-7xl ed-orange-text opacity-90">{it.n}</div>
+                  <svg viewBox="0 0 24 24" className="h-6 w-6 opacity-50 transition-all group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth={1.4}>
                     <path d="M7 17L17 7M9 7h8v8" />
                   </svg>
                 </div>
-                <h3 className="mt-10 ed-serif text-3xl md:text-4xl font-medium leading-tight">{it.title}</h3>
-                <p className="mt-3 ed-soft max-w-md">{it.desc}</p>
-                <div className="mt-8 h-[2px] w-0 bg-[color:var(--ed-orange)] transition-all duration-500 group-hover:w-24" />
+                <h3 className="relative mt-10 ed-display text-3xl md:text-[2.6rem]">{it.title}</h3>
+                <p className="relative mt-4 ed-soft max-w-md text-[15px] leading-relaxed">{it.desc}</p>
+                <div className="relative mt-8 h-px w-12 bg-[color:var(--ed-line-strong)] transition-all duration-500 group-hover:w-32 group-hover:bg-[color:var(--ed-orange)]" />
               </Link>
             </motion.div>
           ))}
@@ -130,8 +132,8 @@ function EdAirCargo() {
               <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ed-orange)]" />
               Fret maritime · FCL/LCL
             </div>
-            <h3 className="mt-3 ed-serif text-4xl md:text-5xl font-medium leading-[0.95]">
-              L'<em>océan</em>,<br/>au mètre cube près.
+            <h3 className="mt-4 ed-display text-5xl md:text-6xl">
+              L'<em className="italic">océan</em>,<br/>au mètre cube près.
             </h3>
             <p className="mt-4 max-w-md text-white/85 text-sm md:text-base">
               Conteneurs 20' / 40', groupage LCL ou complet FCL. Calcul exact au CBM, délais et coûts en clair.
@@ -161,8 +163,8 @@ function EdAirCargo() {
               <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ed-orange)]" />
               Aérien · Express
             </div>
-            <h3 className="mt-3 ed-serif text-4xl md:text-5xl font-medium leading-[0.95]">
-              Quand le délai<br/><em>compte vraiment.</em>
+            <h3 className="mt-4 ed-display text-5xl md:text-6xl">
+              Quand le délai<br/><em className="italic">compte vraiment.</em>
             </h3>
             <p className="mt-4 max-w-md text-white/85 text-sm md:text-base">
               Tarification au poids volumétrique, livraison en 5–7 jours. Idéal pour les marchandises à forte valeur.
@@ -204,16 +206,16 @@ function EdProof() {
           </div>
         </motion.div>
         <div className="lg:col-span-5">
-          <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 03 · Sur le terrain</div>
-          <h2 className="mt-3 ed-serif font-medium text-[clamp(2rem,4.6vw,3.6rem)] leading-[0.95] tracking-[-0.02em]">
-            Pensé pour ceux qui <em className="ed-orange-text">importent réellement</em>.
+          <div className="ed-eyebrow">№ 03 · Sur le terrain</div>
+          <h2 className="mt-4 ed-display text-[clamp(2.2rem,4.8vw,3.8rem)]">
+            Pensé pour ceux qui <span className="ed-gradient italic">importent réellement</span>.
           </h2>
-          <p className="mt-6 ed-soft leading-relaxed max-w-md">{t("argument.subtitle")}</p>
+          <p className="mt-6 ed-soft leading-relaxed max-w-md text-[15px]">{t("argument.subtitle")}</p>
           <div className="mt-10 grid grid-cols-3 gap-4">
             {stats.map((s) => (
-              <div key={s.k} className="border-t-2 border-[color:var(--ed-orange)] pt-3">
-                <div className="ed-serif text-3xl md:text-4xl font-medium">{s.v}</div>
-                <div className="mt-1 ed-mono text-[9px] uppercase tracking-widest ed-soft">{s.k}</div>
+              <div key={s.k} className="border-t border-[color:var(--ed-orange)] pt-4">
+                <div className="ed-display text-4xl md:text-5xl ed-orange-text">{s.v}</div>
+                <div className="mt-2 ed-mono text-[10px] uppercase tracking-[0.25em] ed-soft">{s.k}</div>
               </div>
             ))}
           </div>
@@ -234,25 +236,25 @@ function EdPricing() {
   return (
     <section id="pricing" className="py-20 md:py-28">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 04 · Tarifs</div>
-        <h2 className="mt-3 ed-serif font-medium text-[clamp(2rem,5vw,4rem)] leading-[0.95] tracking-[-0.02em] max-w-3xl">
+        <div className="ed-eyebrow">№ 04 · Tarifs</div>
+        <h2 className="mt-4 ed-display text-[clamp(2.2rem,5.5vw,4.4rem)] max-w-3xl">
           {t("pricing.title")}
         </h2>
 
-        <div className="mt-12 border-t-2 border-[color:var(--ed-orange)]">
+        <div className="mt-14 border-t border-[color:var(--ed-orange)]">
           {rows.map((r) => (
             <Link
               key={r.name}
               to="/activate"
-              className={`group grid grid-cols-12 gap-4 items-center border-b ed-line py-6 md:py-8 px-2 md:px-4 transition-colors ${r.highlight ? "bg-[color:var(--ed-paper)]" : "hover:bg-[color:var(--ed-paper)]"}`}
+              className={`group grid grid-cols-12 gap-4 items-center border-b ed-line py-7 md:py-9 px-2 md:px-4 transition-all duration-300 ${r.highlight ? "bg-[color:var(--ed-paper)]/60 ed-glass" : "hover:bg-[color:var(--ed-paper)]/30"}`}
             >
               <div className="col-span-12 md:col-span-3 flex items-center gap-3">
-                <span className="ed-serif text-2xl md:text-3xl font-medium">{r.name}</span>
-                {r.highlight && <span className="ed-mono text-[9px] uppercase tracking-widest font-bold ed-orange-bg px-2 py-1">Populaire</span>}
+                <span className="ed-display text-3xl md:text-4xl">{r.name}</span>
+                {r.highlight && <span className="ed-mono text-[9px] uppercase tracking-[0.25em] font-bold ed-orange-bg px-2.5 py-1">Populaire</span>}
               </div>
-              <div className="col-span-6 md:col-span-3 ed-serif">
-                <span className="text-3xl md:text-4xl font-medium">{r.price}</span>
-                <span className="ed-mono text-[10px] uppercase tracking-widest ml-2 ed-soft">{r.unit}</span>
+              <div className="col-span-6 md:col-span-3">
+                <span className="ed-display text-4xl md:text-5xl ed-gradient">{r.price}</span>
+                <span className="ed-mono text-[10px] uppercase tracking-[0.25em] ml-2 ed-soft">{r.unit}</span>
               </div>
               <div className="col-span-6 md:col-span-4 ed-mono text-xs uppercase tracking-widest ed-soft">{r.feat}</div>
               <div className="col-span-12 md:col-span-2 flex items-center justify-end gap-3 ed-mono text-[10px] uppercase tracking-widest font-bold">
@@ -281,8 +283,8 @@ function EdTestimonials() {
   return (
     <section className="py-20 md:py-28 bg-[color:var(--ed-paper)]">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 05 · Témoignages</div>
-        <h2 className="mt-3 ed-serif font-medium text-[clamp(2rem,5vw,4rem)] leading-[0.95] tracking-[-0.02em] max-w-3xl">
+        <div className="ed-eyebrow">№ 05 · Témoignages</div>
+        <h2 className="mt-4 ed-display text-[clamp(2.2rem,5.5vw,4.4rem)] max-w-3xl">
           {t("testi.title")}
         </h2>
         <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-px bg-[color:var(--ed-line)] border ed-line">
@@ -292,14 +294,14 @@ function EdTestimonials() {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="ed-glass p-8 md:p-10"
+              transition={{ duration: 0.6, delay: i * 0.1 }}
+              className="ed-glass p-8 md:p-10 hover:bg-[color:var(--ed-paper)]/50 transition-colors"
             >
-              <div className="ed-serif text-6xl ed-orange-text leading-none">"</div>
-              <blockquote className="mt-2 ed-serif text-xl md:text-2xl leading-snug">{it.text}</blockquote>
+              <div className="ed-display italic text-7xl ed-orange-text leading-[0.6] -mb-2">"</div>
+              <blockquote className="mt-4 ed-serif text-xl md:text-[1.4rem] leading-snug font-light">{it.text}</blockquote>
               <figcaption className="mt-8 pt-5 border-t ed-line">
-                <div className="ed-serif text-base font-semibold">{it.name}</div>
-                <div className="ed-mono text-[10px] uppercase tracking-widest ed-soft mt-1">{it.role}</div>
+                <div className="ed-display text-lg">{it.name}</div>
+                <div className="ed-mono text-[10px] uppercase tracking-[0.25em] ed-soft mt-1">{it.role}</div>
               </figcaption>
             </motion.figure>
           ))}
@@ -322,19 +324,19 @@ function EdFAQ() {
     <section id="faq" className="py-20 md:py-28">
       <div className="container mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-4">
-          <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 06 · FAQ</div>
-          <h2 className="mt-3 ed-serif font-medium text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] tracking-[-0.02em]">
+          <div className="ed-eyebrow">№ 06 · FAQ</div>
+          <h2 className="mt-4 ed-display text-[clamp(2rem,4.4vw,3.4rem)]">
             {t("faq.title")}
           </h2>
         </div>
-        <div className="lg:col-span-8 border-t-2 border-[color:var(--ed-orange)]">
+        <div className="lg:col-span-8 border-t border-[color:var(--ed-orange)]">
           {items.map((it) => (
-            <details key={it.q} className="group border-b ed-line py-6">
+            <details key={it.q} className="group border-b ed-line py-6 transition-colors hover:bg-[color:var(--ed-paper)]/30 px-2">
               <summary className="cursor-pointer list-none flex items-center justify-between gap-6">
-                <span className="ed-serif text-lg md:text-xl font-medium pr-4">{it.q}</span>
-                <span className="shrink-0 ed-mono text-2xl ed-orange-text transition-transform group-open:rotate-45">+</span>
+                <span className="ed-display text-xl md:text-2xl pr-4">{it.q}</span>
+                <span className="shrink-0 ed-display text-3xl ed-orange-text transition-transform duration-300 group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-3 ed-soft leading-relaxed max-w-2xl">{it.a}</p>
+              <p className="mt-4 ed-soft leading-relaxed max-w-2xl text-[15px]">{it.a}</p>
             </details>
           ))}
         </div>
@@ -349,10 +351,10 @@ function EdFinalCTA() {
   return (
     <section className="ed-orange-bg">
       <div className="container mx-auto px-4 md:px-6 py-20 md:py-32 text-center">
-        <h2 className="ed-serif font-medium text-[clamp(2.5rem,7vw,6rem)] leading-[0.9] tracking-[-0.02em] max-w-4xl mx-auto">
+        <h2 className="ed-display text-[clamp(2.8rem,8vw,6.5rem)] max-w-4xl mx-auto">
           {t("final.title")}
         </h2>
-        <p className="mt-6 max-w-xl mx-auto ed-mono text-xs uppercase tracking-widest opacity-90">{t("final.subtitle")}</p>
+        <p className="mt-8 max-w-xl mx-auto ed-mono text-xs uppercase tracking-[0.3em] opacity-80">{t("final.subtitle")}</p>
         <Link
           to="/activate"
           className="mt-10 inline-flex items-center gap-3 bg-black text-white px-8 py-4 ed-mono uppercase text-xs tracking-widest font-bold hover:bg-[color:var(--ed-bg-deep)] transition-colors ed-glow-orange"
