@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/landing/Header";
-import { Hero } from "@/components/landing/Hero";
 import { Problem } from "@/components/landing/Problem";
 import { Solution } from "@/components/landing/Solution";
 import { Argument } from "@/components/landing/Argument";
@@ -11,6 +10,7 @@ import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { LandingEditorial } from "@/components/landing-editorial/LandingEditorial";
+import { OceanHero } from "@/components/landing-editorial/OceanHero";
 import { SkinToggle } from "@/components/SkinToggle";
 import { getLandingSkin, type LandingSkin } from "@/lib/site-settings";
 
@@ -51,9 +51,11 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
+      <div className="editorial">
+        <OceanHero />
+      </div>
       <Header />
       <main>
-        <Hero />
         <Problem />
         <Solution />
         <Argument />
