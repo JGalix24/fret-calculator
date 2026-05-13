@@ -51,9 +51,11 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
+      <div className="editorial">
+        <OceanHero />
+      </div>
       <Header />
       <main>
-        <Hero />
         <Problem />
         <Solution />
         <Argument />
