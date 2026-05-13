@@ -324,19 +324,19 @@ function EdFAQ() {
     <section id="faq" className="py-20 md:py-28">
       <div className="container mx-auto px-4 md:px-6 grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-4">
-          <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 06 · FAQ</div>
-          <h2 className="mt-3 ed-serif font-medium text-[clamp(1.8rem,4vw,3rem)] leading-[0.95] tracking-[-0.02em]">
+          <div className="ed-eyebrow">№ 06 · FAQ</div>
+          <h2 className="mt-4 ed-display text-[clamp(2rem,4.4vw,3.4rem)]">
             {t("faq.title")}
           </h2>
         </div>
-        <div className="lg:col-span-8 border-t-2 border-[color:var(--ed-orange)]">
+        <div className="lg:col-span-8 border-t border-[color:var(--ed-orange)]">
           {items.map((it) => (
-            <details key={it.q} className="group border-b ed-line py-6">
+            <details key={it.q} className="group border-b ed-line py-6 transition-colors hover:bg-[color:var(--ed-paper)]/30 px-2">
               <summary className="cursor-pointer list-none flex items-center justify-between gap-6">
-                <span className="ed-serif text-lg md:text-xl font-medium pr-4">{it.q}</span>
-                <span className="shrink-0 ed-mono text-2xl ed-orange-text transition-transform group-open:rotate-45">+</span>
+                <span className="ed-display text-xl md:text-2xl pr-4">{it.q}</span>
+                <span className="shrink-0 ed-display text-3xl ed-orange-text transition-transform duration-300 group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-3 ed-soft leading-relaxed max-w-2xl">{it.a}</p>
+              <p className="mt-4 ed-soft leading-relaxed max-w-2xl text-[15px]">{it.a}</p>
             </details>
           ))}
         </div>
