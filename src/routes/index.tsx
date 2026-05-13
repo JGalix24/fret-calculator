@@ -51,7 +51,14 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
-      <div className="editorial">
+      <div
+        className="editorial"
+        style={{
+          // Override editorial accent with classic blue/violet palette
+          ["--ed-orange" as string]: "oklch(0.58 0.22 264)",
+          ["--ed-orange-deep" as string]: "oklch(0.55 0.26 295)",
+        }}
+      >
         <OceanHero />
       </div>
       <Header />
