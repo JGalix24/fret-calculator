@@ -283,8 +283,8 @@ function EdTestimonials() {
   return (
     <section className="py-20 md:py-28 bg-[color:var(--ed-paper)]">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 05 · Témoignages</div>
-        <h2 className="mt-3 ed-serif font-medium text-[clamp(2rem,5vw,4rem)] leading-[0.95] tracking-[-0.02em] max-w-3xl">
+        <div className="ed-eyebrow">№ 05 · Témoignages</div>
+        <h2 className="mt-4 ed-display text-[clamp(2.2rem,5.5vw,4.4rem)] max-w-3xl">
           {t("testi.title")}
         </h2>
         <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-px bg-[color:var(--ed-line)] border ed-line">
@@ -294,14 +294,14 @@ function EdTestimonials() {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="ed-glass p-8 md:p-10"
+              transition={{ duration: 0.6, delay: i * 0.1 }}
+              className="ed-glass p-8 md:p-10 hover:bg-[color:var(--ed-paper)]/50 transition-colors"
             >
-              <div className="ed-serif text-6xl ed-orange-text leading-none">"</div>
-              <blockquote className="mt-2 ed-serif text-xl md:text-2xl leading-snug">{it.text}</blockquote>
+              <div className="ed-display italic text-7xl ed-orange-text leading-[0.6] -mb-2">"</div>
+              <blockquote className="mt-4 ed-serif text-xl md:text-[1.4rem] leading-snug font-light">{it.text}</blockquote>
               <figcaption className="mt-8 pt-5 border-t ed-line">
-                <div className="ed-serif text-base font-semibold">{it.name}</div>
-                <div className="ed-mono text-[10px] uppercase tracking-widest ed-soft mt-1">{it.role}</div>
+                <div className="ed-display text-lg">{it.name}</div>
+                <div className="ed-mono text-[10px] uppercase tracking-[0.25em] ed-soft mt-1">{it.role}</div>
               </figcaption>
             </motion.figure>
           ))}
