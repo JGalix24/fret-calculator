@@ -35,21 +35,22 @@ function EdManifesto() {
     <section className="ed-orange-bg">
       <div className="container mx-auto px-4 md:px-6 py-20 md:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-          <div className="lg:col-span-2 ed-mono text-[10px] uppercase tracking-widest font-bold opacity-80">№ 01<br/>Manifeste</div>
+          <div className="lg:col-span-2 ed-eyebrow !text-black/70">№ 01 — Manifeste</div>
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7 }}
-            className="lg:col-span-10 ed-serif font-medium leading-[0.95] text-[clamp(2.4rem,6vw,5rem)] tracking-[-0.02em]"
+            transition={{ duration: 0.9, ease: [0.7, 0.1, 0.2, 1] }}
+            className="lg:col-span-10 ed-display text-[clamp(2.6rem,7vw,5.8rem)]"
           >
-            Le calcul de fret n'a pas à être une <em>devinette</em>. Chaque mètre cube, chaque kilogramme, chaque jour de transit — <span className="underline decoration-2 underline-offset-8">connu d'avance</span>.
+            Le calcul de fret n'a pas à être une <em className="italic font-light">devinette</em>.<br/>
+            Chaque mètre cube, chaque kilogramme, chaque jour de transit — <span className="ed-draw">connu d'avance</span>.
           </motion.h2>
         </div>
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 ed-mono text-xs uppercase tracking-widest">
-          <div className="border-t-2 border-white/60 pt-3">{t("problem.1")}</div>
-          <div className="border-t-2 border-white/60 pt-3">{t("problem.2")}</div>
-          <div className="border-t-2 border-white/60 pt-3">{t("problem.3")}</div>
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6 ed-mono text-[11px] uppercase tracking-[0.25em] font-semibold">
+          <div className="border-t border-black/30 pt-4">{t("problem.1")}</div>
+          <div className="border-t border-black/30 pt-4">{t("problem.2")}</div>
+          <div className="border-t border-black/30 pt-4">{t("problem.3")}</div>
         </div>
       </div>
     </section>
