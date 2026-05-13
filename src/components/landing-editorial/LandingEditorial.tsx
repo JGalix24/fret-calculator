@@ -71,12 +71,12 @@ function EdCalculators() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-end justify-between flex-wrap gap-6">
           <div>
-            <div className="ed-mono text-[10px] uppercase tracking-widest font-bold ed-soft">№ 02 · Outils</div>
-            <h2 className="mt-3 ed-serif font-medium text-[clamp(2rem,5vw,4rem)] leading-[0.95] tracking-[-0.02em] max-w-2xl">
-              Quatre calculs, <em className="ed-orange-text">une seule</em> précision.
+            <div className="ed-eyebrow">№ 02 · Outils</div>
+            <h2 className="mt-4 ed-display text-[clamp(2.2rem,5.5vw,4.4rem)] max-w-2xl">
+              Quatre calculs,<br/><span className="ed-gradient italic">une seule</span> précision.
             </h2>
           </div>
-          <Link to="/app" className="ed-mono uppercase text-[11px] tracking-widest font-bold ed-underline-grow">
+          <Link to="/app" className="ed-mono uppercase text-[11px] tracking-[0.3em] font-semibold ed-underline-grow ed-orange-text">
             Tous les outils →
           </Link>
         </div>
