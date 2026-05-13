@@ -91,16 +91,17 @@ function EdCalculators() {
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="bg-[color:var(--ed-paper)]/40 ed-glass"
             >
-              <Link to={it.to} className="group block p-8 md:p-10 hover:bg-[color:var(--ed-paper)] transition-colors h-full">
-                <div className="flex items-start justify-between">
-                  <div className="ed-serif italic text-5xl md:text-6xl font-light ed-orange-text">{it.n}</div>
-                  <svg viewBox="0 0 24 24" className="h-6 w-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth={1.6}>
+              <Link to={it.to} className="group block p-8 md:p-10 hover:bg-[color:var(--ed-paper-2)]/60 transition-all duration-500 h-full relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[color:var(--ed-orange)]/0 via-transparent to-[color:var(--ed-orange)]/0 group-hover:from-[color:var(--ed-orange)]/10 transition-all duration-700" />
+                <div className="relative flex items-start justify-between">
+                  <div className="ed-display italic text-6xl md:text-7xl ed-orange-text opacity-90">{it.n}</div>
+                  <svg viewBox="0 0 24 24" className="h-6 w-6 opacity-50 transition-all group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1" fill="none" stroke="currentColor" strokeWidth={1.4}>
                     <path d="M7 17L17 7M9 7h8v8" />
                   </svg>
                 </div>
-                <h3 className="mt-10 ed-serif text-3xl md:text-4xl font-medium leading-tight">{it.title}</h3>
-                <p className="mt-3 ed-soft max-w-md">{it.desc}</p>
-                <div className="mt-8 h-[2px] w-0 bg-[color:var(--ed-orange)] transition-all duration-500 group-hover:w-24" />
+                <h3 className="relative mt-10 ed-display text-3xl md:text-[2.6rem]">{it.title}</h3>
+                <p className="relative mt-4 ed-soft max-w-md text-[15px] leading-relaxed">{it.desc}</p>
+                <div className="relative mt-8 h-px w-12 bg-[color:var(--ed-line-strong)] transition-all duration-500 group-hover:w-32 group-hover:bg-[color:var(--ed-orange)]" />
               </Link>
             </motion.div>
           ))}
