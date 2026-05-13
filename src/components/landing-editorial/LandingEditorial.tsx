@@ -132,8 +132,8 @@ function EdAirCargo() {
               <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ed-orange)]" />
               Fret maritime · FCL/LCL
             </div>
-            <h3 className="mt-3 ed-serif text-4xl md:text-5xl font-medium leading-[0.95]">
-              L'<em>océan</em>,<br/>au mètre cube près.
+            <h3 className="mt-4 ed-display text-5xl md:text-6xl">
+              L'<em className="italic">océan</em>,<br/>au mètre cube près.
             </h3>
             <p className="mt-4 max-w-md text-white/85 text-sm md:text-base">
               Conteneurs 20' / 40', groupage LCL ou complet FCL. Calcul exact au CBM, délais et coûts en clair.
@@ -163,8 +163,8 @@ function EdAirCargo() {
               <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ed-orange)]" />
               Aérien · Express
             </div>
-            <h3 className="mt-3 ed-serif text-4xl md:text-5xl font-medium leading-[0.95]">
-              Quand le délai<br/><em>compte vraiment.</em>
+            <h3 className="mt-4 ed-display text-5xl md:text-6xl">
+              Quand le délai<br/><em className="italic">compte vraiment.</em>
             </h3>
             <p className="mt-4 max-w-md text-white/85 text-sm md:text-base">
               Tarification au poids volumétrique, livraison en 5–7 jours. Idéal pour les marchandises à forte valeur.
