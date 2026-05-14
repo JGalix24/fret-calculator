@@ -1,107 +1,46 @@
-## Vision
+## Objectif
 
-Remplacer le hero actuel par une **scène océanique vivante et réaliste** : un porte-conteneurs qui avance vraiment sur la mer, sillage d'écume, autres cargos à l'horizon, mouettes qui passent, port de Lomé qui se dessine au loin, un avion-cargo qui traverse le ciel. L'ambiance lumineuse change automatiquement selon l'heure réelle du visiteur (matin doré, midi océan profond, coucher orange, nuit bleutée).
+Ajouter un effet visuel d'arrière-plan animé "gouttes d'eau qui tombent dans l'eau" (ondulations concentriques) derrière les sections situées **après le hero** (Problem → FinalCTA), pour prolonger l'ambiance océan du hero et harmoniser tout le bloc landing.
 
-## Recommandation technique
+## Approche visuelle
 
-**Approche hybride : 1 vidéo cinéma générée en boucle + calques animés + variantes d'ambiance.**
+Effet inspiré de la vidéo fournie : ondes concentriques qui apparaissent de façon aléatoire, s'agrandissent et s'estompent, sur un fond bleu profond très subtil. Pas de vidéo lourde — un canvas léger et performant.
 
-Pourquoi pas "tout vidéo" : une vidéo unique fige la lumière. Pour faire varier matin/midi/soir/nuit on aurait besoin de 4 vidéos lourdes (~40-60 Mo) → page lente.
+- **Implémentation** : composant React `WaterRipplesBackground` à base de `<canvas>` avec `requestAnimationFrame`.
+- Génération aléatoire de "drops" toutes les 800–2000 ms à des positions aléatoires.
+- Chaque drop = 2-3 anneaux concentriques qui grandissent (rayon 0 → ~180px) en se fondant (opacité 0.5 → 0).
+- Couleurs basées sur les tokens du site (bleu/violet du mode classique) pour rester harmonieux.
+- Léger gradient bleu nuit en fond pour donner la sensation d'eau profonde.
 
-Pourquoi pas "tout image animée" : on perd le mouvement réel du bateau qui avance, des vagues, du sillage — exactement ce qui te fait dire "wow".
+## Performance & accessibilité
 
-**Le combo gagnant :**
-- **1 seule vidéo de base** (cargo qui avance, mer, ~6s en boucle, encodée en WebM + MP4, ~3-5 Mo) — toujours en mouvement réel
-- **Overlay couleur dynamique** par-dessus la vidéo (gradient + filtres CSS `hue-rotate` / `brightness` / `sepia`) qui change selon l'heure → 1 seule vidéo, 4 ambiances différentes
-- **Calques SVG animés au-dessus** : mouettes qui traversent, avion-cargo qui glisse de droite à gauche, étoiles la nuit, halo du soleil/lune
+- Canvas avec `devicePixelRatio` géré, pause auto si l'onglet n'est pas visible (`document.hidden`).
+- Limite max ~12 ondes simultanées.
+- Respect de `prefers-reduced-motion` : si activé, on affiche uniquement le gradient statique sans animation.
+- `pointer-events-none` pour ne jamais bloquer l'interaction.
 
-## Ambiance dynamique (heure locale du visiteur)
+## Intégration
 
-| Heure | Ambiance | Filtre overlay |
-|-------|----------|----------------|
-| 5h–8h | **Aube brumeuse** — bleu-gris diffus, soleil bas | gradient bleu pâle + brightness 0.85 |
-| 8h–16h | **Plein jour océan** — bleu profond, écume éclatante | gradient azur + saturate 1.15 |
-| 16h–20h | **Golden hour** — orange/rose, reflets dorés (colle à ton orange de marque) | gradient orange→rose + warmth |
-| 20h–5h | **Nuit étoilée** — bleu nuit, lune, lumières du port | gradient indigo + brightness 0.55 + étoiles SVG |
+Dans `src/routes/index.tsx`, envelopper le `<main>` (sections après le Header) dans un conteneur `relative` qui contient :
+- `<WaterRipplesBackground />` en `absolute inset-0 -z-10`
+- Les sections actuelles inchangées par-dessus
 
-Transition douce de 2s entre deux plages quand l'utilisateur reste longtemps.
+Aucune modification du hero ni du contenu des sections. Les sections gardent leur fond actuel — on rendra leurs backgrounds légèrement transparents (ou on retire les backgrounds opaques) pour que l'effet soit visible derrière.
 
-## Structure de la nouvelle landing
+## Fichiers à créer / modifier
 
 ```text
-┌─────────────────────────────────────────────┐
-│  HERO PLEIN ÉCRAN (100vh)                   │
-│  ┌─ Vidéo cargo en boucle (background) ─┐  │
-│  │  + overlay couleur ambiance           │  │
-│  │  + SVG mouettes (3, parallax)         │  │
-│  │  + SVG avion-cargo (traverse en 25s)  │  │
-│  │  + halo soleil/lune selon heure       │  │
-│  │  + silhouette port Lomé au loin       │  │
-│  └───────────────────────────────────────┘  │
-│  Texte hero : titre énorme + CTA calculer   │
-└─────────────────────────────────────────────┘
-   ↓ scroll
-┌─────────────────────────────────────────────┐
-│  Sections existantes (calculateur, etc.)    │
-│  Photos réelles : conteneurs, dockers,      │
-│  soute avion-cargo (générées photo-réaliste)│
-└─────────────────────────────────────────────┘
+src/components/landing/WaterRipplesBackground.tsx   (nouveau, ~80 lignes)
+src/routes/index.tsx                                (wrap <main>)
+src/styles.css                                      (ajout token --ripple-bg si besoin)
 ```
 
-## Détails techniques
+Optionnellement, vérifier `Problem.tsx`, `Solution.tsx` etc. pour ajuster la transparence des fonds de section si l'effet n'est pas visible.
 
-**Génération de la vidéo hero :**
-- Outil : `videogen--generate_video` (1080p, 16:9, 10s)
-- Prompt : *"Cinematic aerial shot, large container ship sailing across calm ocean, white foamy wake trailing behind, two smaller cargo ships in the distance on the horizon, port of Lomé silhouette barely visible far away, neutral midday light (will be color-graded later), photorealistic, slow steady drone movement, National Geographic style, 4K"*
-- Sauvegarde : `src/assets/hero-ocean.mp4`
-- Lecture : `<video autoplay muted loop playsinline>` + `poster` JPG fallback
+## Question rapide avant implémentation
 
-**Overlay ambiance (CSS) :**
-```tsx
-const ambiance = useTimeOfDayAmbiance(); // hook custom
-<div className="hero-overlay" style={{
-  background: ambiance.gradient,
-  filter: ambiance.filter,
-  transition: 'all 2s ease-in-out'
-}} />
-```
+Préfères-tu :
+1. **Effet sur TOUT le reste du site** (de Problem jusqu'à FinalCTA) en background continu
+2. **Effet uniquement sur 1-2 sections clés** (ex : Problem + FinalCTA) pour rester sobre
 
-**SVG animés :**
-- Mouettes : 3 silhouettes SVG, animation `translateX` + `translateY` ondulée (keyframes CSS), 15-25s de cycle, décalées
-- Avion-cargo : silhouette SVG qui traverse l'écran de droite à gauche en 25s, légère trainée
-- Étoiles (nuit) : 30 points blancs avec `animate-pulse` aléatoire
-- Soleil/lune : cercle avec halo, position selon heure
-
-**Photos réelles dans les sections (générées photo-réaliste) :**
-- Port de Lomé avec grues + conteneurs colorés (golden hour)
-- Soute d'avion-cargo Boeing 747 avec palettes
-- Docker africain qui scanne un conteneur
-- Carte stylisée Chine→Togo avec route maritime
-
-**Palette couleurs (cohérente avec l'orange existant) :**
-- Orange chaud `#FF6B1A` (existant, garde)
-- Bleu océan profond `#0A2540`
-- Bleu nuit `#0D1B2A`
-- Crème `#FAF7F2`
-- Or doux `#D4A574` (accents)
-
-## Étapes d'exécution
-
-1. Générer la vidéo hero (`videogen--generate_video`, ~2 min)
-2. Générer 4 photos réalistes pour les sections (`imagegen--generate_image` premium)
-3. Créer le hook `useTimeOfDayAmbiance()` (retourne gradient + filtre selon `new Date().getHours()`)
-4. Créer le composant `<OceanHero />` : vidéo + overlay + SVG mouettes/avion/soleil
-5. Refondre `LandingEditorial.tsx` autour de ce nouveau hero + sections avec vraies photos
-6. Ajuster les tokens CSS (palette océan/golden) dans `src/styles.css`
-7. Garder le toggle Classic/Editorial déjà en place pour comparer
-
-## Hors scope
-
-- Pas de vidéos multiples (une seule, color-gradée par overlay)
-- Pas de WebGL/Three.js (overkill, perfs mobiles)
-- Pas de modifs au calculateur ou à l'admin
-- Pas de modifs DB
-
-## Questions ouvertes
-
-Aucune — je peux lancer dès que tu valides.
+Je pars sur l'option 1 par défaut si tu valides le plan tel quel.

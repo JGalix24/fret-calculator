@@ -9,6 +9,7 @@ import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { OceanHero } from "@/components/landing-editorial/OceanHero";
+import { WaterRipplesBackground } from "@/components/landing/WaterRipplesBackground";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,15 +45,18 @@ function Index() {
         <OceanHero />
       </div>
       <Header />
-      <main>
-        <Problem />
-        <Solution />
-        <Argument />
-        <Pricing />
-        <Testimonials />
-        <FAQ />
-        <FinalCTA />
-      </main>
+      <div className="relative">
+        <WaterRipplesBackground />
+        <main className="relative z-10">
+          <Problem />
+          <Solution />
+          <Argument />
+          <Pricing />
+          <Testimonials />
+          <FAQ />
+          <FinalCTA />
+        </main>
+      </div>
       <Footer />
     </div>
   );
